@@ -1,0 +1,184 @@
+// Configuration
+const SHEET_NAMES = {
+  RESELL: "Resell Projects",
+  UNDER_CONSTRUCTION: "Under Construction Projects",
+  ENQUIRIES: "Enquiries"
+};
+
+// This is no longer used by the debug doGet, but is kept for doPost
+const ALLOWED_ORIGINS = ["http://localhost:3000", "https://your-production-domain.com"]; 
+
+// Utility function to set CORS headers (used by doPost)
+function setCorsHeaders(event) {
+  const origin = event.parameter.origin || event.parameter.Origin || event.parameter["Origin"] || event.headers && event.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    return {
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Accept",
+      "Access-Control-Max-Age": "86400"
+    };
+  }
+  return {};
+}
+
+// Handle OPTIONS requests (for CORS preflight)
+function doOptions(e) {
+  const headers = setCorsHeaders(e);
+  return ContentService.createTextOutput(JSON.stringify({ status: 'success' }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders(headers);
+}
+
+// ====================================================================
+// UPDATED doGet FUNCTION WITH DETAILED LOGGING
+// ====================================================================
+function doGet(e) {
+  // Use a generic wildcard for CORS for now to ensure it's not the issue
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
+
+  try {
+    console.log("----- doGet execution started -----");
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (!ss) {
+      throw new Error("FATAL: Could not get active spreadsheet. Is the script correctly bound to a sheet?");
+    }
+    console.log("Step 1: Active spreadsheet found: '" + ss.getName() + "'");
+
+    // Get both project sheets
+    const resellSheet = ss.getSheetByName(SHEET_NAMES.RESELL);
+    const underConstructionSheet = ss.getSheetByName(SHEET_NAMES.UNDER_CONSTRUCTION);
+
+    if (!resellSheet) {
+       console.error("Step 2 FAILED: Sheet not found with name: '" + SHEET_NAMES.RESELL + "'");
+       throw new Error("Required sheet not found: " + SHEET_NAMES.RESELL);
+    }
+    console.log("Step 2: Successfully found sheet: '" + SHEET_NAMES.RESELL + "'");
+
+    if (!underConstructionSheet) {
+       console.error("Step 3 FAILED: Sheet not found with name: '" + SHEET_NAMES.UNDER_CONSTRUCTION + "'");
+       throw new Error("Required sheet not found: " + SHEET_NAMES.UNDER_CONSTRUCTION);
+    }
+    console.log("Step 3: Successfully found sheet: '" + SHEET_NAMES.UNDER_CONSTRUCTION + "'");
+
+    // Get data from both sheets
+    console.log("Step 4: Attempting to get data from resell sheet...");
+    const resellData = getSheetData(resellSheet);
+    console.log("-> Resell data fetched. Rows found: " + resellData.length);
+
+    console.log("Step 5: Attempting to get data from under construction sheet...");
+    const underConstructionData = getSheetData(underConstructionSheet);
+    console.log("-> Under construction data fetched. Rows found: " + underConstructionData.length);
+
+    // Combine into one response object
+    const response = {
+      status: 'success',
+      data: {
+        resellProjects: resellData,
+        underConstructionProjects: underConstructionData
+      }
+    };
+    
+    console.log("Step 6: Successfully prepared response. Sending data to browser.");
+    // Return JSON response
+    return ContentService.createTextOutput(JSON.stringify(response))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders(headers);
+
+  } catch (error) {
+    // This will catch any error from the steps above and log it clearly.
+    console.error('CRITICAL ERROR IN doGet:', error.message, error.stack);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      message: error.toString()
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders(headers);
+  }
+}
+
+// ====================================================================
+// ORIGINAL doPost and getSheetData FUNCTIONS (UNCHANGED)
+// ====================================================================
+
+// Handle POST requests for enquiries
+function doPost(e) {
+  const headers = setCorsHeaders(e);
+  try {
+    // Log the incoming request for debugging
+    console.log('Received POST request:', e.postData.contents);
+    // Parse the JSON data from the request
+    const data = JSON.parse(e.postData.contents);
+    // Validate required fields
+    if (!data.name || !data.email || !data.phone) {
+      throw new Error('Name, email and phone are required fields');
+    }
+    // Get the active spreadsheet and sheet
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const enquiriesSheet = ss.getSheetByName(SHEET_NAMES.ENQUIRIES);
+    if (!enquiriesSheet) {
+      throw new Error('Enquiries sheet not found');
+    }
+    // Prepare the row data - matching exact column order from your sheet
+    const rowData = [
+      new Date(), // Timestamp
+      data.name,
+      data.email,
+      data.phone,
+      data.message || '',
+      data.projectConfiguration || '',
+      data.projectCarpetSize || '',
+      data.projectBuiltUp || '',
+      data.projectNode || '',
+      data.projectPrice || '',
+      new Date() // Enquiry Date
+    ];
+    // Append the data to the sheet
+    enquiriesSheet.appendRow(rowData);
+    // Format the new row
+    const lastRow = enquiriesSheet.getLastRow();
+    enquiriesSheet.getRange(lastRow, 1, 1, enquiriesSheet.getLastColumn()).setBackground("#E8F0FE");
+    // Return success response
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success',
+      message: 'Enquiry submitted successfully'
+    }))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders(headers);
+  } catch (error) {
+    console.error('Error in doPost:', error);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      message: error.toString()
+    }))
+    .setMimeType(Content.MimeType.JSON)
+    .setHeaders(headers);
+  }
+}
+
+// Helper function to convert sheet data to JSON
+function getSheetData(sheet) {
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const projects = [];
+  // Skip header row, convert each row to object
+  for(let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row[0]) { // Only include rows with an SR NO
+      projects.push({
+        srNo: row[0],
+        configuration: row[1],
+        carpetSize: row[2],
+        builtUp: row[3],
+        node: row[4],
+        price: row[5]
+      });
+    }
+  }
+  return projects;
+}
