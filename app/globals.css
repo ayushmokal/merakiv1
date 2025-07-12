@@ -80,3 +80,42 @@
     @apply bg-background text-foreground;
   }
 }
+
+.marquee-row {
+  display: flex;
+  width: max-content;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.marquee-row-rtl {
+  animation-name: marquee-rtl;
+  animation-duration: 70s;
+}
+.marquee-row-ltr {
+  animation-name: marquee-ltr;
+  animation-duration: 70s;
+}
+@keyframes marquee-rtl {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-ltr {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.marquee-logo-img {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  width: 80px;
+}
+
+.marquee-section-bg {
+  background: #18181b;
+}
