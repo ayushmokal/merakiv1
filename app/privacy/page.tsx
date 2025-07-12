@@ -5,28 +5,7 @@ import { Building2, ArrowLeft } from 'lucide-react';
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-background pt-16">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Building2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-primary">ArchProp</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-              <Link href="/projects" className="text-foreground hover:text-primary transition-colors">Projects</Link>
-              <Link href="/services" className="text-foreground hover:text-primary transition-colors">Services</Link>
-              <Link href="/contact" className="text-foreground hover:text-primary transition-colors">Contact</Link>
-            </div>
-            <Button asChild>
-              <Link href="/contact">Get Quote</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">
@@ -139,7 +118,7 @@ export default function PrivacyPage() {
                   please contact us:
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg">
-                  <p><strong>Email:</strong> privacy@archprop.com</p>
+                  <p><strong>Email:</strong> privacy@merakisquarefoots.com</p>
                   <p><strong>Phone:</strong> +91 98765 43210</p>
                   <p><strong>Address:</strong> Mumbai, Maharashtra, India</p>
                 </div>

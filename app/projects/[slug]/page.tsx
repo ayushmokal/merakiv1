@@ -216,28 +216,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-16">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Building2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-primary">ArchProp</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-              <Link href="/projects" className="text-primary font-medium">Projects</Link>
-              <Link href="/services" className="text-foreground hover:text-primary transition-colors">Services</Link>
-              <Link href="/contact" className="text-foreground hover:text-primary transition-colors">Contact</Link>
-            </div>
-            <Button asChild>
-              <Link href="/contact">Get Quote</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">
@@ -460,7 +439,7 @@ export default function ProjectDetailPage() {
                   Let's discuss how we can create something amazing for you.
                 </p>
                 <Button variant="secondary" asChild className="w-full">
-                  <Link href="/contact">Start Your Project</Link>
+                  <Link href="/services">Our Services</Link>
                 </Button>
               </CardContent>
             </Card>

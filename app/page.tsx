@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+// Removed useState and useEffect - no longer needed for popup logic
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Building2, Users, Award, MapPin, Phone, Mail, Star, Home as HomeIcon, Briefcase, FileText, Palette } from 'lucide-react';
-import LeadCaptureModal from '@/components/LeadCaptureModal';
+// Removed LeadCaptureModal import - now using PopupBlocker from layout
 import Image from 'next/image';
 
 const services = [
@@ -69,19 +69,7 @@ const logoImages = [
 ];
 
 export default function Home() {
-  const [showLeadModal, setShowLeadModal] = useState(false);
-
-  useEffect(() => {
-    const hasSeenModal = localStorage.getItem('leadModalSeen');
-    const modalTimestamp = localStorage.getItem('leadModalTimestamp');
-    
-    if (!hasSeenModal || (modalTimestamp && Date.now() - parseInt(modalTimestamp) > 30 * 24 * 60 * 60 * 1000)) {
-      const timer = setTimeout(() => {
-        setShowLeadModal(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  // Removed duplicate popup logic - now using PopupBlocker from layout
 
   return (
     <div className="min-h-screen bg-background">
@@ -337,75 +325,18 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild className="text-lg px-8">
-              <Link href="/contact">Get Free Consultation</Link>
+              <Link href="/services">Our Services</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-              <Link href="/projects">View Our Projects</Link>
+            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+              <Link href="/work">Our Work</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Building2 className="h-8 w-8" />
-                <span className="text-xl font-bold">Meraki Square Foots</span>
-              </div>
-              <p className="text-slate-300">
-                Established in 2017, we provide professional property consultancy services with 
-                uncompromising professionalism and systematic approach.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-slate-300">
-                <li><Link href="/services" className="hover:text-white transition-colors">Architecture/RCC Work</Link></li>
-                <li><Link href="/services" className="hover:text-white transition-colors">Real Estate Consultation</Link></li>
-                <li><Link href="/services" className="hover:text-white transition-colors">Interior Designing</Link></li>
-                <li><Link href="/services" className="hover:text-white transition-colors">Property Management</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-slate-300">
-                <li><Link href="/projects" className="hover:text-white transition-colors">Projects</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <div className="space-y-3 text-slate-300">
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>Navi Mumbai, Maharashtra</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4" />
-                  <span>+91 98765 43210</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4" />
-                  <span>info@merakisquarefoots.com</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 Meraki Square Foots LLP. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
 
-      <LeadCaptureModal 
-        isOpen={showLeadModal} 
-        onClose={() => setShowLeadModal(false)} 
-      />
+
+
     </div>
   );
 }

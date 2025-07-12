@@ -5,28 +5,7 @@ import { Building2, ArrowLeft } from 'lucide-react';
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-background pt-16">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Building2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-primary">ArchProp</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-              <Link href="/projects" className="text-foreground hover:text-primary transition-colors">Projects</Link>
-              <Link href="/services" className="text-foreground hover:text-primary transition-colors">Services</Link>
-              <Link href="/contact" className="text-foreground hover:text-primary transition-colors">Contact</Link>
-            </div>
-            <Button asChild>
-              <Link href="/contact">Get Quote</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">
@@ -47,7 +26,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
                 <p>
-                  By accessing and using ArchProp's website and services, you accept and agree 
+                  By accessing and using Meraki Square Foots' website and services, you accept and agree 
                   to be bound by the terms and provision of this agreement. If you do not agree 
                   to abide by the above, please do not use this service.
                 </p>
@@ -56,7 +35,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">2. Services Description</h2>
                 <p className="mb-4">
-                  ArchProp provides architecture and property services including but not limited to:
+                  Meraki Square Foots provides architecture and property services including but not limited to:
                 </p>
                 <ul className="list-disc pl-6 mb-4 space-y-2">
                   <li>RCC Consultancy and structural engineering</li>
@@ -95,7 +74,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">5. Intellectual Property</h2>
                 <p>
-                  All designs, plans, and documentation created by ArchProp remain our intellectual 
+                  All designs, plans, and documentation created by Meraki Square Foots remain our intellectual 
                   property until full payment is received. Upon full payment, clients receive 
                   usage rights as specified in the service agreement.
                 </p>
@@ -104,7 +83,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">6. Limitation of Liability</h2>
                 <p className="mb-4">
-                  ArchProp's liability is limited to the amount paid for services. We are not 
+                  Meraki Square Foots' liability is limited to the amount paid for services. We are not 
                   liable for:
                 </p>
                 <ul className="list-disc pl-6 mb-4 space-y-2">
@@ -152,7 +131,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">11. Force Majeure</h2>
                 <p>
-                  ArchProp is not liable for delays or failures due to circumstances beyond 
+                  Meraki Square Foots is not liable for delays or failures due to circumstances beyond 
                   our reasonable control, including natural disasters, government actions, 
                   or other force majeure events.
                 </p>
@@ -173,7 +152,7 @@ export default function TermsPage() {
                   For questions about these terms or our services, please contact us:
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg">
-                  <p><strong>Email:</strong> legal@archprop.com</p>
+                  <p><strong>Email:</strong> legal@merakisquarefoots.com</p>
                   <p><strong>Phone:</strong> +91 98765 43210</p>
                   <p><strong>Address:</strong> Mumbai, Maharashtra, India</p>
                 </div>
