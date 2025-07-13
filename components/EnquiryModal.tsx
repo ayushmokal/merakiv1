@@ -43,6 +43,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
     // Prepare the data to be sent
     const enquiryData = {
       ...formData,
+      projectSrNo: project.srNo,
       projectConfiguration: project.configuration,
       projectCarpetSize: project.carpetSize,
       projectBuiltUp: project.builtUp,
@@ -62,16 +63,16 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
 
       const result = await response.json();
 
-      if (response.ok) {
-        alert('Thank you for your enquiry! We will contact you soon.');
+      if (response.ok && result.status === 'success') {
+        alert('✅ Thank you for your enquiry! We will contact you within 24 hours.');
         onClose();
         setFormData({ name: '', email: '', phone: '', message: '' });
       } else {
-        throw new Error(result.error || 'Failed to submit enquiry');
+        throw new Error(result.error || result.message || 'Failed to submit enquiry');
       }
     } catch (error) {
       console.error('Enquiry submission error:', error);
-      alert('Sorry, there was an error submitting your enquiry. Please try again or contact us directly.');
+      alert('❌ Sorry, there was an error submitting your enquiry. Please try again or contact us directly at +91 98765 43210.');
     } finally {
       setLoading(false);
     }

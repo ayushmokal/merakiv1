@@ -15,17 +15,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Using the updated enquiry script URL
-    const gscriptUrl = 'https://script.google.com/macros/s/AKfycbyqNlOVCEyc4pS-0y-r28VCkhlBJvTZ7ZLoobHe8y1K8mREFveRlsVeCwcvS61Fz4X9GQ/exec';
+    // Using the dedicated Enquiries Google Apps Script URL with correct format
+    const gscriptUrl = 'https://script.google.com/macros/s/AKfycbyEEL-s76czfub9cUbI52LILZBJhrBS_vAe02sXJ7vA01x6Ibt78StQ4szr4UBUm1jF8Q/exec';
     
     console.log('Using Google Script URL:', gscriptUrl);
 
     try {
       // Prepare the data in the exact format expected by the Google Sheet
+      // Columns: Timestamp, Name, Email, Phone, Message, Project Configuration, Carpet Size, Built Up, Node, Price, Enquiry Date
       const formData = {
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
+        type: 'enquiry', // Important: tells Google Apps Script this is an enquiry
+        name: body.name || '',
+        email: body.email || '',
+        phone: body.phone || '',
         message: body.message || '',
         projectConfiguration: body.projectConfiguration || '',
         projectCarpetSize: body.projectCarpetSize || '',
@@ -68,10 +70,17 @@ export async function POST(request: NextRequest) {
         throw new Error('Invalid response from Google Script - not valid JSON');
       }
 
-      if (!response.ok || result.status === 'error') {
-        throw new Error(result.message || 'Failed to submit to Google Sheets');
+      if (!response.ok) {
+        console.error('Google Apps Script HTTP error:', response.status, response.statusText);
+        throw new Error(`Google Apps Script returned HTTP ${response.status}: ${response.statusText}`);
       }
 
+      if (result.status === 'error') {
+        console.error('Google Apps Script error:', result.message);
+        throw new Error(result.message || 'Google Apps Script returned an error');
+      }
+
+      console.log('✅ Enquiry submitted successfully:', result);
       return NextResponse.json({ 
         status: 'success',
         message: 'Enquiry submitted successfully' 

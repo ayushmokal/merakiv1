@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Google Sheets API configuration
-// Connected to your Google Apps Script
-const PROPERTIES_API_URL = "https://script.google.com/macros/s/AKfycbwBbMWTu671Cae2XmTT5YdsybYIBpdHBXwMFLgrqu6OvunZAuStG95ebvHCIrTmPGEl/exec";
+// Google Sheets API configuration  
+// Connected to your Properties Google Apps Script with 55 properties and Cloudinary support
+const PROPERTIES_API_URL = "https://script.google.com/macros/s/AKfycbxcMffd39lz4L7W2Rov7GfWQNsIR-eRsw2cw3tUY6wAZaZoP0Ed9FUrzNT-Ekr80ko-/exec";
 
 // NOTE: To get your script URL:
 // 1. Go to script.google.com

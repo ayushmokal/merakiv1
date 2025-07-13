@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Building2, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Building2, Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -47,26 +47,32 @@ export default function Footer() {
             <h3 className="text-lg font-semibold">Contact Us</h3>
             <div className="space-y-3 text-gray-400 text-sm">
               <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                <MapPin className="h-5 w-5 text-gray-300 mt-0.5" />
                 <div>
                   <p>Navi Mumbai, Maharashtra</p>
                   <p>Mumbai, Pune</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-primary" />
+                <Phone className="h-5 w-5 text-gray-300" />
                 <a href="tel:+919876543210" className="hover:text-white transition-colors">
                   +91 98765 43210
                 </a>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-primary" />
+                <Mail className="h-5 w-5 text-gray-300" />
                 <a href="mailto:info@merakisquarefoots.com" className="hover:text-white transition-colors">
                   info@merakisquarefoots.com
                 </a>
               </div>
+              <div className="flex items-center space-x-3">
+                <MessageCircle className="h-5 w-5 text-green-400" />
+                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  WhatsApp: +91 98765 43210
+                </a>
+              </div>
               <div className="flex items-start space-x-3">
-                <Clock className="h-5 w-5 text-primary mt-0.5" />
+                <Clock className="h-5 w-5 text-gray-300 mt-0.5" />
                 <div>
                   <p>Mon - Sat: 9:00 AM - 6:00 PM</p>
                   <p>Sunday: By Appointment</p>

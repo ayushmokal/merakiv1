@@ -297,30 +297,48 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="secondary" className="mb-4">Our Services</Badge>
-          <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-            Comprehensive Property Solutions
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            From architectural design to property management, we provide end-to-end services 
-            that transform your vision into exceptional reality.
-          </p>
-          
-          {/* Service Navigation */}
-          <div className="flex flex-wrap justify-center gap-3 mt-8">
-            {services.map((service) => (
-              <Button
-                key={service.id}
-                variant="outline"
-                onClick={() => scrollToService(service.id)}
-                className="hover:bg-primary hover:text-primary-foreground"
-              >
-                {service.title}
-            </Button>
-            ))}
-          </div>
+      <section className="relative bg-black text-white">
+        <div className="absolute inset-0">
+            <img
+                src="/hero.png"
+                alt="Modern architecture"
+                className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="min-h-[80vh] flex flex-col justify-center py-20">
+              <div className="max-w-2xl space-y-8">
+                <div className="space-y-4">
+                  <Badge variant="secondary" className="w-fit bg-white/10 border-white/20 text-white">
+                    Our Services
+                  </Badge>
+                  <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+                    Comprehensive Property
+                    <br />
+                    <span className="text-white/90">Solutions</span>
+                  </h1>
+                  <p className="text-xl text-white/80 leading-relaxed">
+                    From architectural design to property management, we provide end-to-end services 
+                    that transform your vision into exceptional reality with uncompromising professionalism.
+                  </p>
+                </div>
+                
+                {/* Service Navigation */}
+                <div className="flex flex-wrap gap-4">
+                  {services.map((service) => (
+                    <Button
+                      key={service.id}
+                      variant="secondary"
+                      onClick={() => scrollToService(service.id)}
+                      className="text-sm"
+                    >
+                      {service.title}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
         </div>
       </section>
 
@@ -546,19 +564,19 @@ export default function ServicesPage() {
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-            Ready to Get Started?
+            Ready to Start Your Real Estate Journey?
           </h2>
           <p className="text-xl mb-8 text-primary-foreground/90">
-            Let's discuss your project requirements and create something exceptional together.
+            Let's discuss how we can help you find the perfect property or bring your interior design dreams to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" onClick={() => setShowLeadModal(true)} className="text-lg px-8">
-              Get Free Consultation
+            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+              <Link href="/services">Our Services</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-              <Link href="/projects">View Our Work</Link>
+            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+              <Link href="/work">Our Work</Link>
             </Button>
-              </div>
+          </div>
         </div>
       </section>
 
