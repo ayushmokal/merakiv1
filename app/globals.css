@@ -107,15 +107,15 @@
 .marquee-logo-img {
   background: #fff;
   border-radius: 0.5rem;
-  padding: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 80px;
-  width: 80px;
+  height: 120px;
+  width: 120px;
 }
 
 .marquee-section-bg {
-  background: #18181b;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }

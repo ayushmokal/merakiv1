@@ -130,12 +130,22 @@ export default function Home() {
 
       {/* Marquee Logos Section */}
       <section className="py-12 marquee-section-bg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="text-center">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
+              Brands We Worked With
+            </h2>
+            <p className="text-gray-600">
+              Trusted by leading companies and organizations
+            </p>
+          </div>
+        </div>
         <div className="overflow-hidden">
           {/* Row 1: Right to Left */}
           <div className="marquee-row marquee-row-rtl flex items-center space-x-8 py-4">
             {[...logoImages, ...logoImages].map((src, idx) => (
               <div key={src + idx} className="flex-shrink-0 marquee-logo-img">
-                <Image src={src} alt="Logo" width={200} height={200} className="object-contain grayscale hover:grayscale-0 transition duration-300" />
+                <Image src={src} alt="Logo" width={250} height={250} className="object-contain hover:scale-105 transition duration-300" />
               </div>
             ))}
           </div>
@@ -143,7 +153,7 @@ export default function Home() {
           <div className="marquee-row marquee-row-ltr flex items-center space-x-8 py-4">
             {[...logoImages, ...logoImages].map((src, idx) => (
               <div key={src + '2' + idx} className="flex-shrink-0 marquee-logo-img">
-                <Image src={src} alt="Logo" width={200} height={200} className="object-contain grayscale hover:grayscale-0 transition duration-300" />
+                <Image src={src} alt="Logo" width={250} height={250} className="object-contain hover:scale-105 transition duration-300" />
               </div>
             ))}
           </div>

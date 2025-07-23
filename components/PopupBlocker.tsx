@@ -32,10 +32,33 @@ export default function PopupBlocker() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.number) {
+    // Validate required fields
+    if (!formData.name || !formData.number || !formData.email || !formData.enquiry) {
       toast({
         title: "Required fields missing",
-        description: "Please fill in your name and phone number.",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate phone number (basic validation for numbers only)
+    const phoneRegex = /^\+?[\d\s\-()]+$/;
+    if (!phoneRegex.test(formData.number)) {
+      toast({
+        title: "Invalid phone number",
+        description: "Please enter a valid phone number with only numbers, spaces, hyphens, or brackets.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate phone number length (should be at least 10 digits)
+    const numbersOnly = formData.number.replace(/\D/g, '');
+    if (numbersOnly.length < 10) {
+      toast({
+        title: "Invalid phone number",
+        description: "Phone number should contain at least 10 digits.",
         variant: "destructive"
       });
       return;
@@ -133,24 +156,26 @@ export default function PopupBlocker() {
             </div>
 
             <div>
-              <Label htmlFor="popup-email">Email (Optional)</Label>
+              <Label htmlFor="popup-email">Email *</Label>
               <Input
                 id="popup-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="your@email.com"
+                required
               />
             </div>
 
             <div>
-              <Label htmlFor="popup-enquiry">Enquiry Details (Optional)</Label>
+              <Label htmlFor="popup-enquiry">Enquiry Details *</Label>
               <Textarea
                 id="popup-enquiry"
                 value={formData.enquiry}
                 onChange={(e) => setFormData({ ...formData, enquiry: e.target.value })}
                 placeholder="Tell us about your property requirements..."
                 rows={3}
+                required
               />
             </div>
 

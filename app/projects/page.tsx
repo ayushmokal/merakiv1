@@ -624,7 +624,7 @@ export default function PropertiesPage() {
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Configuration</Label>
                   <div className="space-y-2">
-                    {['1 BHK', '2 BHK', '3 BHK', '4 BHK', 'Villa', 'Office Space'].map(config => (
+                    {['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5 BHK', 'Villa', 'Office Space'].map(config => (
                       <div key={config} className="flex items-center space-x-2">
                         <Checkbox
                           id={`config-${config}`}
