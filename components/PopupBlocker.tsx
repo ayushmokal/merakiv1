@@ -150,7 +150,7 @@ export default function PopupBlocker() {
                 id="popup-number"
                 value={formData.number}
                 onChange={(e) => setFormData({ ...formData, number: e.target.value })}
-                placeholder="+91 98765 43210"
+                placeholder="9930910004 / 9820274467"
                 required
               />
             </div>
@@ -162,7 +162,7 @@ export default function PopupBlocker() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="your@email.com"
+                placeholder="merakisquarefootsllp@gmail.com"
                 required
               />
             </div>
@@ -189,11 +189,11 @@ export default function PopupBlocker() {
           <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Phone className="h-3 w-3" />
-              <span>+91 98765 43210</span>
+              <span>9930910004 / 9820274467</span>
             </div>
             <div className="flex items-center space-x-1">
               <Mail className="h-3 w-3" />
-              <span>info@merakisquarefoots.com</span>
+              <span>merakisquarefootsllp@gmail.com</span>
             </div>
           </div>
 

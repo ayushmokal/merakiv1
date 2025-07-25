@@ -153,7 +153,7 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+91 98765 43210"
+                placeholder="9930910004 / 9820274467"
               />
             </div>
 

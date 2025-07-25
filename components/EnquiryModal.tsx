@@ -72,7 +72,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
       }
     } catch (error) {
       console.error('Enquiry submission error:', error);
-      alert('❌ Sorry, there was an error submitting your enquiry. Please try again or contact us directly at +91 98765 43210.');
+      alert('❌ Sorry, there was an error submitting your enquiry. Please try again or contact us directly at 9930910004 / 9820274467.');
     } finally {
       setLoading(false);
     }

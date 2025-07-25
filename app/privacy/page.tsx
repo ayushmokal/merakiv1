@@ -118,8 +118,8 @@ export default function PrivacyPage() {
                   please contact us:
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg">
-                  <p><strong>Email:</strong> privacy@merakisquarefoots.com</p>
-                  <p><strong>Phone:</strong> +91 98765 43210</p>
+                  <p><strong>Email:</strong> merakisquarefootsllp@gmail.com</p>
+                  <p><strong>Phone:</strong> 9930910004 / 9820274467</p>
                   <p><strong>Address:</strong> Mumbai, Maharashtra, India</p>
                 </div>
               </section>

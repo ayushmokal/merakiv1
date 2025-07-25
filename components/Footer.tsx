@@ -55,20 +55,20 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-gray-300" />
-                <a href="tel:+919876543210" className="hover:text-white transition-colors">
-                  +91 98765 43210
+                <a href="tel:+919930910004" className="hover:text-white transition-colors">
+                  9930910004 / 9820274467
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-gray-300" />
-                <a href="mailto:info@merakisquarefoots.com" className="hover:text-white transition-colors">
-                  info@merakisquarefoots.com
+                <a href="mailto:merakisquarefootsllp@gmail.com" className="hover:text-white transition-colors">
+                  merakisquarefootsllp@gmail.com
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <MessageCircle className="h-5 w-5 text-green-400" />
-                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                  WhatsApp: +91 98765 43210
+                <a href="https://wa.me/919930910004" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  WhatsApp: 9930910004 / 9820274467
                 </a>
               </div>
               <div className="flex items-start space-x-3">

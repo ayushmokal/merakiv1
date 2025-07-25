@@ -429,7 +429,7 @@ export default function ServicesPage() {
                         id="phone"
                             value={enquiryForm.phone}
                             onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
+                        placeholder="9930910004 / 9820274467"
                       />
                   </div>
 
