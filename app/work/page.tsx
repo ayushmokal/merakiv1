@@ -109,7 +109,7 @@ const stats = [
   { number: '6+', label: 'Years Experience' }
 ];
 
-const categories = ['All', 'Residential', 'Commercial', 'Interior', 'Management'];
+const categories = ['All', 'Residential', 'Commercial', 'Interior'];
 
 export default function WorkPage() {
   const [showLeadModal, setShowLeadModal] = useState(false);
@@ -128,8 +128,8 @@ export default function WorkPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-black text-white">
+      {/* Hero Section - extends behind navbar */}
+      <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
         <div className="absolute inset-0">
             <img
                 src="/hero.png"

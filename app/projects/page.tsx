@@ -429,12 +429,12 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section with Search */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-12 sm:py-16">
+      {/* Hero Section with Search - extends behind navbar */}
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-12 sm:py-16 -mt-[80px] lg:-mt-[88px] pt-[92px] lg:pt-[104px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
-              Properties in Navi Mumbai
+              Properties in Mumbai
             </h1>
             <p className="text-lg sm:text-xl text-white/90">
               Explore verified listings

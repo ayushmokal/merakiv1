@@ -296,8 +296,8 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-black text-white">
+      {/* Hero Section - extends behind navbar */}
+      <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
         <div className="absolute inset-0">
             <img
                 src="/hero.png"
@@ -489,17 +489,6 @@ export default function ServicesPage() {
                               <span className="text-sm">{step}</span>
                             </div>
                           ))}
-                    </div>
-                  </div>
-                  
-                      <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Starting Price</p>
-                          <p className="font-semibold text-primary">{service.pricing}</p>
-                        </div>
-                    <div>
-                          <p className="text-sm font-medium text-muted-foreground">Timeline</p>
-                          <p className="font-semibold">{service.duration}</p>
                     </div>
                   </div>
                   

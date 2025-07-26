@@ -76,8 +76,23 @@
   * {
     @apply border-border;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Ensure no unwanted white space around navbar */
+  nav {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Remove any default spacing from main content */
+  main {
+    margin: 0;
+    padding: 0;
   }
 }
 

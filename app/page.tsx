@@ -73,8 +73,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-black text-white">
+      {/* Hero Section - extends behind navbar for seamless look */}
+      <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
         <div className="absolute inset-0">
             <img
                 src="/hero.png"
@@ -84,7 +84,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="min-h-[80vh] flex flex-col justify-center py-20">
+            <div className="min-h-screen flex flex-col justify-center pb-20">
               <div className="max-w-2xl space-y-8">
                 <div className="space-y-4">
                   <Badge variant="secondary" className="w-fit bg-white/10 border-white/20 text-white">

@@ -31,7 +31,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
+      <div className={`fixed top-2 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
         isScrolled ? 'w-[95%] max-w-6xl' : 'w-[98%] max-w-7xl'
       }`}>
         <nav className={`relative bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-2xl shadow-lg transition-all duration-300 ${
@@ -121,8 +121,8 @@ export default function Navbar() {
         </nav>
       </div>
       
-      {/* Spacer to prevent content from hiding behind fixed navbar */}
-      <div className="h-20 lg:h-24"></div>
+      {/* Spacer to prevent content from hiding behind fixed navbar - optimized height */}
+      <div className="h-[80px] lg:h-[88px]"></div>
       
       <LeadCaptureModal 
         isOpen={isModalOpen} 

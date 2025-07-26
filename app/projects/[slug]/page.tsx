@@ -216,7 +216,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">
