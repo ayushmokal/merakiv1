@@ -64,7 +64,8 @@ export async function GET(request: NextRequest) {
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
       console.error('Response that failed to parse:', responseText.substring(0, 1000));
-      throw new Error(`Invalid JSON response from Google Apps Script: ${parseError.message}`);
+      const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+      throw new Error(`Invalid JSON response from Google Apps Script: ${errorMessage}`);
     }
     console.log('Raw Google Sheets response:', data);
 
