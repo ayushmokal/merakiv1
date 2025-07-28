@@ -360,10 +360,7 @@ export default function WorkPage() {
           </div>
         </div>
               
-              <div className="flex gap-4 pt-4">
-                <Button onClick={() => setShowLeadModal(true)} className="flex-1">
-                  Start Similar Project
-                </Button>
+              <div className="flex justify-end pt-4">
                 <Button variant="outline" onClick={() => setShowProjectModal(false)}>
                   Close
                 </Button>
