@@ -117,8 +117,8 @@ export default function PropertiesPage() {
   ];
 
   const locations = [
-    'Kharghar', 'Vashi', 'Belapur', 'Panvel', 'Nerul', 'Airoli', 'Ghansoli', 'Kopar Khairane',
-    'Ulwe', 'Dronagiri', 'Taloja', 'Kalamboli', 'Kamothe', 'Seawoods', 'CBD Belapur', 'Sanpada'
+    'Airoli', 'Belapur', 'CBD Belapur', 'Dronagiri', 'Ghansoli', 'Kalamboli', 'Kamothe', 'Kharghar',
+    'Kopar Khairane', 'Nerul', 'Panvel', 'Sanpada', 'Seawoods', 'Taloja', 'Ulwe', 'Vashi'
   ];
 
 
