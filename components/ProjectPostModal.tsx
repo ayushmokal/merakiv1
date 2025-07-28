@@ -1,1 +1,0 @@
-ID | Image URL | Project Name | Type | Location | Year | Description | Area (sq ft) | Services | Status | Featured | Created Date | Updated Date
