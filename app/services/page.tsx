@@ -33,20 +33,16 @@ const services = [
     description: 'Expert structural engineering and RCC design solutions for residential and commercial projects with focus on safety, durability, and cost-effectiveness.',
     icon: Building2,
     features: [
-      'Structural Analysis & Design',
-      'Foundation Engineering',
-      'Seismic Assessment',
-      'Quality Control & Testing',
-      'Construction Supervision',
-      'Structural Audit',
-      'Retrofitting Solutions',
-      'Code Compliance'
+      'Advanced Structural Analysis',
+      'Cost-Optimized Foundation Design',
+      'Earthquake-Resistant Engineering',
+      'Comprehensive Quality Assurance'
     ],
     benefits: [
-      'Enhanced structural safety',
-      'Cost-effective solutions',
-      'Regulatory compliance',
-      'Long-term durability'
+      'Maximum safety & reliability',
+      'Reduced construction costs',
+      'Compliant with building codes',
+      'Extended building lifespan'
     ],
     process: [
       'Site Assessment',
@@ -64,20 +60,16 @@ const services = [
     description: 'Comprehensive property advisory services from market analysis to investment guidance, helping you make informed real estate decisions.',
     icon: Users,
     features: [
-      'Market Analysis & Research',
-      'Investment Advisory',
-      'Due Diligence Services',
-      'Property Valuation',
-      'Legal Documentation',
-      'Negotiation Support',
-      'Portfolio Management',
-      'Exit Strategy Planning'
+      'In-Depth Market Research',
+      'Strategic Investment Planning',
+      'Thorough Property Inspection',
+      'Accurate Property Pricing'
     ],
     benefits: [
-      'Informed investment decisions',
-      'Risk mitigation',
-      'Maximum ROI',
-      'Expert market insights'
+      'Data-driven investment choices',
+      'Maximized investment returns',
+      'Risk-free property purchase',
+      'Fair market value deals'
     ],
     process: [
       'Requirement Analysis',
@@ -95,20 +87,16 @@ const services = [
     description: 'Transform your spaces with innovative and functional interior design solutions that reflect your personality and lifestyle.',
     icon: Award,
     features: [
-      'Space Planning & Layout',
-      '3D Visualization',
-      'Custom Furniture Design',
-      'Lighting Design',
-      'Color Consultation',
-      'Material Selection',
-      'Project Management',
-      'Styling & Accessories'
+      'Smart Space Optimization',
+      'Realistic 3D Previews',
+      'Bespoke Furniture Creation',
+      'Premium Material Curation'
     ],
     benefits: [
-      'Optimized space utilization',
-      'Enhanced aesthetics',
-      'Increased property value',
-      'Personalized design'
+      'Every inch utilized efficiently',
+      'See before you invest',
+      'Unique personalized interiors',
+      'Luxury finishes & durability'
     ],
     process: [
       'Consultation & Brief',
@@ -126,20 +114,16 @@ const services = [
     description: 'Complete villa management services ensuring your property is well-maintained, secure, and generating optimal returns.',
     icon: Home,
     features: [
-      'Property Maintenance',
-      'Security Management',
-      'Tenant Management',
-      'Rental Optimization',
-      'Financial Reporting',
-      'Emergency Response',
-      'Vendor Coordination',
-      'Regular Inspections'
+      'Proactive Property Upkeep',
+      '24/7 Security Monitoring',
+      'Professional Tenant Screening',
+      'Dynamic Rental Pricing'
     ],
     benefits: [
-      'Hassle-free ownership',
-      'Maximized rental income',
-      'Property value preservation',
-      'Peace of mind'
+      'Zero maintenance worries',
+      'Complete property protection',
+      'Quality tenants guaranteed',
+      'Optimal rental income'
     ],
     process: [
       'Property Assessment',
@@ -157,20 +141,16 @@ const services = [
     description: 'End-to-end property management and registration services ensuring legal compliance and smooth property transactions.',
     icon: FileText,
     features: [
-      'Property Registration',
-      'Legal Documentation',
-      'Title Verification',
-      'NOC Procurement',
-      'Compliance Management',
-      'Tax Advisory',
-      'Dispute Resolution',
-      'Record Maintenance'
+      'Seamless Property Registration',
+      'Complete Legal Documentation',
+      'Verified Title Clearance',
+      'All NOC Procurement'
     ],
     benefits: [
-      'Legal compliance',
-      'Smooth transactions',
-      'Risk mitigation',
-      'Expert guidance'
+      'Fully legal property ownership',
+      'Zero documentation hassles',
+      'Clear & disputed-free titles',
+      'All approvals secured'
     ],
     process: [
       'Document Review',
@@ -295,7 +275,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background services-page-bg">
       {/* Hero Section - extends behind navbar */}
       <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
         <div className="absolute inset-0">
@@ -345,12 +325,10 @@ export default function ServicesPage() {
       {/* Services Sections */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {services.map((service, index) => (
-          <section key={service.id} id={service.id} className="mb-20">
-            <div className={`grid lg:grid-cols-2 gap-12 items-center ${
-              index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''
-            }`}>
+          <section key={service.id} id={service.id} className="service-section-bg">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Content */}
-              <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
+              <div>
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
                     <service.icon className="h-6 w-6 text-primary" />
@@ -474,8 +452,8 @@ export default function ServicesPage() {
                   </div>
                   
               {/* Service Details Card */}
-              <div className={index % 2 === 1 ? 'lg:col-start-1' : ''}>
-                <Card className="shadow-xl">
+              <div>
+                <Card className="shadow-xl service-details-card">
                   <CardContent className="p-8">
                     <div className="space-y-6">
                     <div>

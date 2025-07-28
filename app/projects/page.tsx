@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import EnquiryModal from '@/components/EnquiryModal';
 import ImageCarousel from '@/components/ImageCarousel';
+import PropertyPostModal from '@/components/PropertyPostModal';
 
 // Enhanced Property Interface for different categories
 interface Property {
@@ -459,6 +460,15 @@ export default function PropertiesPage() {
                   <span className="sm:hidden">{type.label.split(' ')[0]}</span>
                 </button>
               ))}
+              
+              {/* Post a Property Button integrated into tabs */}
+              <PropertyPostModal>
+                <button className="px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] bg-black hover:bg-gray-800 text-white">
+                  <Plus className="h-4 w-4 mr-1 sm:mr-2 inline" />
+                  <span className="hidden sm:inline">Post a Property</span>
+                  <span className="sm:hidden">Post</span>
+                </button>
+              </PropertyPostModal>
             </div>
           </div>
 
@@ -646,12 +656,6 @@ export default function PropertiesPage() {
 
               </div>
             </div>
-
-            {/* Post Property Button */}
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Post a Property
-            </Button>
           </div>
 
           {/* Properties Grid */}

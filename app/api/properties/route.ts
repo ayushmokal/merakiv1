@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Google Sheets API configuration  
 // Connected to your Properties Google Apps Script with 55 properties and Cloudinary support
-const PROPERTIES_API_URL = "https://script.google.com/macros/s/AKfycbxcMffd39lz4L7W2Rov7GfWQNsIR-eRsw2cw3tUY6wAZaZoP0Ed9FUrzNT-Ekr80ko-/exec";
+
+// Google Apps Script Web App URL for properties data (listing/fetching)
+const PROPERTIES_API_URL = process.env.GOOGLE_PROPERTIES_API_URL;
+// Google Apps Script Web App URL for property submissions and enquiries  
+const PROPERTY_SUBMISSIONS_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
 
 // NOTE: To get your script URL:
 // 1. Go to script.google.com
@@ -39,8 +43,8 @@ export async function GET(request: NextRequest) {
     });
 
     // Check if API URL is configured
-    if (PROPERTIES_API_URL.includes('YOUR_ACTUAL_SCRIPT_ID_HERE')) {
-      console.warn('Google Apps Script URL not configured yet');
+    if (!PROPERTIES_API_URL) {
+      console.warn('Google Apps Script URL not configured in environment variables');
       // Return sample data for development
       return NextResponse.json({
         success: true,
@@ -93,12 +97,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Check if API URL is configured
-    if (PROPERTIES_API_URL.includes('YOUR_ACTUAL_SCRIPT_ID_HERE')) {
-      console.warn('Google Apps Script URL not configured yet');
+    // Check if API URLs are configured
+    if (!PROPERTIES_API_URL || !PROPERTY_SUBMISSIONS_URL) {
+      console.warn('Google Apps Script URLs not configured in environment variables');
       return NextResponse.json({
         success: false,
-        error: 'Google Apps Script not configured. Please update PROPERTIES_API_URL in /app/api/properties/route.ts'
+        error: 'Google Apps Script not configured. Please add GOOGLE_APPS_SCRIPT_URL and GOOGLE_PROPERTIES_API_URL to your environment variables.'
       }, { status: 503 });
     }
     
@@ -114,7 +118,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Submit enquiry to Google Sheets
+      // Submit enquiry to Google Sheets (use properties API for enquiries)
       const enquiryData = {
         type: 'enquiry',
         name,
@@ -156,7 +160,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Submit property to Google Sheets
+      // Submit property to Google Sheets (use properties API for new property submissions)
       const propertySubmissionData = {
         type: 'property',
         category: category.toUpperCase(),
@@ -218,8 +222,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Check if API URL is configured
-    if (PROPERTIES_API_URL.includes('YOUR_ACTUAL_SCRIPT_ID_HERE')) {
-      console.warn('Google Apps Script URL not configured yet');
+    if (!PROPERTIES_API_URL) {
+      console.warn('Google Apps Script URL not configured in environment variables');
       return NextResponse.json({
         success: true,
         message: 'Analytics will be tracked once Google Apps Script is configured',

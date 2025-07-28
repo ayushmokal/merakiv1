@@ -1,0 +1,390 @@
+Timestamp	Property Type	Listing Type	Title	Description	Location	Area	Price	Price Type	Configuration	Carpet Area (sq ft)	Built-up Area (sq ft)	Bedrooms	Bathrooms	Balconies	Parking	Furnished	Amenities	Contact Name	Contact Phone	Contact Email	Additional Notes	Status	Follow-up Date	Agent Assigned	Priority
+
+
+// Google Apps Script for Meraki Property Portal
+// This script handles property submissions from your website
+
+// Configuration - UPDATE THESE VALUES
+const CONFIG = {
+  SHEET_NAME: 'Property Submissions',
+  NOTIFICATION_EMAIL: 'your-email@example.com', // Change this to your email
+  COMPANY_NAME: 'Meraki Properties',
+  TIMEZONE: 'Asia/Kolkata'
+};
+
+/**
+ * Main function to handle POST requests from your website
+ */
+function doPost(e) {
+  try {
+    // Parse the incoming data
+    const data = JSON.parse(e.postData.contents);
+    
+    // Log the received data for debugging
+    console.log('Received data:', data);
+    
+    // Validate required fields
+    const validation = validateData(data);
+    if (!validation.isValid) {
+      return createResponse(400, { 
+        success: false, 
+        error: 'Validation failed: ' + validation.errors.join(', ') 
+      });
+    }
+    
+    // Get or create the spreadsheet
+    const sheet = getOrCreateSheet();
+    
+    // Add the property data to the sheet
+    const rowData = formatDataForSheet(data);
+    sheet.appendRow(rowData);
+    
+    // Send notification email
+    sendNotificationEmail(data);
+    
+    // Return success response
+    return createResponse(200, { 
+      success: true, 
+      message: 'Property submitted successfully',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Error in doPost:', error);
+    return createResponse(500, { 
+      success: false, 
+      error: 'Internal server error: ' + error.message 
+    });
+  }
+}
+
+/**
+ * Get existing sheet or create new one with headers
+ */
+function getOrCreateSheet() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(CONFIG.SHEET_NAME);
+  
+  if (!sheet) {
+    // Create new sheet if it doesn't exist
+    sheet = spreadsheet.insertSheet(CONFIG.SHEET_NAME);
+    
+    // Add headers
+    const headers = [
+      'Timestamp',
+      'Property Type',
+      'Listing Type', 
+      'Title',
+      'Description',
+      'Location',
+      'Area',
+      'Price',
+      'Price Type',
+      'Configuration',
+      'Carpet Area (sq ft)',
+      'Built-up Area (sq ft)',
+      'Bedrooms',
+      'Bathrooms',
+      'Balconies',
+      'Parking',
+      'Furnished',
+      'Amenities',
+      'Contact Name',
+      'Contact Phone',
+      'Contact Email',
+      'Additional Notes',
+      'Status',
+      'Follow-up Date',
+      'Agent Assigned',
+      'Priority'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    
+    // Format headers
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#E3F2FD');
+    headerRange.setFontColor('#1565C0');
+    
+    // Freeze header row
+    sheet.setFrozenRows(1);
+    
+    // Set column widths
+    setColumnWidths(sheet);
+    
+    console.log('Created new sheet with headers');
+  }
+  
+  return sheet;
+}
+
+/**
+ * Set optimal column widths
+ */
+function setColumnWidths(sheet) {
+  const widths = [
+    150, // Timestamp
+    120, // Property Type
+    120, // Listing Type
+    200, // Title
+    250, // Description
+    150, // Location
+    150, // Area
+    100, // Price
+    100, // Price Type
+    100, // Configuration
+    120, // Carpet Area
+    120, // Built-up Area
+    80,  // Bedrooms
+    80,  // Bathrooms
+    80,  // Balconies
+    80,  // Parking
+    120, // Furnished
+    200, // Amenities
+    150, // Contact Name
+    150, // Contact Phone
+    180, // Contact Email
+    200, // Additional Notes
+    100, // Status
+    120, // Follow-up Date
+    150, // Agent Assigned
+    80   // Priority
+  ];
+  
+  for (let i = 0; i < widths.length; i++) {
+    sheet.setColumnWidth(i + 1, widths[i]);
+  }
+}
+
+/**
+ * Validate incoming data
+ */
+function validateData(data) {
+  const errors = [];
+  const required = ['propertyType', 'listingType', 'title', 'location', 'price', 'contactName', 'contactPhone'];
+  
+  // Check required fields
+  required.forEach(field => {
+    if (!data[field] || data[field].toString().trim() === '') {
+      errors.push(`${field} is required`);
+    }
+  });
+  
+  // Validate email format if provided
+  if (data.contactEmail && !isValidEmail(data.contactEmail)) {
+    errors.push('Invalid email format');
+  }
+  
+  // Validate phone number format
+  if (data.contactPhone && !isValidPhone(data.contactPhone)) {
+    errors.push('Invalid phone number format');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors: errors
+  };
+}
+
+/**
+ * Format data for sheet insertion
+ */
+function formatDataForSheet(data) {
+  const now = new Date();
+  const timestamp = Utilities.formatDate(now, CONFIG.TIMEZONE, 'yyyy-MM-dd HH:mm:ss');
+  
+  // Calculate follow-up date (3 days from now)
+  const followUpDate = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000));
+  const followUpFormatted = Utilities.formatDate(followUpDate, CONFIG.TIMEZONE, 'yyyy-MM-dd');
+  
+  return [
+    timestamp,                                    // A: Timestamp
+    data.propertyType || '',                     // B: Property Type
+    data.listingType || '',                      // C: Listing Type
+    data.title || '',                            // D: Title
+    data.description || '',                      // E: Description
+    data.location || '',                         // F: Location
+    data.area || '',                             // G: Area
+    parseFloat(data.price) || 0,                 // H: Price
+    data.priceType || 'total',                   // I: Price Type
+    data.configuration || '',                    // J: Configuration
+    parseFloat(data.carpetArea) || 0,            // K: Carpet Area
+    parseFloat(data.builtUpArea) || 0,           // L: Built-up Area
+    parseInt(data.bedrooms) || 0,                // M: Bedrooms
+    parseInt(data.bathrooms) || 0,               // N: Bathrooms
+    parseInt(data.balconies) || 0,               // O: Balconies
+    parseInt(data.parking) || 0,                 // P: Parking
+    data.furnished || 'Unfurnished',             // Q: Furnished
+    data.amenities || '',                        // R: Amenities
+    data.contactName || '',                      // S: Contact Name
+    data.contactPhone || '',                     // T: Contact Phone
+    data.contactEmail || '',                     // U: Contact Email
+    data.additionalNotes || '',                  // V: Additional Notes
+    'New',                                       // W: Status
+    followUpFormatted,                           // X: Follow-up Date
+    '',                                          // Y: Agent Assigned
+    'Medium'                                     // Z: Priority
+  ];
+}
+
+/**
+ * Send notification email
+ */
+function sendNotificationEmail(data) {
+  try {
+    const subject = `🏠 New Property Submission - ${data.title}`;
+    
+    const htmlBody = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1565C0; border-bottom: 2px solid #E3F2FD; padding-bottom: 10px;">
+          New Property Submission
+        </h2>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Property Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr><td style="padding: 8px; font-weight: bold;">Title:</td><td style="padding: 8px;">${data.title}</td></tr>
+            <tr style="background: #fff;"><td style="padding: 8px; font-weight: bold;">Type:</td><td style="padding: 8px;">${data.propertyType}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Listing:</td><td style="padding: 8px;">${data.listingType}</td></tr>
+            <tr style="background: #fff;"><td style="padding: 8px; font-weight: bold;">Location:</td><td style="padding: 8px;">${data.location}</td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Price:</td><td style="padding: 8px;">₹${formatPrice(data.price)} ${data.priceType || ''}</td></tr>
+            <tr style="background: #fff;"><td style="padding: 8px; font-weight: bold;">Configuration:</td><td style="padding: 8px;">${data.configuration || 'N/A'}</td></tr>
+          </table>
+        </div>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Contact Information</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr><td style="padding: 8px; font-weight: bold;">Name:</td><td style="padding: 8px;">${data.contactName}</td></tr>
+            <tr style="background: #fff;"><td style="padding: 8px; font-weight: bold;">Phone:</td><td style="padding: 8px;"><a href="tel:${data.contactPhone}">${data.contactPhone}</a></td></tr>
+            <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;"><a href="mailto:${data.contactEmail || ''}">${data.contactEmail || 'Not provided'}</a></td></tr>
+          </table>
+        </div>
+        
+        ${data.description ? `
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Description</h3>
+          <p>${data.description}</p>
+        </div>
+        ` : ''}
+        
+        ${data.additionalNotes ? `
+        <div style="background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Additional Notes</h3>
+          <p>${data.additionalNotes}</p>
+        </div>
+        ` : ''}
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${SpreadsheetApp.getActiveSpreadsheet().getUrl()}" 
+             style="background: #1565C0; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+            View in Google Sheets
+          </a>
+        </div>
+        
+        <p style="color: #666; font-size: 12px; text-align: center;">
+          This email was automatically generated by ${CONFIG.COMPANY_NAME} Property Portal<br>
+          Submitted on: ${new Date().toLocaleString('en-IN', {timeZone: CONFIG.TIMEZONE})}
+        </p>
+      </div>
+    `;
+    
+    MailApp.sendEmail({
+      to: CONFIG.NOTIFICATION_EMAIL,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+    
+    console.log('Notification email sent successfully');
+    
+  } catch (error) {
+    console.error('Error sending notification email:', error);
+  }
+}
+
+/**
+ * Utility functions
+ */
+function createResponse(code, data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+function isValidPhone(phone) {
+  // Indian phone number validation
+  const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+  return phoneRegex.test(phone);
+}
+
+function formatPrice(price) {
+  return new Intl.NumberFormat('en-IN').format(price);
+}
+
+/**
+ * Test function - you can run this to test the script
+ */
+function testPropertySubmission() {
+  const testData = {
+    propertyType: 'Residential Apartment',
+    listingType: 'Sale',
+    title: 'Test Property Submission',
+    description: 'This is a test property submission',
+    location: 'Bandra West',
+    area: 'Near Metro Station',
+    price: '12500000',
+    priceType: 'total',
+    configuration: '2 BHK',
+    carpetArea: '850',
+    builtUpArea: '1000',
+    bedrooms: '2',
+    bathrooms: '2',
+    balconies: '1',
+    parking: '1',
+    furnished: 'Semi-Furnished',
+    amenities: 'Swimming Pool, Gym, Security',
+    contactName: 'Test User',
+    contactPhone: '+91 9876543210',
+    contactEmail: 'test@example.com',
+    additionalNotes: 'This is a test submission'
+  };
+  
+  // Simulate the doPost function
+  const mockEvent = {
+    postData: {
+      contents: JSON.stringify(testData)
+    }
+  };
+  
+  const result = doPost(mockEvent);
+  console.log('Test result:', result.getContent());
+}
+
+/**
+ * Setup function - run this once to initialize
+ */
+function setup() {
+  console.log('Setting up Meraki Property Portal...');
+  
+  // Create the sheet with headers
+  const sheet = getOrCreateSheet();
+  console.log('Sheet created/verified:', sheet.getName());
+  
+  // You can add sample data here if needed
+  console.log('Setup completed successfully!');
+  console.log('Sheet URL:', SpreadsheetApp.getActiveSpreadsheet().getUrl());
+  console.log('Remember to deploy this script as a web app!');
+}
+
+
+Deployment ID : AKfycbz6Pmy0vtVxFH1oUSJeii-OhwisabHv0xvRZIYxXU51Tk9NfpZt_hV508FF3BPKiGVO
+
+
+web app URL : https://script.google.com/macros/s/AKfycbz6Pmy0vtVxFH1oUSJeii-OhwisabHv0xvRZIYxXU51Tk9NfpZt_hV508FF3BPKiGVO/exec
+ 
