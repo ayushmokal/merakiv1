@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,91 +16,26 @@ import {
   Calendar,
   Ruler,
   Eye,
-  CheckCircle
+  CheckCircle,
+  RefreshCw
 } from 'lucide-react';
 import Image from 'next/image';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
 
-const projects = [
-  {
-    id: 1,
-    title: 'Luxury Residential Villa',
-    category: 'Residential',
-    location: 'Navi Mumbai',
-    area: '4,500 sq ft',
-    year: '2023',
-    status: 'Completed',
-    description: 'Modern luxury villa with contemporary design and premium amenities.',
-    services: ['Architecture', 'Interior Design', 'Project Management'],
-    image: '/images/Picture1.jpg',
-    gallery: ['/images/Picture1.jpg', '/images/Picture2.jpg', '/images/Picture3.jpg']
-  },
-  {
-    id: 2,
-    title: 'Commercial Office Complex',
-    category: 'Commercial',
-    location: 'Mumbai',
-    area: '15,000 sq ft',
-    year: '2023',
-    status: 'Completed',
-    description: 'State-of-the-art office complex with modern workspace solutions.',
-    services: ['RCC Consultancy', 'Structural Design', 'Project Management'],
-    image: '/images/Picture4.jpg',
-    gallery: ['/images/Picture4.jpg', '/images/Picture5.jpg', '/images/Picture6.jpg']
-  },
-  {
-    id: 3,
-    title: 'Residential Apartment Complex',
-    category: 'Residential',
-    location: 'Pune',
-    area: '25,000 sq ft',
-    year: '2022',
-    status: 'Completed',
-    description: 'Multi-story residential complex with modern amenities and green spaces.',
-    services: ['Architecture', 'RCC Consultancy', 'Property Management'],
-    image: '/images/Picture7.jpg',
-    gallery: ['/images/Picture7.jpg', '/images/Picture8.jpg', '/images/Picture9.jpg']
-  },
-  {
-    id: 4,
-    title: 'Premium Interior Design',
-    category: 'Interior',
-    location: 'Mumbai',
-    area: '3,200 sq ft',
-    year: '2023',
-    status: 'Completed',
-    description: 'Elegant interior design for premium residential space with custom furniture.',
-    services: ['Interior Design', '3D Visualization', 'Custom Furniture'],
-    image: '/images/Picture10.jpg',
-    gallery: ['/images/Picture10.jpg', '/images/Picture11.jpg', '/images/Picture12.jpg']
-  },
-  {
-    id: 5,
-    title: 'Villa Management Project',
-    category: 'Management',
-    location: 'Lonavala',
-    area: '5,000 sq ft',
-    year: '2023',
-    status: 'Ongoing',
-    description: 'Complete villa management services including maintenance and rental optimization.',
-    services: ['Villa Management', 'Property Management', 'Rental Services'],
-    image: '/images/Picture13.png',
-    gallery: ['/images/Picture13.png', '/images/Picture14.jpg', '/images/Picture15.jpg']
-  },
-  {
-    id: 6,
-    title: 'Commercial Interior Fitout',
-    category: 'Commercial',
-    location: 'Navi Mumbai',
-    area: '8,000 sq ft',
-    year: '2022',
-    status: 'Completed',
-    description: 'Modern office interior fitout with collaborative workspaces and meeting rooms.',
-    services: ['Interior Design', 'Space Planning', 'Project Management'],
-    image: '/images/Picture16.jpg',
-    gallery: ['/images/Picture16.jpg', '/images/Picture17.jpg', '/images/Picture18.jpg']
-  }
-];
+interface WorkProject {
+  id: string;
+  name: string;
+  type: string;
+  location: string;
+  year: number;
+  description: string;
+  area: string;
+  services: string[];
+  status: string;
+  featured: boolean;
+  imageUrl: string;
+  timestamp: string;
+}
 
 const stats = [
   { number: '50+', label: 'Projects Completed' },
@@ -109,19 +44,73 @@ const stats = [
   { number: '6+', label: 'Years Experience' }
 ];
 
-const categories = ['All', 'Residential', 'Commercial', 'Interior'];
-
 export default function WorkPage() {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<WorkProject | null>(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [projects, setProjects] = useState<WorkProject[]>([]);
+  const [categories, setCategories] = useState(['All']);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Fetch work projects from Google Sheets
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Add cache buster to force fresh data
+      const cacheBuster = `?t=${Date.now()}`;
+      const response = await fetch(`/api/work${cacheBuster}`, {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setProjects(data.data || []);
+        setLastRefresh(new Date());
+        setIsUsingFallback(data.fallback || false);
+        
+        // Extract unique categories from the data
+        const uniqueTypes = Array.from(new Set(data.data?.map((p: WorkProject) => p.type).filter(Boolean))) as string[];
+        setCategories(['All', ...uniqueTypes]);
+        
+        if (data.fallback) {
+          setError('Google Sheets connection failed - showing sample data');
+        } else {
+          setError('');
+        }
+      } else {
+        setError(data.error || 'Failed to fetch projects from Google Sheets');
+        setIsUsingFallback(false);
+      }
+    } catch (err) {
+      console.error('Fetch Error:', err);
+      setError('Failed to connect to Google Sheets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+  setMounted(true);
+  fetchProjects();    // Auto-refresh every 5 minutes to keep data in sync
+    const interval = setInterval(fetchProjects, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filteredProjects = selectedCategory === 'All' 
     ? projects 
-    : projects.filter(project => project.category === selectedCategory);
+    : projects.filter(project => project.type === selectedCategory);
 
-  const handleProjectClick = (project: any) => {
+  const handleProjectClick = (project: WorkProject) => {
     setSelectedProject(project);
     setShowProjectModal(true);
   };
@@ -177,92 +166,182 @@ export default function WorkPage() {
       {/* Projects Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {categories.map((category) => (
+          {/* Header */}
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div>
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4">Our Work Portfolio</h2>
+            </div>
+            <div className="flex gap-4 mt-4 md:mt-0">
               <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
-                className="px-6 py-2"
+                onClick={() => fetchProjects()}
+                variant="outline"
+                size="sm"
+                disabled={loading}
               >
-                {category}
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? 'Syncing...' : 'Refresh'}
               </Button>
-            ))}
-                  </div>
+            </div>
+          </div>
+
+          {/* Error/Warning State */}
+          {error && (
+            <div className={`border rounded-lg p-4 mb-8 ${isUsingFallback ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'}`}>
+              <p className={`mb-2 ${isUsingFallback ? 'text-yellow-700' : 'text-red-700'}`}>
+                {isUsingFallback ? '⚠️ ' : '❌ '}{error}
+              </p>
+              {isUsingFallback ? (
+                <p className="text-sm text-yellow-600 mb-3">
+                  Please check your Google Apps Script deployment settings. Showing sample data for now.
+                </p>
+              ) : (
+                <p className="text-sm text-red-600 mb-3">
+                  Please ensure your Google Sheets is properly configured and accessible.
+                </p>
+              )}
+              <Button
+                onClick={() => fetchProjects()}
+                variant="outline"
+                size="sm"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Try Again
+              </Button>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-2 text-muted-foreground">Syncing from Google Sheets...</span>
+            </div>
+          )}
+
+          {/* Category Filter */}
+          {!loading && (
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(category)}
+                  className="px-6 py-2"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+          )}
                   
           {/* Projects Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <Card key={project.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      width={400}
-                      height={300}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleProjectClick(project)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                      </Button>
+          {!loading && mounted && (
+            <>
+              {filteredProjects.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredProjects.map((project) => (
+                    <Card key={project.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
+                      <CardContent className="p-0">
+                        <div className="relative overflow-hidden rounded-t-lg">
+                          <Image
+                            src={project.imageUrl}
+                            alt={project.name}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => handleProjectClick(project)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </Button>
                           </div>
-                    <Badge 
-                      variant={project.status === 'Completed' ? 'default' : 'secondary'}
-                      className="absolute top-4 right-4"
-                    >
-                      {project.status}
-                    </Badge>
+                          <Badge 
+                            variant={project.status === 'Completed' ? 'default' : 'secondary'}
+                            className="absolute top-4 right-4"
+                          >
+                            {project.status}
+                          </Badge>
+                          {project.featured && (
+                            <Badge 
+                              variant="destructive"
+                              className="absolute top-4 left-4"
+                            >
+                              Featured
+                            </Badge>
+                          )}
                         </div>
-                  
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {project.category}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">{project.year}</span>
-              </div>
-              
-                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-4">{project.description}</p>
-                    
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        {project.location}
-                      </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Ruler className="h-4 w-4 mr-2" />
-                        {project.area}
-                      </div>
-                      </div>
-                      
-                    <div className="flex flex-wrap gap-1">
-                      {project.services.slice(0, 2).map((service, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {service}
-                        </Badge>
-                      ))}
-                      {project.services.length > 2 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{project.services.length - 2} more
-                        </Badge>
-                      )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-            ))}
-              </div>
-            </div>
-          </section>
+                        
+                        <div className="p-6">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="outline" className="text-xs">
+                              {project.type}
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">{project.year}</span>
+                          </div>
+                          
+                          <h3 className="text-xl font-semibold mb-2">{project.name}</h3>
+                          <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{project.description}</p>
+                          
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              {project.location}
+                            </div>
+                            {project.area && (
+                              <div className="flex items-center text-sm text-muted-foreground">
+                                <Ruler className="h-4 w-4 mr-2" />
+                                {project.area} sq ft
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-1">
+                            {project.services.slice(0, 2).map((service, idx) => (
+                              <Badge key={idx} variant="secondary" className="text-xs">
+                                {service}
+                              </Badge>
+                            ))}
+                            {project.services.length > 2 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{project.services.length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No Projects Found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {selectedCategory === 'All' 
+                      ? 'No work projects found in your Google Sheets. Add some entries to your spreadsheet to see them here.' 
+                      : `No projects found in the ${selectedCategory} category.`}
+                  </p>
+                  <Button
+                    onClick={() => fetchProjects()}
+                    variant="outline"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh from Sheets
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </section>
 
       {/* Process Section */}
       <section className="py-20 bg-slate-50">
@@ -304,18 +383,21 @@ export default function WorkPage() {
       <Dialog open={showProjectModal} onOpenChange={setShowProjectModal}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{selectedProject?.title}</DialogTitle>
+            <DialogTitle>{selectedProject?.name}</DialogTitle>
           </DialogHeader>
           
           {selectedProject && (
             <div className="space-y-6">
               <div className="relative">
                 <Image
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
+                  src={selectedProject.imageUrl}
+                  alt={selectedProject.name}
                   width={600}
                   height={400}
                   className="w-full h-64 object-cover rounded-lg"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
+                  }}
                 />
                 <Badge 
                   variant={selectedProject.status === 'Completed' ? 'default' : 'secondary'}
@@ -323,6 +405,14 @@ export default function WorkPage() {
                 >
                   {selectedProject.status}
                 </Badge>
+                {selectedProject.featured && (
+                  <Badge 
+                    variant="destructive"
+                    className="absolute top-4 left-4"
+                  >
+                    Featured
+                  </Badge>
+                )}
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -330,18 +420,20 @@ export default function WorkPage() {
                   <p className="text-sm font-medium text-muted-foreground">Location</p>
                   <p className="font-semibold">{selectedProject.location}</p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Area</p>
-                  <p className="font-semibold">{selectedProject.area}</p>
-            </div>
+                {selectedProject.area && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Area</p>
+                    <p className="font-semibold">{selectedProject.area} sq ft</p>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">Year</p>
                   <p className="font-semibold">{selectedProject.year}</p>
-            </div>
+                </div>
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Category</p>
-                  <p className="font-semibold">{selectedProject.category}</p>
-            </div>
+                  <p className="text-sm font-medium text-muted-foreground">Type</p>
+                  <p className="font-semibold">{selectedProject.type}</p>
+                </div>
               </div>
               
               <div>
@@ -357,8 +449,8 @@ export default function WorkPage() {
                       {service}
                     </Badge>
                   ))}
-          </div>
-        </div>
+                </div>
+              </div>
               
               <div className="flex justify-end pt-4">
                 <Button variant="outline" onClick={() => setShowProjectModal(false)}>
