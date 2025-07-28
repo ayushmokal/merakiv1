@@ -17,7 +17,9 @@ import {
   Ruler,
   Eye,
   CheckCircle,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Image from 'next/image';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
@@ -32,8 +34,8 @@ interface WorkProject {
   area: string;
   services: string[];
   status: string;
-  featured: boolean;
   imageUrl: string;
+  images?: string[]; // Support for multiple images
   timestamp: string;
 }
 
@@ -56,6 +58,7 @@ export default function WorkPage() {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: string]: number}>({});
 
   // Fetch work projects from Google Sheets
   const fetchProjects = async () => {
@@ -83,17 +86,17 @@ export default function WorkPage() {
         setCategories(['All', ...uniqueTypes]);
         
         if (data.fallback) {
-          setError('Google Sheets connection failed - showing sample data');
+          setError('Data connection failed - showing sample data');
         } else {
           setError('');
         }
       } else {
-        setError(data.error || 'Failed to fetch projects from Google Sheets');
+        setError(data.error || 'Failed to fetch projects');
         setIsUsingFallback(false);
       }
     } catch (err) {
       console.error('Fetch Error:', err);
-      setError('Failed to connect to Google Sheets');
+      setError('Failed to connect to data source');
     } finally {
       setLoading(false);
     }
@@ -109,6 +112,28 @@ export default function WorkPage() {
   const filteredProjects = selectedCategory === 'All' 
     ? projects 
     : projects.filter(project => project.type === selectedCategory);
+
+  // Helper functions for image carousel
+  const getProjectImages = (project: WorkProject): string[] => {
+    if (project.images && project.images.length > 0) {
+      return project.images;
+    }
+    return [project.imageUrl];
+  };
+
+  const nextImage = (projectId: string, totalImages: number) => {
+    setCurrentImageIndex(prev => ({
+      ...prev,
+      [projectId]: ((prev[projectId] || 0) + 1) % totalImages
+    }));
+  };
+
+  const prevImage = (projectId: string, totalImages: number) => {
+    setCurrentImageIndex(prev => ({
+      ...prev,
+      [projectId]: ((prev[projectId] || 0) - 1 + totalImages) % totalImages
+    }));
+  };
 
   const handleProjectClick = (project: WorkProject) => {
     setSelectedProject(project);
@@ -179,7 +204,7 @@ export default function WorkPage() {
                 disabled={loading}
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                {loading ? 'Syncing...' : 'Refresh'}
+                {loading ? 'Loading...' : 'Refresh'}
               </Button>
             </div>
           </div>
@@ -192,11 +217,11 @@ export default function WorkPage() {
               </p>
               {isUsingFallback ? (
                 <p className="text-sm text-yellow-600 mb-3">
-                  Please check your Google Apps Script deployment settings. Showing sample data for now.
+                  There was an issue loading the latest project data. Showing sample data for now.
                 </p>
               ) : (
                 <p className="text-sm text-red-600 mb-3">
-                  Please ensure your Google Sheets is properly configured and accessible.
+                  Unable to load project data at this time. Please try again later.
                 </p>
               )}
               <Button
@@ -214,7 +239,7 @@ export default function WorkPage() {
           {loading && (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <span className="ml-2 text-muted-foreground">Syncing from Google Sheets...</span>
+              <span className="ml-2 text-muted-foreground">Loading projects...</span>
             </div>
           )}
 
@@ -239,12 +264,16 @@ export default function WorkPage() {
             <>
               {filteredProjects.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredProjects.map((project) => (
+                  {filteredProjects.map((project) => {
+                    const images = getProjectImages(project);
+                    const currentIndex = currentImageIndex[project.id] || 0;
+                    
+                    return (
                     <Card key={project.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
                       <CardContent className="p-0">
                         <div className="relative overflow-hidden rounded-t-lg">
                           <Image
-                            src={project.imageUrl}
+                            src={images[currentIndex]}
                             alt={project.name}
                             width={400}
                             height={300}
@@ -253,6 +282,43 @@ export default function WorkPage() {
                               (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
                             }}
                           />
+                          
+                          {/* Image Navigation */}
+                          {images.length > 1 && (
+                            <>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  prevImage(project.id, images.length);
+                                }}
+                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <ChevronLeft className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  nextImage(project.id, images.length);
+                                }}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <ChevronRight className="h-4 w-4" />
+                              </button>
+                              
+                              {/* Image indicators */}
+                              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                {images.map((_, index) => (
+                                  <div
+                                    key={index}
+                                    className={`w-2 h-2 rounded-full transition-colors ${
+                                      index === currentIndex ? 'bg-white' : 'bg-white/50'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </>
+                          )}
+                          
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <Button
                               variant="secondary"
@@ -263,20 +329,6 @@ export default function WorkPage() {
                               View Details
                             </Button>
                           </div>
-                          <Badge 
-                            variant={project.status === 'Completed' ? 'default' : 'secondary'}
-                            className="absolute top-4 right-4"
-                          >
-                            {project.status}
-                          </Badge>
-                          {project.featured && (
-                            <Badge 
-                              variant="destructive"
-                              className="absolute top-4 left-4"
-                            >
-                              Featured
-                            </Badge>
-                          )}
                         </div>
                         
                         <div className="p-6">
@@ -318,7 +370,8 @@ export default function WorkPage() {
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-12">
@@ -326,7 +379,7 @@ export default function WorkPage() {
                   <h3 className="text-lg font-semibold mb-2">No Projects Found</h3>
                   <p className="text-muted-foreground mb-4">
                     {selectedCategory === 'All' 
-                      ? 'No work projects found in your Google Sheets. Add some entries to your spreadsheet to see them here.' 
+                      ? 'No work projects found. Please check back later.' 
                       : `No projects found in the ${selectedCategory} category.`}
                   </p>
                   <Button
@@ -334,7 +387,7 @@ export default function WorkPage() {
                     variant="outline"
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh from Sheets
+                    Refresh
                   </Button>
                 </div>
               )}
@@ -389,30 +442,73 @@ export default function WorkPage() {
           {selectedProject && (
             <div className="space-y-6">
               <div className="relative">
-                <Image
-                  src={selectedProject.imageUrl}
-                  alt={selectedProject.name}
-                  width={600}
-                  height={400}
-                  className="w-full h-64 object-cover rounded-lg"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
-                  }}
-                />
-                <Badge 
-                  variant={selectedProject.status === 'Completed' ? 'default' : 'secondary'}
-                  className="absolute top-4 right-4"
-                >
-                  {selectedProject.status}
-                </Badge>
-                {selectedProject.featured && (
-                  <Badge 
-                    variant="destructive"
-                    className="absolute top-4 left-4"
-                  >
-                    Featured
-                  </Badge>
-                )}
+                {(() => {
+                  const modalImages = getProjectImages(selectedProject);
+                  const modalCurrentIndex = currentImageIndex[`modal-${selectedProject.id}`] || 0;
+                  
+                  return (
+                    <>
+                      <Image
+                        src={modalImages[modalCurrentIndex]}
+                        alt={selectedProject.name}
+                        width={600}
+                        height={400}
+                        className="w-full h-64 object-cover rounded-lg"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
+                        }}
+                      />
+                      
+                      {/* Modal Image Navigation */}
+                      {modalImages.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => {
+                              const newIndex = ((modalCurrentIndex - 1) + modalImages.length) % modalImages.length;
+                              setCurrentImageIndex(prev => ({
+                                ...prev,
+                                [`modal-${selectedProject.id}`]: newIndex
+                              }));
+                            }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              const newIndex = (modalCurrentIndex + 1) % modalImages.length;
+                              setCurrentImageIndex(prev => ({
+                                ...prev,
+                                [`modal-${selectedProject.id}`]: newIndex
+                              }));
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </button>
+                          
+                          {/* Modal Image indicators */}
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                            {modalImages.map((_, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  setCurrentImageIndex(prev => ({
+                                    ...prev,
+                                    [`modal-${selectedProject.id}`]: index
+                                  }));
+                                }}
+                                className={`w-3 h-3 rounded-full transition-colors ${
+                                  index === modalCurrentIndex ? 'bg-white' : 'bg-white/50'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               
               <div className="grid grid-cols-2 gap-4">

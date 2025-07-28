@@ -68,22 +68,51 @@ export async function GET(request: NextRequest) {
       throw new Error(`Invalid JSON response from Google Apps Script: ${errorMessage}`);
     }
     console.log('Raw Google Sheets response:', data);
+    
+    // Log the first item to see the actual field structure
+    if (data.data && data.data.length > 0) {
+      console.log('First item image data:', {
+        imageUrl: data.data[0].imageUrl,
+        image: data.data[0].image,
+        photos: data.data[0].photos
+      });
+    }
 
     // Transform the data to match our frontend expectations
-    const transformedData = data.data?.map((item: any) => ({
-      id: item.id || '',
-      name: item.title || item.name || '', // Apps Script returns 'title'
-      type: item.type || '',
-      location: item.location || '',
-      year: item.year || new Date().getFullYear(),
-      description: item.description || '',
-      area: item.area || '',
-      services: Array.isArray(item.services) ? item.services : (item.services ? item.services.split(',').map((s: string) => s.trim()) : []),
-      status: item.status || 'Completed',
-      featured: Boolean(item.featured),
-      imageUrl: item.image || item.imageUrl || '/images/Picture1.jpg', // Apps Script returns 'image'
-      timestamp: item.createdDate || item.timestamp || new Date().toISOString()
-    })) || [];
+    const transformedData = data.data?.map((item: any) => {
+      
+      return {
+        id: item.id || '',
+        name: item.title || item.name || item['Project Name'] || '', // Apps Script returns 'title'
+        type: item.type || item.Type || '',
+        location: item.location || item.Location || '',
+        year: item.year || item.Year || new Date().getFullYear(),
+        description: item.description || item.Description || '',
+        area: item.area || item.Area || item['Area (sq ft)'] || '',
+        services: Array.isArray(item.services) ? item.services : (item.services || item.Services ? (item.services || item.Services).split(',').map((s: string) => s.trim()) : []),
+        status: item.status || item.Status || 'Completed',
+        imageUrl: (() => {
+          // Handle multiple images - split comma-separated URLs and use first one as primary
+          const imageField = item.image || item.imageUrl || item['Image URL'] || item.imageURL || item.photos || '/images/Picture1.jpg';
+          if (typeof imageField === 'string' && imageField.includes(',')) {
+            const urls = imageField.split(',').map((url: string) => url.trim()).filter((url: string) => url);
+            return urls[0] || '/images/Picture1.jpg';
+          }
+          return imageField || '/images/Picture1.jpg';
+        })(),
+        images: (() => {
+          // Parse multiple images from comma-separated string
+          const imageField = item.image || item.imageUrl || item['Image URL'] || item.imageURL || item.photos;
+          if (typeof imageField === 'string' && imageField.includes(',')) {
+            return imageField.split(',').map((url: string) => url.trim()).filter((url: string) => url && url !== '');
+          } else if (item.images) {
+            return Array.isArray(item.images) ? item.images : item.images.split(',').map((s: string) => s.trim());
+          }
+          return undefined;
+        })(),
+        timestamp: item.createdDate || item.timestamp || item['Created Date'] || new Date().toISOString()
+      };
+    }) || [];
 
     console.log('Transformed data:', transformedData);
 
