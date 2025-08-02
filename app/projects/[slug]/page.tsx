@@ -57,6 +57,7 @@ const mockProjectDetails: { [key: string]: ProjectDetail } = {
       '/IMG-20250611-WA0041.jpg',
       '/IMG-20250611-WA0041.jpg'
     ],
+    videos: [],
     completion_date: '2024-03-15',
     budget_range: '₹2-5 Crores',
     area: '3500 sq ft',
@@ -106,6 +107,7 @@ const mockProjectDetails: { [key: string]: ProjectDetail } = {
       '/IMG-20250611-WA0041.jpg',
       '/IMG-20250611-WA0041.jpg'
     ],
+    videos: [],
     completion_date: '2023-11-20',
     budget_range: '₹10-15 Crores',
     area: '25000 sq ft',
