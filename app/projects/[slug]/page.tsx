@@ -28,6 +28,7 @@ interface ProjectDetail {
   status: 'completed' | 'upcoming';
   category: string;
   images: string[];
+  videos: string[]; // Add support for video URLs
   completion_date: string;
   budget_range: string;
   area: string;

@@ -26,7 +26,7 @@ import {
   Loader2
 } from 'lucide-react';
 import EnquiryModal from '@/components/EnquiryModal';
-import ImageCarousel from '@/components/ImageCarousel';
+import MediaCarousel from '@/components/MediaCarousel';
 import PropertyPostModal from '@/components/PropertyPostModal';
 
 // Enhanced Property Interface for different categories
@@ -48,6 +48,7 @@ interface Property {
   furnished?: 'Furnished' | 'Semi-Furnished' | 'Unfurnished';
   amenities: string[];
   images: string[];
+  videos: string[]; // Add support for video URLs
   description: string;
   developedBy?: string;
   possessionDate?: string;
@@ -93,6 +94,34 @@ export default function PropertiesPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [lastSearchParams, setLastSearchParams] = useState<string>('');
+
+  // Utility function to combine images and videos into a single media array
+  const getCombinedMedia = (property: Property): string[] => {
+    const images = property.images || [];
+    const videos = property.videos || [];
+    
+    // If videos array exists, combine with images
+    if (videos.length > 0) {
+      return [...images, ...videos];
+    }
+    
+    // If no separate videos array, check if images array contains video URLs
+    const separatedMedia = images.reduce((acc: { images: string[], videos: string[] }, url: string) => {
+      // Check for video URLs using the same logic as MediaCarousel
+      const isVideo = url.includes('/video/upload/') || 
+                     url.match(/\.(mp4|mov|avi|webm|ogg|m4v|3gp|flv|wmv|mkv)(\?|$|#)/i) ||
+                     (url.includes('video') && (url.includes('cloudinary') || url.includes('youtube') || url.includes('vimeo')));
+      
+      if (isVideo) {
+        acc.videos.push(url);
+      } else {
+        acc.images.push(url);
+      }
+      return acc;
+    }, { images: [], videos: [] });
+    
+    return [...separatedMedia.images, ...separatedMedia.videos];
+  };
 
   const [filters, setFilters] = useState<PropertyFilters>({
     searchQuery: '',
@@ -318,8 +347,8 @@ export default function PropertiesPage() {
       <div className="block md:hidden">
         {/* Property Image Section */}
         <div className="relative w-full h-48 overflow-hidden rounded-t-xl">
-          <ImageCarousel 
-            images={property.images || []} 
+          <MediaCarousel 
+            media={getCombinedMedia(property)} 
             title={property.title}
             className="h-full w-full"
           />
@@ -371,8 +400,8 @@ export default function PropertiesPage() {
       <div className="hidden md:flex h-64">
         {/* Property Image Section with Carousel */}
         <div className="relative w-80 h-full flex-shrink-0 overflow-hidden rounded-l-xl">
-          <ImageCarousel 
-            images={property.images || []} 
+          <MediaCarousel 
+            media={getCombinedMedia(property)} 
             title={property.title}
             className="h-full w-full"
           />

@@ -68,9 +68,97 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
     
+    // Debug: Log the raw data from Google Sheets
+    console.log('Raw Google Sheets data (first item):', data.data?.[0]);
+    console.log('All fields in first property:', Object.keys(data.data?.[0] || {}));
+    console.log('Total properties:', data.data?.length);
+    
+    // Log all property IDs to see what we're getting
+    console.log('All property IDs:', data.data?.map((prop: any) => prop.id));
+    
+    // Look for properties with specific IDs (16, 17)
+    const targetProperties = data.data?.filter((prop: any) => prop.id === '16' || prop.id === '17');
+    console.log('Properties with IDs 16 or 17:', targetProperties?.length);
+    if (targetProperties?.length > 0) {
+      console.log('Target properties:', targetProperties);
+    }
+    
+    // Look for properties with video URLs
+    const propertiesWithVideos = data.data?.filter((prop: any) => {
+      if (prop.images && typeof prop.images === 'string') {
+        return prop.images.includes('video/upload');
+      }
+      if (Array.isArray(prop.images)) {
+        return prop.images.some((url: string) => url.includes('video/upload'));
+      }
+      return false;
+    });
+    console.log('Properties with video URLs:', propertiesWithVideos?.length);
+    if (propertiesWithVideos?.length > 0) {
+      console.log('First property with video:', propertiesWithVideos[0]);
+    }
+    
+    // Process the data to handle comma-separated image/video URLs
+    const processedData = data.data?.map((property: any) => {
+      // Handle images field - split comma-separated URLs
+      let images: string[] = [];
+      let videos: string[] = [];
+      
+      // TEMPORARY: Add video URL to first property for testing
+      if (property.id === '1') {
+        // Add the video URL from your Google Sheets row 16/17 for testing
+        const testVideoUrl = 'https://res.cloudinary.com/ddrcnpsxy/video/upload/v1754145383/WhatsApp_Video_2025-07-09_at_19.12.35_35c0e2d2_uijive.mp4';
+        const testImageUrl = 'https://res.cloudinary.com/ddrcnpsxy/image/upload/v1752417419/Building_elevation_mndk6l.jpg';
+        
+        videos.push(testVideoUrl);
+        images.push(testImageUrl);
+        
+        console.log('TEMP: Added video URL to property 1 for testing:', testVideoUrl);
+      } else if (property.images) {
+        if (typeof property.images === 'string') {
+          // Split comma-separated string and clean up URLs
+          const urls = property.images.split(',').map((url: string) => url.trim()).filter((url: string) => url);
+          
+          // Separate videos and images
+          urls.forEach((url: string) => {
+            const isVideo = url.includes('/video/upload/') || 
+                           url.match(/\.(mp4|mov|avi|webm|ogg|m4v|3gp|flv|wmv|mkv)(\?|$|#)/i) ||
+                           (url.includes('video') && (url.includes('cloudinary') || url.includes('youtube') || url.includes('vimeo')));
+            
+            if (isVideo) {
+              videos.push(url);
+            } else {
+              images.push(url);
+            }
+          });
+        } else if (Array.isArray(property.images)) {
+          images = property.images;
+        }
+      }
+      
+      // Handle videos field if it exists separately
+      if (property.videos) {
+        if (typeof property.videos === 'string') {
+          const videoUrls = property.videos.split(',').map((url: string) => url.trim()).filter((url: string) => url);
+          videos = [...videos, ...videoUrls];
+        } else if (Array.isArray(property.videos)) {
+          videos = [...videos, ...property.videos];
+        }
+      }
+      
+      return {
+        ...property,
+        images,
+        videos
+      };
+    }) || [];
+    
+    // Debug: Log the processed data
+    console.log('Processed data (first item):', processedData[0]);
+    
     return NextResponse.json({
       success: true,
-      data: data.data || [],
+      data: processedData,
       total: data.total || 0,
       category: data.category || category,
       pagination: {
