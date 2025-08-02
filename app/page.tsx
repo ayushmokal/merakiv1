@@ -88,7 +88,7 @@ export default function Home() {
               <div className="max-w-2xl space-y-8">
                 <div className="space-y-4">
                   <Badge variant="secondary" className="w-fit bg-white/10 border-white/20 text-white">
-                    Acquisition, Realty & Interiors
+                    Real Estate – Acquisition, Realty & Interiors
                   </Badge>
                   <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
                     Meraki Square Foots
