@@ -268,10 +268,10 @@ export default function PropertiesPage() {
     }
 
     // Price range filter
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 10000000) {
+    if (filters.priceRange[1] < 50000000) {
       filtered = filtered.filter(property => {
         const price = parseFloat(property.price.replace(/,/g, ''));
-        return price >= filters.priceRange[0] && price <= filters.priceRange[1];
+        return price >= 0 && price <= filters.priceRange[1];
       });
     }
 
@@ -283,9 +283,9 @@ export default function PropertiesPage() {
     }
 
     // Carpet Area filter
-    if (filters.carpetAreaRange[0] > 0 || filters.carpetAreaRange[1] < 5000) {
+    if (filters.carpetAreaRange[1] < 5000) {
       filtered = filtered.filter(property => 
-        property.carpetArea >= filters.carpetAreaRange[0] && property.carpetArea <= filters.carpetAreaRange[1]
+        property.carpetArea >= 0 && property.carpetArea <= filters.carpetAreaRange[1]
       );
     }
 
@@ -340,8 +340,8 @@ export default function PropertiesPage() {
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.location !== 'all') count++;
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 10000000) count++;
-    if (filters.carpetAreaRange[0] > 0 || filters.carpetAreaRange[1] < 5000) count++;
+    if (filters.priceRange[1] < 50000000) count++;
+    if (filters.carpetAreaRange[1] < 5000) count++;
     if (filters.bedrooms.length > 0) count++;
     return count;
   };
@@ -600,14 +600,14 @@ export default function PropertiesPage() {
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Price Range</Label>
                   <Slider
-                    value={filters.priceRange}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value as [number, number] }))}
+                    value={[filters.priceRange[1]]}
+                    onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: [0, value[0]] as [number, number] }))}
                     max={50000000}
                     step={100000}
                     className="w-full"
                   />
                   <div className="flex justify-between text-sm text-gray-500 mt-2">
-                    <span>₹{(filters.priceRange[0] / 100000).toFixed(0)}L</span>
+                    <span>₹0L</span>
                     <span>₹{(filters.priceRange[1] / 100000).toFixed(0)}L</span>
                   </div>
                 </div>
@@ -618,14 +618,14 @@ export default function PropertiesPage() {
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Carpet Area (sq ft)</Label>
                   <Slider
-                    value={filters.carpetAreaRange}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, carpetAreaRange: value as [number, number] }))}
+                    value={[filters.carpetAreaRange[1]]}
+                    onValueChange={(value) => setFilters(prev => ({ ...prev, carpetAreaRange: [0, value[0]] as [number, number] }))}
                     max={5000}
                     step={50}
                     className="w-full"
                   />
                   <div className="flex justify-between text-sm text-gray-500 mt-2">
-                    <span>{filters.carpetAreaRange[0]} sq ft</span>
+                    <span>0 sq ft</span>
                     <span>{filters.carpetAreaRange[1]} sq ft</span>
                   </div>
                 </div>
