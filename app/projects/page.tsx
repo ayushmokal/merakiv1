@@ -127,7 +127,7 @@ export default function PropertiesPage() {
     searchQuery: '',
     propertyType: 'all',
     location: 'all',
-    priceRange: [0, 10000000],
+    priceRange: [0, 50000000],
     bedrooms: [],
     bathrooms: [],
     furnished: [],
@@ -198,13 +198,20 @@ export default function PropertiesPage() {
       const data = await response.json();
       
       if (data.success) {
+        // Sort properties by postedDate (newest first)
+        const sortedData = data.data.sort((a: Property, b: Property) => {
+          const dateA = new Date(a.postedDate);
+          const dateB = new Date(b.postedDate);
+          return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+        });
+        
         if (resetData) {
-          setProperties(data.data);
-          setFilteredProperties(data.data);
+          setProperties(sortedData);
+          setFilteredProperties(sortedData);
           setCurrentPage(0);
         } else {
-          setProperties(prev => [...prev, ...data.data]);
-          setFilteredProperties(prev => [...prev, ...data.data]);
+          setProperties(prev => [...prev, ...sortedData]);
+          setFilteredProperties(prev => [...prev, ...sortedData]);
         }
         setTotalProperties(data.total);
         setHasMore(data.pagination.hasMore);
@@ -575,7 +582,7 @@ export default function PropertiesPage() {
                   searchQuery: '',
                   propertyType: 'all',
                   location: 'all',
-                  priceRange: [0, 10000000],
+                  priceRange: [0, 50000000],
                   bedrooms: [],
                   bathrooms: [],
                   furnished: [],
@@ -595,7 +602,7 @@ export default function PropertiesPage() {
                   <Slider
                     value={filters.priceRange}
                     onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value as [number, number] }))}
-                    max={10000000}
+                    max={50000000}
                     step={100000}
                     className="w-full"
                   />
