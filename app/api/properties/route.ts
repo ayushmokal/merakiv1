@@ -29,18 +29,19 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get('featured') || '';
 
     // Build query parameters for Google Sheets API
+    // Note: We don't pass limit/offset to Google Sheets since we handle pagination after filtering
     const params = new URLSearchParams({
       category,
-      limit,
-      offset,
       search,
       location,
-      minPrice,
-      maxPrice,
       bedrooms,
       verified,
       featured
     });
+    
+    // Add price filters only if they exist
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
 
     // Check if API URL is configured
     if (!PROPERTIES_API_URL) {
@@ -99,7 +100,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Process the data to handle comma-separated image/video URLs
-    const processedData = data.data?.map((property: any) => {
+    let processedData = data.data?.map((property: any) => {
       // Handle images field - split comma-separated URLs
       let images: string[] = [];
       let videos: string[] = [];
@@ -152,19 +153,186 @@ export async function GET(request: NextRequest) {
         videos
       };
     }) || [];
+
+    // Apply client-side filtering to ensure accurate results
+    if (processedData && processedData.length > 0) {
+      
+      // Filter by price range - CRITICAL FIX for your 18L vs 19L issue
+      if (minPrice || maxPrice) {
+        processedData = processedData.filter((property: any) => {
+          if (!property.price) return true; // Include properties without price
+          
+          // Normalize price string - handle various formats
+          let priceString = property.price.toString()
+            .replace(/[₹\s,]/g, '') // Remove rupee symbol, spaces, commas
+            .replace(/–/g, '-') // Replace em dash with regular dash
+            .replace(/\s+/g, '') // Remove any remaining spaces
+            .toLowerCase();
+          
+          // Extract price ranges like "45-55lakhs", "19l-30l", or "1.5cr-2cr"
+          const priceMatches = priceString.match(/(\d+(?:\.\d+)?)\s*(?:cr|crores?|l|lakhs?)?(?:\s*[-–]\s*(\d+(?:\.\d+)?)\s*(?:cr|crores?|l|lakhs?)?)?/gi);
+          
+          if (!priceMatches || priceMatches.length === 0) return true;
+          
+          // Parse price ranges
+          const match = priceMatches[0];
+          const parts = match.split(/[-–]/);
+          
+          let propertyMinPrice, propertyMaxPrice;
+          
+          if (parts.length === 2) {
+            // Range format like "45-55lakhs", "19l-30l", "1.5Cr-2Cr", or "90L-1.2Cr"
+            // Parse each part individually to handle mixed units
+            const minPart = parts[0].toLowerCase();
+            const maxPart = parts[1].toLowerCase();
+            
+            // Parse minimum price
+            const minNum = parseFloat(minPart.replace(/[^0-9.]/g, ''));
+            if (minPart.includes('cr') || minPart.includes('crore')) {
+              propertyMinPrice = minNum * 10000000; // 1 Cr = 1,00,00,000
+            } else if (minPart.includes('l') || minPart.includes('lakh')) {
+              propertyMinPrice = minNum * 100000; // 1 L = 1,00,000
+            } else {
+              propertyMinPrice = minNum;
+            }
+            
+            // Parse maximum price
+            const maxNum = parseFloat(maxPart.replace(/[^0-9.]/g, ''));
+            if (maxPart.includes('cr') || maxPart.includes('crore')) {
+              propertyMaxPrice = maxNum * 10000000; // 1 Cr = 1,00,00,000
+            } else if (maxPart.includes('l') || maxPart.includes('lakh')) {
+              propertyMaxPrice = maxNum * 100000; // 1 L = 1,00,000
+            } else {
+              propertyMaxPrice = maxNum;
+            }
+          } else {
+            // Single price format
+            const hasLakhsIndicator = match.toLowerCase().includes('l') || match.toLowerCase().includes('lakh');
+            const hasCroreIndicator = match.toLowerCase().includes('cr') || match.toLowerCase().includes('crore');
+            const num = parseFloat(match.replace(/[^0-9.]/g, ''));
+            
+            if (hasCroreIndicator) {
+              propertyMinPrice = num * 10000000; // 1 Cr = 1,00,00,000
+              propertyMaxPrice = propertyMinPrice;
+            } else if (hasLakhsIndicator) {
+              propertyMinPrice = num * 100000; // 1 L = 1,00,000
+              propertyMaxPrice = propertyMinPrice;
+            } else {
+              propertyMinPrice = num;
+              propertyMaxPrice = propertyMinPrice;
+            }
+          }
+          
+          let matches = true;
+          
+          // CRITICAL FIX: When user sets price filter to 18L (1800000), 
+          // we should EXCLUDE properties with minimum price > filter maximum
+          if (maxPrice && maxPrice !== '') {
+            const filterMax = parseInt(maxPrice);
+            // Property's MINIMUM price must be <= user's maximum filter
+            // This ensures 19L properties are excluded when filter is set to 18L
+            matches = matches && propertyMinPrice <= filterMax;
+          }
+          
+          // If user sets minimum price filter
+          if (minPrice && minPrice !== '') {
+            const filterMin = parseInt(minPrice);
+            // Property's MAXIMUM price must be >= user's minimum filter
+            matches = matches && propertyMaxPrice >= filterMin;
+          }
+          
+          console.log(`Property ${property.id}: "${property.price}" -> Min: ${propertyMinPrice}, Max: ${propertyMaxPrice}, Filter Min: ${minPrice || 0}, Filter Max: ${maxPrice || 50000000}, Matches: ${matches}`);
+          
+          return matches;
+        });
+      }
+      
+      // Filter by location
+      if (location && location !== '' && location !== 'All Locations') {
+        processedData = processedData.filter((property: any) => 
+          property.location && property.location.toLowerCase().includes(location.toLowerCase())
+        );
+      }
+
+      // Filter by bedrooms/configuration
+      if (bedrooms && bedrooms !== '') {
+        processedData = processedData.filter((property: any) => {
+          if (!property.configuration) return false;
+          const config = property.configuration.toString().toLowerCase();
+          return config.includes(bedrooms.toLowerCase()) || config.includes(`${bedrooms} bhk`);
+        });
+      }
+
+      // Filter by search term
+      if (search && search !== '') {
+        const searchLower = search.toLowerCase();
+        processedData = processedData.filter((property: any) => {
+          const title = property.title?.toLowerCase() || '';
+          const location = property.location?.toLowerCase() || '';
+          const description = property.description?.toLowerCase() || '';
+          const configuration = property.configuration?.toLowerCase() || '';
+          
+          return title.includes(searchLower) || 
+                 location.includes(searchLower) || 
+                 description.includes(searchLower) ||
+                 configuration.includes(searchLower);
+        });
+      }
+
+      // Filter by verified status
+      if (verified && verified !== '') {
+        const isVerified = verified.toLowerCase() === 'true';
+        processedData = processedData.filter((property: any) => 
+          Boolean(property.verified) === isVerified
+        );
+      }
+
+      // Filter by featured status
+      if (featured && featured !== '') {
+        const isFeatured = featured.toLowerCase() === 'true';
+        processedData = processedData.filter((property: any) => 
+          Boolean(property.featured) === isFeatured
+        );
+      }
+    }
     
-    // Debug: Log the processed data
-    console.log('Processed data (first item):', processedData[0]);
+    // Apply pagination AFTER filtering
+    const totalFilteredCount = processedData.length;
+    const limitNum = parseInt(limit);
+    const offsetNum = parseInt(offset);
+    
+    // Slice the data for pagination
+    const paginatedData = processedData.slice(offsetNum, offsetNum + limitNum);
+    
+    // Calculate if there are more results
+    const hasMoreResults = (offsetNum + limitNum) < totalFilteredCount;
+    
+    // Debug: Log the processed and filtered data
+    console.log('Total filtered properties:', totalFilteredCount);
+    console.log('Paginated properties:', paginatedData.length);
+    console.log('Offset:', offsetNum, 'Limit:', limitNum);
+    console.log('Has more results:', hasMoreResults);
+    console.log('Original data count:', data.data?.length || 0);
     
     return NextResponse.json({
       success: true,
-      data: processedData,
-      total: data.total || 0,
+      data: paginatedData, // Return only the current page
+      total: totalFilteredCount, // Total filtered count
+      originalTotal: data.total || 0, // Keep original total for reference
       category: data.category || category,
       pagination: {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        hasMore: data.total > (parseInt(offset) + parseInt(limit))
+        limit: limitNum,
+        offset: offsetNum,
+        hasMore: hasMoreResults // Proper hasMore calculation
+      },
+      filters: {
+        minPrice,
+        maxPrice,
+        location,
+        bedrooms,
+        search,
+        verified,
+        featured
       }
     });
 

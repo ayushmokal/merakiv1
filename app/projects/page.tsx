@@ -137,6 +137,8 @@ export default function PropertiesPage() {
     featured: false
   });
 
+  const [sortBy, setSortBy] = useState<string>('relevance');
+
   const propertyTypes = [
     { value: 'all', label: 'All Properties', icon: Building2 },
     { value: 'buy', label: 'Buy', icon: Home },
@@ -167,8 +169,8 @@ export default function PropertiesPage() {
       
       const params = new URLSearchParams({
         category: filters.propertyType.toUpperCase(),
-        limit: '20', // Increased limit for better performance
-        offset: resetData ? '0' : (currentPage * 20).toString(),
+        limit: '50', // Show all properties - matches backend default
+        offset: resetData ? '0' : (currentPage * 50).toString(),
         search: filters.searchQuery,
         location: filters.location === 'all' ? '' : filters.location,
         minPrice: filters.priceRange[0].toString(),
@@ -225,34 +227,32 @@ export default function PropertiesPage() {
       setSearchLoading(false);
       setInitialLoading(false);
     }
-  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage, lastSearchParams, initialLoading]);
+  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage]);
 
   // Debounced version of fetchProperties
-  const debouncedFetchProperties = useMemo(() => {
-    let timeoutId: NodeJS.Timeout;
-    return (resetData = false) => {
-      clearTimeout(timeoutId);
-      // Skip debounce for initial load
-      if (initialLoading) {
+  const debouncedFetchProperties = useCallback((resetData = false) => {
+    // Skip debounce for initial load
+    if (initialLoading) {
+      fetchProperties(resetData);
+    } else {
+      const timeoutId = setTimeout(() => {
         fetchProperties(resetData);
-      } else {
-        timeoutId = setTimeout(() => {
-          fetchProperties(resetData);
-        }, 300); // 300ms debounce delay
-      }
-    };
+      }, 300); // 300ms debounce delay
+      return timeoutId;
+    }
   }, [fetchProperties, initialLoading]);
 
   // Initial load
   useEffect(() => {
     debouncedFetchProperties(true);
-  }, [filters.propertyType, filters.searchQuery, filters.location, debouncedFetchProperties]);
+  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange]);
 
   // Reset to initial loading when major filters change
   useEffect(() => {
-    if (!initialLoading) {
-      setInitialLoading(true);
-    }
+    // Reset current page and trigger initial loading when property type changes
+    setCurrentPage(0);
+    setProperties([]);
+    setFilteredProperties([]);
   }, [filters.propertyType]);
 
   // Filter properties locally for price range and other filters
@@ -291,6 +291,76 @@ export default function PropertiesPage() {
 
     setFilteredProperties(filtered);
   }, [filters.priceRange, filters.bedrooms, filters.carpetAreaRange, filters.location, properties]);
+
+  // Sort filtered properties based on selected sort option
+  const sortedProperties = useMemo(() => {
+    let sorted = [...filteredProperties];
+    
+    // Helper function to parse Indian price format
+    const parseIndianPrice = (priceStr: string): number => {
+      if (!priceStr) return 0;
+      
+      // Remove currency symbols and clean the string
+      let cleanPrice = priceStr.replace(/[₹,\s]/g, '');
+      
+      // Handle price ranges - take the minimum value for sorting
+      if (cleanPrice.includes('-')) {
+        const parts = cleanPrice.split('-');
+        cleanPrice = parts[0]; // Take the minimum price for sorting
+      }
+      
+      // Handle different units (check BEFORE removing non-digit characters)
+      if (cleanPrice.includes('Cr') || cleanPrice.includes('cr')) {
+        const numValue = parseFloat(cleanPrice.replace(/[^\d.]/g, ''));
+        return numValue * 10000000; // 1 Cr = 1,00,00,000
+      } else if (cleanPrice.includes('L') || cleanPrice.includes('l')) {
+        const numValue = parseFloat(cleanPrice.replace(/[^\d.]/g, ''));
+        return numValue * 100000; // 1 L = 1,00,000
+      } else if (cleanPrice.includes('K') || cleanPrice.includes('k')) {
+        const numValue = parseFloat(cleanPrice.replace(/[^\d.]/g, ''));
+        return numValue * 1000; // 1 K = 1,000
+      } else {
+        // Assume it's already in rupees
+        return parseFloat(cleanPrice.replace(/[^\d.]/g, '')) || 0;
+      }
+    };
+    
+    switch (sortBy) {
+      case 'price-low':
+        sorted.sort((a, b) => {
+          const priceA = parseIndianPrice(a.price);
+          const priceB = parseIndianPrice(b.price);
+          return priceA - priceB;
+        });
+        break;
+      case 'price-high':
+        sorted.sort((a, b) => {
+          const priceA = parseIndianPrice(a.price);
+          const priceB = parseIndianPrice(b.price);
+          return priceB - priceA;
+        });
+        break;
+      case 'newest':
+        sorted.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime());
+        break;
+      case 'area-large':
+        sorted.sort((a, b) => (b.carpetArea || 0) - (a.carpetArea || 0));
+        break;
+      case 'relevance':
+      default:
+        // Keep original order (by featured, verified, etc.)
+        sorted.sort((a, b) => {
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          if (a.verified && !b.verified) return -1;
+          if (!a.verified && b.verified) return 1;
+          return new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime();
+        });
+        break;
+    }
+    
+    return sorted;
+  }, [filteredProperties, sortBy]);
 
 
 
@@ -599,16 +669,91 @@ export default function PropertiesPage() {
                 {/* Price Range */}
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Price Range</Label>
-                  <Slider
-                    value={[filters.priceRange[1]]}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: [0, value[0]] as [number, number] }))}
-                    max={50000000}
-                    step={100000}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-gray-500 mt-2">
-                    <span>₹0L</span>
-                    <span>₹{(filters.priceRange[1] / 100000).toFixed(0)}L</span>
+                  
+                  {/* Manual Price Input Fields */}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                      <Label className="text-xs text-gray-600 mb-1 block">Min Price (₹ Lakhs)</Label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={filters.priceRange[0] > 0 ? (filters.priceRange[0] / 100000).toString() : ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const minPrice = value === '' ? 0 : parseFloat(value) * 100000;
+                          if (!isNaN(minPrice) && minPrice >= 0) {
+                            setFilters(prev => ({ 
+                              ...prev, 
+                              priceRange: [minPrice, Math.max(minPrice, prev.priceRange[1])] as [number, number] 
+                            }));
+                          }
+                        }}
+                        className="text-sm"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-600 mb-1 block">Max Price (₹ Lakhs)</Label>
+                      <Input
+                        type="number"
+                        placeholder="500"
+                        value={filters.priceRange[1] < 50000000 ? (filters.priceRange[1] / 100000).toString() : ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const maxPrice = value === '' ? 50000000 : parseFloat(value) * 100000;
+                          if (!isNaN(maxPrice) && maxPrice >= 0) {
+                            setFilters(prev => ({ 
+                              ...prev, 
+                              priceRange: [Math.min(prev.priceRange[0], maxPrice), maxPrice] as [number, number] 
+                            }));
+                          }
+                        }}
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Slider for Quick Selection */}
+                  <div>
+                    <Label className="text-xs text-gray-500 mb-2 block">Quick Selection (Max Price)</Label>
+                    <Slider
+                      value={[filters.priceRange[1]]}
+                      onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: [prev.priceRange[0], value[0]] as [number, number] }))}
+                      max={50000000}
+                      step={100000}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-gray-500 mt-2">
+                      <span>₹{(filters.priceRange[0] / 100000).toFixed(0)}L</span>
+                      <span>₹{(filters.priceRange[1] / 100000).toFixed(0)}L</span>
+                    </div>
+                  </div>
+
+                  {/* Quick Price Preset Buttons */}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {[
+                      { label: '< 10L', min: 0, max: 1000000 },
+                      { label: '10-20L', min: 1000000, max: 2000000 },
+                      { label: '20-50L', min: 2000000, max: 5000000 },
+                      { label: '50L-1Cr', min: 5000000, max: 10000000 },
+                      { label: '1Cr+', min: 10000000, max: 50000000 }
+                    ].map((preset) => (
+                      <Button
+                        key={preset.label}
+                        variant="outline"
+                        size="sm"
+                        className={`text-xs ${
+                          filters.priceRange[0] === preset.min && filters.priceRange[1] === preset.max
+                            ? 'bg-blue-50 border-blue-300 text-blue-700'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                        onClick={() => setFilters(prev => ({ 
+                          ...prev, 
+                          priceRange: [preset.min, preset.max] as [number, number] 
+                        }))}
+                      >
+                        {preset.label}
+                      </Button>
+                    ))}
                   </div>
                 </div>
 
@@ -704,10 +849,10 @@ export default function PropertiesPage() {
                 </h2>
                 <p className="text-gray-600 text-sm sm:text-base">
                   {initialLoading ? 'Discovering amazing properties for you...' : 
-                   `Showing ${filteredProperties.length} of ${totalProperties} properties${filters.location !== 'all' ? ` in ${filters.location}` : ''}`}
+                   `Showing ${sortedProperties.length} of ${totalProperties} properties${filters.location !== 'all' ? ` in ${filters.location}` : ''}`}
                 </p>
               </div>
-              <Select defaultValue="relevance">
+              <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -721,7 +866,7 @@ export default function PropertiesPage() {
               </Select>
             </div>
 
-            {(initialLoading || (searchLoading && filteredProperties.length === 0)) ? (
+            {(initialLoading || (searchLoading && sortedProperties.length === 0)) ? (
               <div className="flex justify-center items-center h-64">
                 <div className="flex items-center space-x-3 text-xl text-muted-foreground">
                   <Loader2 className="h-8 w-8 animate-spin" />
@@ -730,7 +875,7 @@ export default function PropertiesPage() {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {searchLoading && filteredProperties.length > 0 && (
+                {searchLoading && sortedProperties.length > 0 && (
                   <div className="flex justify-center py-4">
                     <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -738,22 +883,84 @@ export default function PropertiesPage() {
                     </div>
                   </div>
                 )}
-                {filteredProperties.map((property, index) => (
+                {sortedProperties.map((property, index) => (
                   <PropertyCard key={`${property.type}-${property.id}-${index}`} property={property} />
                 ))}
               </div>
             )}
 
-            {!loading && !searchLoading && !initialLoading && filteredProperties.length === 0 && (
+            {!loading && !searchLoading && !initialLoading && sortedProperties.length === 0 && (
               <div className="text-center py-12">
                 <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No properties found</h3>
-                <p className="text-gray-600">Try adjusting your filters or search criteria</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No properties found in your price range</h3>
+                <div className="text-gray-600 max-w-md mx-auto">
+                  {filters.priceRange[1] < 50000000 || filters.priceRange[0] > 0 ? (
+                    <div>
+                      <p className="mb-3">
+                        No properties available 
+                        {filters.priceRange[0] > 0 && filters.priceRange[1] < 50000000 
+                          ? ` between ₹${(filters.priceRange[0] / 100000).toFixed(0)}L - ₹${(filters.priceRange[1] / 100000).toFixed(0)}L`
+                          : filters.priceRange[0] > 0 
+                          ? ` above ₹${(filters.priceRange[0] / 100000).toFixed(0)}L`
+                          : ` under ₹${(filters.priceRange[1] / 100000).toFixed(0)}L`
+                        }
+                      </p>
+                      <div className="flex flex-col gap-2 justify-center">
+                        <div className="flex gap-2 justify-center">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setFilters(prev => ({ 
+                              ...prev, 
+                              priceRange: [
+                                Math.max(0, prev.priceRange[0] - 500000), 
+                                prev.priceRange[1] + 500000
+                              ] as [number, number] 
+                            }))}
+                          >
+                            Expand range
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setFilters(prev => ({ ...prev, priceRange: [0, 50000000] as [number, number] }))}
+                          >
+                            Clear price filter
+                          </Button>
+                        </div>
+                        {/* Quick suggestions based on current range */}
+                        <div className="flex flex-wrap gap-1 justify-center mt-2">
+                          {[
+                            { label: '< 20L', range: [0, 2000000] },
+                            { label: '20-50L', range: [2000000, 5000000] },
+                            { label: '50L-1Cr', range: [5000000, 10000000] },
+                            { label: '1Cr+', range: [10000000, 50000000] }
+                          ].map((suggestion) => (
+                            <Button
+                              key={suggestion.label}
+                              variant="ghost"
+                              size="sm"
+                              className="text-xs text-blue-600 hover:bg-blue-50"
+                              onClick={() => setFilters(prev => ({ 
+                                ...prev, 
+                                priceRange: suggestion.range as [number, number] 
+                              }))}
+                            >
+                              Try {suggestion.label}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p>Try adjusting your filters or search criteria</p>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Load More Button */}
-            {!searchLoading && !initialLoading && hasMore && filteredProperties.length > 0 && (
+            {!searchLoading && !initialLoading && hasMore && sortedProperties.length > 0 && (
               <div className="text-center mt-8">
                 <Button 
                   onClick={loadMore} 
