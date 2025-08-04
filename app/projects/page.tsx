@@ -97,12 +97,17 @@ export default function PropertiesPage() {
 
   // Utility function to combine images and videos into a single media array
   const getCombinedMedia = (property: Property): string[] => {
+    // If the property has a media field (preserving original order), use it
+    if ((property as any).media && Array.isArray((property as any).media)) {
+      return (property as any).media;
+    }
+    
     const images = property.images || [];
     const videos = property.videos || [];
     
     // If videos array exists, combine with images
     if (videos.length > 0) {
-      return [...images, ...videos];
+      return [...videos, ...images]; // Videos first to match Google Sheets order
     }
     
     // If no separate videos array, check if images array contains video URLs
@@ -120,7 +125,7 @@ export default function PropertiesPage() {
       return acc;
     }, { images: [], videos: [] });
     
-    return [...separatedMedia.images, ...separatedMedia.videos];
+    return [...separatedMedia.videos, ...separatedMedia.images]; // Videos first
   };
 
   const [filters, setFilters] = useState<PropertyFilters>({

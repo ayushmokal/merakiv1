@@ -17,7 +17,6 @@ interface MediaCarouselProps {
 
 export default function MediaCarousel({ media, title, className = "" }: MediaCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [failedMedia, setFailedMedia] = useState<Set<number>>(new Set());
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -26,6 +25,11 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const validMedia = media?.filter(item => item && item.trim() !== '') || [];
+
+  // Reset playing state when currentIndex changes
+  useEffect(() => {
+    setIsPlaying(false);
+  }, [currentIndex]);
 
   // Determine if URL is video or image
   const determineMediaType = (url: string): 'image' | 'video' => {
@@ -87,12 +91,11 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
   };
 
   const handleMediaLoad = () => {
-    setIsLoading(false);
+    // Media loaded - no loading state to update
   };
 
   const handleMediaError = (index: number) => {
     setFailedMedia(prev => new Set([...Array.from(prev), index]));
-    setIsLoading(false);
   };
 
   const togglePlay = () => {
@@ -122,11 +125,11 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
       const parts = url.split('/upload/');
       if (parts.length === 2) {
         if (type === 'image') {
-          // Add optimization parameters for images: resize to 520x350, fill crop, auto quality and format
-          return `${parts[0]}/upload/w_520,h_350,c_fill,q_auto,f_auto,g_center/${parts[1]}`;
+          // Add optimization parameters for images: resize to fit within 520x350, preserve aspect ratio, auto quality and format
+          return `${parts[0]}/upload/w_520,h_350,c_fit,q_auto,f_auto,dpr_auto/${parts[1]}`;
         } else if (type === 'video') {
-          // Add optimization parameters for videos: resize to max width 520, auto quality
-          return `${parts[0]}/upload/w_520,q_auto/${parts[1]}`;
+          // Add optimization parameters for videos: resize to fit within 520x350, preserve aspect ratio, auto quality
+          return `${parts[0]}/upload/w_520,h_350,c_fit,q_auto,f_auto/${parts[1]}`;
         }
       }
       return url;
@@ -138,7 +141,6 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
   // Reset video state when media changes
   useEffect(() => {
     setIsPlaying(false);
-    setIsLoading(true);
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
     }
@@ -167,38 +169,33 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
     >
       {/* Main Media */}
       <div className="relative w-full h-full">
-        {isLoading && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center z-10">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        )}
-        
         {currentMedia?.type === 'image' ? (
           <img
             src={processedMediaUrl}
             alt={`${title} - Image ${currentIndex + 1}`}
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-contain object-center"
             onLoad={handleMediaLoad}
             onError={() => handleMediaError(currentIndex)}
-            style={{ display: isLoading ? 'none' : 'block' }}
+            loading="lazy"
           />
         ) : (
           <video
             ref={videoRef}
             src={processedMediaUrl}
-            className="w-full h-full object-cover object-center"
-            onLoadedData={handleMediaLoad}
+            className="w-full h-full object-contain object-center"
+            onLoadedMetadata={handleMediaLoad}
             onError={() => handleMediaError(currentIndex)}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
             muted={isMuted}
             playsInline
-            style={{ display: isLoading ? 'none' : 'block' }}
+            preload="metadata"
+            controls={false}
           />
         )}
         
         {/* Video Controls */}
-        {currentMedia?.type === 'video' && !isLoading && (
+        {currentMedia?.type === 'video' && (
           <>
             <div className="absolute inset-0 bg-transparent" onClick={togglePlay} />
             <div className="absolute bottom-4 left-4 flex space-x-2">

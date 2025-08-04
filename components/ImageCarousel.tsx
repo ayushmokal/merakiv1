@@ -115,7 +115,7 @@ export default function ImageCarousel({ images, title, className = "" }: ImageCa
         <img
           src={processedImageUrl}
           alt={`${title} - Image ${currentIndex + 1}`}
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-contain object-center"
           onLoad={handleImageLoad}
           onError={() => handleImageError(currentIndex)}
           style={{ display: isLoading ? 'none' : 'block' }}

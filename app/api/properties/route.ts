@@ -104,23 +104,17 @@ export async function GET(request: NextRequest) {
       // Handle images field - split comma-separated URLs
       let images: string[] = [];
       let videos: string[] = [];
+      let media: string[] = []; // Preserve original order from Google Sheets
       
-      // TEMPORARY: Add video URL to first property for testing
-      if (property.id === '1') {
-        // Add the video URL from your Google Sheets row 16/17 for testing
-        const testVideoUrl = 'https://res.cloudinary.com/ddrcnpsxy/video/upload/v1754145383/WhatsApp_Video_2025-07-09_at_19.12.35_35c0e2d2_uijive.mp4';
-        const testImageUrl = 'https://res.cloudinary.com/ddrcnpsxy/image/upload/v1752417419/Building_elevation_mndk6l.jpg';
-        
-        videos.push(testVideoUrl);
-        images.push(testImageUrl);
-        
-        console.log('TEMP: Added video URL to property 1 for testing:', testVideoUrl);
-      } else if (property.images) {
+      if (property.images) {
         if (typeof property.images === 'string') {
           // Split comma-separated string and clean up URLs
           const urls = property.images.split(',').map((url: string) => url.trim()).filter((url: string) => url);
           
-          // Separate videos and images
+          // Preserve original order in media array
+          media = [...urls];
+          
+          // Separate videos and images for backward compatibility
           urls.forEach((url: string) => {
             const isVideo = url.includes('/video/upload/') || 
                            url.match(/\.(mp4|mov|avi|webm|ogg|m4v|3gp|flv|wmv|mkv)(\?|$|#)/i) ||
@@ -133,7 +127,21 @@ export async function GET(request: NextRequest) {
             }
           });
         } else if (Array.isArray(property.images)) {
-          images = property.images;
+          // Handle array of URLs directly
+          media = [...property.images]; // Preserve original order
+          
+          // Separate videos and images for backward compatibility
+          property.images.forEach((url: string) => {
+            const isVideo = url.includes('/video/upload/') || 
+                           url.match(/\.(mp4|mov|avi|webm|ogg|m4v|3gp|flv|wmv|mkv)(\?|$|#)/i) ||
+                           (url.includes('video') && (url.includes('cloudinary') || url.includes('youtube') || url.includes('vimeo')));
+            
+            if (isVideo) {
+              videos.push(url);
+            } else {
+              images.push(url);
+            }
+          });
         }
       }
       
@@ -142,15 +150,18 @@ export async function GET(request: NextRequest) {
         if (typeof property.videos === 'string') {
           const videoUrls = property.videos.split(',').map((url: string) => url.trim()).filter((url: string) => url);
           videos = [...videos, ...videoUrls];
+          media = [...media, ...videoUrls]; // Add to media array too
         } else if (Array.isArray(property.videos)) {
           videos = [...videos, ...property.videos];
+          media = [...media, ...property.videos]; // Add to media array too
         }
       }
       
       return {
         ...property,
         images,
-        videos
+        videos,
+        media // New field preserving original order
       };
     }) || [];
 
