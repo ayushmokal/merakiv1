@@ -40,10 +40,10 @@ interface WorkProject {
 }
 
 const stats = [
-  { number: '50+', label: 'Projects Completed' },
-  { number: '2.5 Lac+', label: 'Sq. Ft. Delivered' },
-  { number: '100+', label: 'Happy Clients' },
-  { number: '6+', label: 'Years Experience' }
+  { number: '1.5 Lac+', label: 'Given on Lease' },
+  { number: '1 Lac+', label: 'Sold' },
+  { number: '30+', label: 'Clients' },
+  { number: '7', label: 'Years Experience' }
 ];
 
 export default function WorkPage() {
