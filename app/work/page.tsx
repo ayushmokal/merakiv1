@@ -17,7 +17,6 @@ import {
   Ruler,
   Eye,
   CheckCircle,
-  RefreshCw,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -196,17 +195,6 @@ export default function WorkPage() {
             <div>
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Our Work Portfolio</h2>
             </div>
-            <div className="flex gap-4 mt-4 md:mt-0">
-              <Button
-                onClick={() => fetchProjects()}
-                variant="outline"
-                size="sm"
-                disabled={loading}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                {loading ? 'Loading...' : 'Refresh'}
-              </Button>
-            </div>
           </div>
 
           {/* Error/Warning State */}
@@ -224,14 +212,6 @@ export default function WorkPage() {
                   Unable to load project data at this time. Please try again later.
                 </p>
               )}
-              <Button
-                onClick={() => fetchProjects()}
-                variant="outline"
-                size="sm"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Try Again
-              </Button>
             </div>
           )}
 
@@ -271,13 +251,13 @@ export default function WorkPage() {
                     return (
                     <Card key={project.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
                       <CardContent className="p-0">
-                        <div className="relative overflow-hidden rounded-t-lg">
+                        <div className="relative overflow-hidden rounded-t-lg bg-gray-100">
                           <Image
                             src={images[currentIndex]}
                             alt={project.name}
                             width={400}
                             height={300}
-                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-48 object-contain object-center group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
                             }}
@@ -382,13 +362,6 @@ export default function WorkPage() {
                       ? 'No work projects found. Please check back later.' 
                       : `No projects found in the ${selectedCategory} category.`}
                   </p>
-                  <Button
-                    onClick={() => fetchProjects()}
-                    variant="outline"
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
-                  </Button>
                 </div>
               )}
             </>
@@ -448,16 +421,18 @@ export default function WorkPage() {
                   
                   return (
                     <>
-                      <Image
-                        src={modalImages[modalCurrentIndex]}
-                        alt={selectedProject.name}
-                        width={600}
-                        height={400}
-                        className="w-full h-64 object-cover rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
-                        }}
-                      />
+                      <div className="bg-gray-100 rounded-lg">
+                        <Image
+                          src={modalImages[modalCurrentIndex]}
+                          alt={selectedProject.name}
+                          width={600}
+                          height={400}
+                          className="w-full h-64 object-contain object-center rounded-lg"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
+                          }}
+                        />
+                      </div>
                       
                       {/* Modal Image Navigation */}
                       {modalImages.length > 1 && (
