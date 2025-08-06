@@ -16,12 +16,11 @@ import {
   Calendar,
   Ruler,
   Eye,
-  CheckCircle,
-  ChevronLeft,
-  ChevronRight
+  CheckCircle
 } from 'lucide-react';
 import Image from 'next/image';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import MediaCarousel from '@/components/MediaCarousel';
 
 interface WorkProject {
   id: string;
@@ -35,6 +34,7 @@ interface WorkProject {
   status: string;
   imageUrl: string;
   images?: string[]; // Support for multiple images
+  media?: string[]; // Support for mixed media (images and videos)
   timestamp: string;
 }
 
@@ -57,7 +57,6 @@ export default function WorkPage() {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: string]: number}>({});
 
   // Fetch work projects from Google Sheets
   const fetchProjects = async () => {
@@ -112,26 +111,16 @@ export default function WorkPage() {
     ? projects 
     : projects.filter(project => project.type === selectedCategory);
 
-  // Helper functions for image carousel
-  const getProjectImages = (project: WorkProject): string[] => {
+  // Helper functions for media carousel
+  const getProjectMedia = (project: WorkProject): string[] => {
+    // Priority: media > images > imageUrl
+    if (project.media && project.media.length > 0) {
+      return project.media;
+    }
     if (project.images && project.images.length > 0) {
       return project.images;
     }
     return [project.imageUrl];
-  };
-
-  const nextImage = (projectId: string, totalImages: number) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [projectId]: ((prev[projectId] || 0) + 1) % totalImages
-    }));
-  };
-
-  const prevImage = (projectId: string, totalImages: number) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [projectId]: ((prev[projectId] || 0) - 1 + totalImages) % totalImages
-    }));
   };
 
   const handleProjectClick = (project: WorkProject) => {
@@ -245,59 +234,17 @@ export default function WorkPage() {
               {filteredProjects.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredProjects.map((project) => {
-                    const images = getProjectImages(project);
-                    const currentIndex = currentImageIndex[project.id] || 0;
+                    const mediaUrls = getProjectMedia(project);
                     
                     return (
                     <Card key={project.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
                       <CardContent className="p-0">
-                        <div className="relative overflow-hidden rounded-t-lg bg-gray-100">
-                          <Image
-                            src={images[currentIndex]}
-                            alt={project.name}
-                            width={400}
-                            height={300}
-                            className="w-full h-48 object-contain object-center group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
-                            }}
+                        <div className="relative overflow-hidden rounded-t-lg bg-gray-100 h-48">
+                          <MediaCarousel
+                            media={mediaUrls}
+                            title={project.name}
+                            className="rounded-t-lg"
                           />
-                          
-                          {/* Image Navigation */}
-                          {images.length > 1 && (
-                            <>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  prevImage(project.id, images.length);
-                                }}
-                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <ChevronLeft className="h-4 w-4" />
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  nextImage(project.id, images.length);
-                                }}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <ChevronRight className="h-4 w-4" />
-                              </button>
-                              
-                              {/* Image indicators */}
-                              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                                {images.map((_, index) => (
-                                  <div
-                                    key={index}
-                                    className={`w-2 h-2 rounded-full transition-colors ${
-                                      index === currentIndex ? 'bg-white' : 'bg-white/50'
-                                    }`}
-                                  />
-                                ))}
-                              </div>
-                            </>
-                          )}
                           
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <Button
@@ -414,76 +361,12 @@ export default function WorkPage() {
           
           {selectedProject && (
             <div className="space-y-6">
-              <div className="relative">
-                {(() => {
-                  const modalImages = getProjectImages(selectedProject);
-                  const modalCurrentIndex = currentImageIndex[`modal-${selectedProject.id}`] || 0;
-                  
-                  return (
-                    <>
-                      <div className="bg-gray-100 rounded-lg">
-                        <Image
-                          src={modalImages[modalCurrentIndex]}
-                          alt={selectedProject.name}
-                          width={600}
-                          height={400}
-                          className="w-full h-64 object-contain object-center rounded-lg"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/images/Picture1.jpg';
-                          }}
-                        />
-                      </div>
-                      
-                      {/* Modal Image Navigation */}
-                      {modalImages.length > 1 && (
-                        <>
-                          <button
-                            onClick={() => {
-                              const newIndex = ((modalCurrentIndex - 1) + modalImages.length) % modalImages.length;
-                              setCurrentImageIndex(prev => ({
-                                ...prev,
-                                [`modal-${selectedProject.id}`]: newIndex
-                              }));
-                            }}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
-                          >
-                            <ChevronLeft className="h-5 w-5" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              const newIndex = (modalCurrentIndex + 1) % modalImages.length;
-                              setCurrentImageIndex(prev => ({
-                                ...prev,
-                                [`modal-${selectedProject.id}`]: newIndex
-                              }));
-                            }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
-                          >
-                            <ChevronRight className="h-5 w-5" />
-                          </button>
-                          
-                          {/* Modal Image indicators */}
-                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                            {modalImages.map((_, index) => (
-                              <button
-                                key={index}
-                                onClick={() => {
-                                  setCurrentImageIndex(prev => ({
-                                    ...prev,
-                                    [`modal-${selectedProject.id}`]: index
-                                  }));
-                                }}
-                                className={`w-3 h-3 rounded-full transition-colors ${
-                                  index === modalCurrentIndex ? 'bg-white' : 'bg-white/50'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </>
-                  );
-                })()}
+              <div className="relative h-64 bg-gray-100 rounded-lg overflow-hidden">
+                <MediaCarousel
+                  media={getProjectMedia(selectedProject)}
+                  title={selectedProject.name}
+                  className="rounded-lg"
+                />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
