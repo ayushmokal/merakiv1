@@ -13,7 +13,7 @@ export default function Footer() {
               <Image src="/logo.png" alt="Meraki Logo" width={120} height={32} className="brightness-0 invert" />
             </div>
             <p className="text-gray-400 text-sm">
-              Meraki Square Foots - Where Dreams Become Reality. Established in 2017, we are Navi Mumbai's trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
+              Meraki Square Foots - Where Dreams Become Reality. Established in 2017, we are Navi Mumbai&apos;s trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
             </p>
           </div>
 

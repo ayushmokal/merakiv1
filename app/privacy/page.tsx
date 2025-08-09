@@ -107,7 +107,7 @@ export default function PrivacyPage() {
                 <p>
                   We may update this privacy policy from time to time. We will notify you of 
                   any changes by posting the new policy on this page and updating the 
-                  "Last updated" date.
+                  &ldquo;Last updated&rdquo; date.
                 </p>
               </section>
 

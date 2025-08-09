@@ -26,7 +26,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
                 <p>
-                  By accessing and using Meraki Square Foots' website and services, you accept and agree 
+                  By accessing and using Meraki Square Foots&apos; website and services, you accept and agree 
                   to be bound by the terms and provision of this agreement. If you do not agree 
                   to abide by the above, please do not use this service.
                 </p>
@@ -83,7 +83,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">6. Limitation of Liability</h2>
                 <p className="mb-4">
-                  Meraki Square Foots' liability is limited to the amount paid for services. We are not 
+                  Meraki Square Foots&apos; liability is limited to the amount paid for services. We are not 
                   liable for:
                 </p>
                 <ul className="list-disc pl-6 mb-4 space-y-2">
