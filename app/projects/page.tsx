@@ -232,7 +232,7 @@ export default function PropertiesPage() {
       setSearchLoading(false);
       setInitialLoading(false);
     }
-  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage]);
+  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage, initialLoading, lastSearchParams]);
 
   // Debounced version of fetchProperties
   const debouncedFetchProperties = useCallback((resetData = false) => {
@@ -250,7 +250,7 @@ export default function PropertiesPage() {
   // Initial load
   useEffect(() => {
     debouncedFetchProperties(true);
-  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange]);
+  }, [debouncedFetchProperties, filters.propertyType, filters.searchQuery, filters.location, filters.priceRange]);
 
   // Reset to initial loading when major filters change
   useEffect(() => {

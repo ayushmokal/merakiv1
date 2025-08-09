@@ -512,7 +512,7 @@ export default function ServicesPage() {
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
+                  <p className="text-muted-foreground mb-4 italic">&ldquo;{testimonial.content}&rdquo;</p>
                   <div className="mb-2">
                     <p className="font-semibold">{testimonial.name}</p>
                     <p className="text-sm text-muted-foreground">{testimonial.role}</p>
@@ -534,7 +534,7 @@ export default function ServicesPage() {
             Ready to Start Your Real Estate Journey?
           </h2>
           <p className="text-xl mb-8 text-primary-foreground/90">
-            Let's discuss how we can help you find the perfect property or bring your interior design dreams to life.
+            Let&apos;s discuss how we can help you find the perfect property or bring your interior design dreams to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild className="text-lg px-8">
