@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Building2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
@@ -170,13 +171,13 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
       {/* Main Media */}
       <div className="relative w-full h-full">
         {currentMedia?.type === 'image' ? (
-          <img
+          <Image
             src={processedMediaUrl}
             alt={`${title} - Image ${currentIndex + 1}`}
-            className="w-full h-full object-contain object-center"
+            fill
+            className="object-contain"
             onLoad={handleMediaLoad}
             onError={() => handleMediaError(currentIndex)}
-            loading="lazy"
           />
         ) : (
           <video

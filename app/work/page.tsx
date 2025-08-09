@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,6 @@ import {
   Eye,
   CheckCircle
 } from 'lucide-react';
-import Image from 'next/image';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
 import MediaCarousel from '@/components/MediaCarousel';
 
@@ -133,10 +133,12 @@ export default function WorkPage() {
       {/* Hero Section - extends behind navbar */}
       <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
         <div className="absolute inset-0">
-            <img
+            <Image
                 src="/hero.png"
                 alt="Modern architecture"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
         </div>
@@ -423,7 +425,7 @@ export default function WorkPage() {
             Ready to Start Your Real Estate Journey?
           </h2>
           <p className="text-xl mb-8 text-primary-foreground/90">
-            Let's discuss how we can help you find the perfect property or bring your interior design dreams to life.
+            Let&apos;s discuss how we can help you find the perfect property or bring your interior design dreams to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild className="text-lg px-8">

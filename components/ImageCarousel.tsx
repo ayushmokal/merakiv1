@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 
@@ -112,10 +113,11 @@ export default function ImageCarousel({ images, title, className = "" }: ImageCa
           </div>
         )}
         
-        <img
+        <Image
           src={processedImageUrl}
           alt={`${title} - Image ${currentIndex + 1}`}
-          className="w-full h-full object-contain object-center"
+          fill
+          className="object-contain"
           onLoad={handleImageLoad}
           onError={() => handleImageError(currentIndex)}
           style={{ display: isLoading ? 'none' : 'block' }}

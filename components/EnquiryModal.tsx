@@ -84,7 +84,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
         <DialogHeader>
           <DialogTitle>Enquire About This Property</DialogTitle>
           <DialogDescription>
-            Fill out the form below and we'll get back to you shortly.
+            Fill out the form below and we&apos;ll get back to you shortly.
           </DialogDescription>
         </DialogHeader>
 

@@ -158,7 +158,7 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
             </div>
 
             <div>
-              <Label htmlFor="interest">I'm interested in</Label>
+              <Label htmlFor="interest">I&apos;m interested in</Label>
               <Select value={formData.interest} onValueChange={(value) => setFormData({ ...formData, interest: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select service" />

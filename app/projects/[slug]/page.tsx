@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -205,7 +206,7 @@ export default function ProjectDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Project Not Found</h1>
-            <p className="text-muted-foreground mb-6">The project you're looking for doesn't exist.</p>
+            <p className="text-muted-foreground mb-6">The project you&apos;re looking for doesn&apos;t exist.</p>
             <Button asChild>
               <Link href="/projects">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -243,11 +244,12 @@ export default function ProjectDetailPage() {
 
         {/* Image Carousel */}
         <div className="relative mb-12">
-          <div className="aspect-[16/9] overflow-hidden rounded-2xl">
-            <img 
+          <div className="aspect-[16/9] overflow-hidden rounded-2xl relative">
+            <Image 
               src={project.images[currentImageIndex]} 
               alt={`${project.title} - Image ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
           
@@ -439,7 +441,7 @@ export default function ProjectDetailPage() {
               <CardContent className="p-6 text-center">
                 <h3 className="text-xl font-semibold mb-3">Interested in Similar Project?</h3>
                 <p className="mb-4 text-primary-foreground/90">
-                  Let's discuss how we can create something amazing for you.
+                  Let&apos;s discuss how we can create something amazing for you.
                 </p>
                 <Button variant="secondary" asChild className="w-full">
                   <Link href="/services">Our Services</Link>
