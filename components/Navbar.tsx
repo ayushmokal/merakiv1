@@ -31,98 +31,137 @@ export default function Navbar() {
 
   return (
     <>
-      <div className={`fixed top-2 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
-        isScrolled ? 'w-[95%] max-w-6xl' : 'w-[98%] max-w-7xl'
-      }`}>
-        <nav className={`relative bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-2xl shadow-lg transition-all duration-300 ${
-          isScrolled ? 'shadow-xl' : 'shadow-md'
+      {/* Wrapper with gradient ring + glass background for a more "designed" feel */}
+      <div
+        className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-[width] duration-300 ${
+          isScrolled ? 'w-[95%] max-w-6xl' : 'w-[98%] max-w-7xl'
+        }`}
+      >
+        <div className={`relative rounded-2xl bg-transparent ${
+          isScrolled ? 'shadow-[0_6px_18px_-8px_rgba(0,0,0,0.25)]' : 'shadow-[0_4px_14px_-10px_rgba(0,0,0,0.2)]'
         }`}>
-          {/* Background elements */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/95 to-white/90 rounded-2xl"></div>
-          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-2xl"></div>
-          
-          <div className="relative px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center h-16 lg:h-18">
-              {/* Logo */}
-              <div className="flex items-center lg:w-1/4">
-                <Link href="/" className="flex items-center">
-                  <Image 
-                    src="/logo.png" 
-                    alt="Meraki Logo" 
-                    width={140} 
-                    height={35}
-                    className="h-7 w-auto sm:h-8 lg:h-9 object-contain"
-                  />
-                </Link>
-              </div>
-
-              {/* Desktop Navigation - Centered */}
-              <div className="hidden lg:flex items-center justify-center flex-1 space-x-1">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50/50 ${
-                      pathname === link.href
-                        ? 'text-primary bg-primary/5'
-                        : 'text-gray-700 hover:text-primary'
-                    }`}
-                  >
-                    {link.label}
-                    {pathname === link.href && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>
-                    )}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Mobile Menu Button */}
-              <div className="lg:hidden ml-auto">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="h-10 w-10 rounded-lg hover:bg-gray-50/50"
-                >
-                  {isMobileMenuOpen ? (
-                    <X className="h-5 w-5" />
-                  ) : (
-                    <Menu className="h-5 w-5" />
-                  )}
-                </Button>
-              </div>
-
-              {/* Spacer for desktop to balance layout */}
-              <div className="hidden lg:block lg:w-1/4"></div>
+          <nav
+            aria-label="Main navigation"
+            className={`relative flex items-center h-16 lg:h-18 rounded-[1.1rem] px-4 sm:px-6 lg:px-8
+            bg-sky-50/90 dark:bg-neutral-900/70 backdrop-blur-xl
+            border border-sky-100 dark:border-white/10
+            transition-colors duration-500`}
+          >
+            {/* Logo */}
+            <div className="relative flex items-center">
+              <Link href="/" className="flex items-center group relative">
+                <Image
+                  src="/logo.png"
+                  alt="Meraki Logo"
+                  width={140}
+                  height={38}
+                  priority
+                  className="h-7 w-auto sm:h-8 lg:h-9 object-contain transition-transform duration-300 group-hover:scale-[1.035]"
+                />
+              </Link>
             </div>
 
-            {/* Mobile Navigation Menu */}
-            {isMobileMenuOpen && (
-              <div className="lg:hidden border-t border-gray-200/50 mt-2">
-                <div className="py-4 space-y-1">
-                  {navLinks.map((link) => (
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center justify-center flex-1 ml-6">
+              <ul className="flex items-center gap-1">
+                {navLinks.map((link) => {
+                  const active = pathname === link.href;
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={`group relative block px-4 py-2 text-sm font-medium tracking-wide rounded-lg
+                        transition-colors duration-300
+                        ${active ? 'text-slate-900 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'}`}
+                      >
+                        <span className="relative z-10">
+                          {link.label}
+                        </span>
+                        {/* Soft hover background */}
+                        <span
+                          className={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                          bg-gradient-to-br from-slate-100/90 via-white/60 to-slate-100/80 dark:from-white/5 dark:via-white/0 dark:to-white/5 backdrop-blur-sm`}
+                        />
+                        {/* Underline (solid color) */}
+                        <span
+                          className={`pointer-events-none absolute left-4 right-4 -bottom-0.5 h-[2px] origin-center rounded-full
+                          bg-blue-600 transition-all duration-300 ease-out
+                          ${active ? 'opacity-100 scale-100' : 'opacity-0 scale-50 group-hover:opacity-60 group-hover:scale-100'}`}
+                        />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {/* Right actions */}
+            <div className="ml-auto hidden md:flex items-center gap-3">
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                size="sm"
+                className="relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 shadow-md hover:shadow-lg transition-all duration-300 border border-white/20 text-white"
+              >
+                <span className="relative z-10">Get Quote</span>
+                <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_60%)]" />
+              </Button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden ml-auto">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="h-10 w-10 rounded-xl hover:bg-white/60 dark:hover:bg-white/10"
+                aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </nav>
+
+          {/* Mobile menu panel */}
+          <div
+            className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-400 ease-in-out rounded-b-2xl
+            bg-sky-50/95 dark:bg-neutral-900/80 backdrop-blur-xl border border-t-0 border-sky-100 dark:border-white/10 shadow-md
+            ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+          >
+            <ul className="py-3 px-2 divide-y divide-white/40 dark:divide-white/5">
+              {navLinks.map((link) => {
+                const active = pathname === link.href;
+                return (
+                  <li key={link.href}>
                     <Link
-                      key={link.href}
                       href={link.href}
-                      className={`block px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-                        pathname === link.href
-                          ? 'text-primary bg-primary/5'
-                          : 'text-gray-700 hover:text-primary hover:bg-gray-50/50'
-                      }`}
+                      className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors
+                      ${active ? 'text-slate-900 dark:text-white bg-white/70 dark:bg-white/10' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/5'}`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {link.label}
                     </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+                  </li>
+                );
+              })}
+              <li className="pt-3 px-4">
+                <Button
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white"
+                >
+                  Get Quote
+                </Button>
+              </li>
+            </ul>
           </div>
-        </nav>
+        </div>
       </div>
-      
-      {/* Spacer to prevent content from hiding behind fixed navbar - optimized height */}
-      <div className="h-[80px] lg:h-[88px]"></div>
+
+      {/* Spacer to offset fixed navbar height */}
+      <div className="h-[82px] lg:h-[90px]"></div>
       
       <LeadCaptureModal 
         isOpen={isModalOpen} 

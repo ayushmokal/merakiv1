@@ -135,40 +135,18 @@
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-/* Service cards layout - keep consistent left-to-right grid */
+/* Service cards layout - responsive grid */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
-
 @media (max-width: 768px) {
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
+  .services-grid { gap: 1.5rem; }
 }
 
-/* Ensure service cards don't shuffle and maintain consistent height */
-.service-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  order: initial;
-}
-
-/* Range slider styling to ensure left-to-right direction */
-input[type="range"] {
-  direction: ltr;
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: #e2e8f0;
-  outline: none;
-}
+/* Service card helper */
+.service-card { height: 100%; }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -224,4 +202,25 @@ input[type="range"]::-moz-range-thumb {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Blended section backgrounds (dark theme friendly) --- */
+.section-blend {
+  position: relative;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(59,130,246,0.07), transparent 55%),
+    radial-gradient(circle at 82% 78%, rgba(139,92,246,0.05), transparent 60%),
+    linear-gradient(180deg, #0f1216 0%, #12161b 50%, #101418 100%);
+}
+.section-blend-alt {
+  position: relative;
+  background:
+    radial-gradient(circle at 78% 24%, rgba(56,189,248,0.07), transparent 55%),
+    radial-gradient(circle at 24% 82%, rgba(99,102,241,0.05), transparent 60%),
+    linear-gradient(180deg, #101419 0%, #151a20 50%, #12171d 100%);
+}
+.section-blend, .section-blend-alt { overflow: hidden; }
+
+@media (prefers-color-scheme: dark) {
+  /* Same backgrounds work for dark; adjust if future contrast issues arise */
 }

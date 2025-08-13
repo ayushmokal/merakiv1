@@ -162,15 +162,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mission Section */}
-      <section className="py-20 bg-gray-50">
+  {/* Mission Section */}
+  <section className="py-20 section-blend">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">Our Mission</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-white">
               Putting Soul, Creativity & Purpose into Our Profession
             </h2>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto">
+            <p className="text-xl text-white max-w-4xl mx-auto">
               We are on a mission to provide reliable real estate solutions with ethical and socially conscious practices, 
               offering one-stop solutions for all your real estate requirements.
             </p>
@@ -213,15 +213,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-20">
+  {/* Services Section */}
+  <section className="py-20 section-blend-alt">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">Core Competencies</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
               Comprehensive Service Portfolio
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-white">
               From architecture to property management, we offer tailor-made services for all types of property transactions.
             </p>
           </div>
@@ -249,15 +249,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-20 bg-gray-50">
+  {/* Team Section */}
+  <section className="py-20 section-blend">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">Leadership</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
               Meet Our Founders
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-white">
               Seven years of excellence under visionary leadership
             </p>
           </div>
@@ -296,12 +296,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50">
+  {/* Testimonials Section */}
+  <section className="py-20 section-blend-alt">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">Success Stories</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-white">
               Our Major Achievements
             </h2>
           </div>
