@@ -37,7 +37,7 @@ const services = [
 ];
 
 const stats = [
-  { number: '1 Lac+', label: 'Sqft Delivered to Podar International School' },
+  { number: '1 lakh sq.ft+', label: 'Sqft Delivered to Podar International School' },
   { number: '75,000', label: 'Sqft Land Sold at Aamby Valley City' },
   { number: '61,000', label: 'Sqft Residential Space Leased' },
   { number: '6+', label: 'Years of Excellence' }

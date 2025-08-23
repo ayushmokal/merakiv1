@@ -56,7 +56,7 @@ export default function Navbar() {
                   width={140}
                   height={38}
                   priority
-                  className="h-7 w-auto sm:h-8 lg:h-9 object-contain transition-transform duration-300 group-hover:scale-[1.035]"
+                  className="h-9 w-auto sm:h-10 lg:h-12 object-contain transition-transform duration-300 group-hover:scale-[1.035]"
                 />
               </Link>
             </div>

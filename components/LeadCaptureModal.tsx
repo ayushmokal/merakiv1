@@ -98,27 +98,16 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Gift className="h-6 w-6 text-primary" />
-              <DialogTitle className="text-xl">Exclusive Offer!</DialogTitle>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNotNow}
-              className="h-6 w-6 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center space-x-2">
+            <Gift className="h-6 w-6 text-primary" />
+            <DialogTitle className="text-xl">Exclusive Offer!</DialogTitle>
           </div>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="bg-primary/5 p-4 rounded-lg">
             <p className="text-sm text-center">
-              <strong>Get 15% off</strong> your first project consultation + 
-              <strong> Free 3D visualization</strong> worth ₹25,000!
+              Fill out the form below and we'll get back to you shortly.
             </p>
           </div>
 
