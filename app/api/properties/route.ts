@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Connected to your Properties Google Apps Script with 55 properties and Cloudinary support
 
 // Google Apps Script Web App URL for properties data (listing/fetching)
-const PROPERTIES_API_URL = process.env.GOOGLE_PROPERTIES_API_URL;
+const PROPERTIES_API_URL = process.env.GOOGLE_PROPERTY_API_URL;
 // Google Apps Script Web App URL for property submissions and enquiries  
 const PROPERTY_SUBMISSIONS_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
 
@@ -17,7 +17,8 @@ const PROPERTY_SUBMISSIONS_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category') || 'ALL';
+    const category = searchParams.get('category') || 'ALL'; // RESIDENTIAL, COMMERCIAL, ALL
+    const transactionType = searchParams.get('transactionType') || 'ALL'; // BUY, LEASE, ALL
     const limit = searchParams.get('limit') || '50';
     const offset = searchParams.get('offset') || '0';
     const search = searchParams.get('search') || '';
@@ -29,9 +30,9 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get('featured') || '';
 
     // Build query parameters for Google Sheets API
-    // Note: We don't pass limit/offset to Google Sheets since we handle pagination after filtering
     const params = new URLSearchParams({
       category,
+      transactionType, // New parameter
       search,
       location,
       bedrooms,
@@ -45,7 +46,8 @@ export async function GET(request: NextRequest) {
 
     // Check if API URL is configured
     if (!PROPERTIES_API_URL) {
-      console.warn('Google Apps Script URL not configured in environment variables');
+      console.error('GOOGLE_PROPERTY_API_URL not configured in environment variables');
+      console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('GOOGLE')));
       // Return sample data for development
       return NextResponse.json({
         success: true,
@@ -56,9 +58,13 @@ export async function GET(request: NextRequest) {
           limit: parseInt(limit),
           offset: parseInt(offset),
           hasMore: false
-        }
+        },
+        error: 'API URL not configured'
       });
     }
+
+    console.log('Making request to Google Apps Script:', `${PROPERTIES_API_URL}?${params}`);
+    console.log('Request parameters:', { category, transactionType, search, location });
 
     // Fetch from Google Sheets
     const response = await fetch(`${PROPERTIES_API_URL}?${params}`);
@@ -68,6 +74,22 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    
+    // Debug: Log the complete response from Google Apps Script
+    console.log('Google Apps Script Response Status:', data.status);
+    console.log('Response Category:', data.category);
+    console.log('Response Total:', data.total);
+    console.log('Response Data Length:', data.data?.length || 0);
+    
+    if (data.status === 'error') {
+      console.error('Google Apps Script Error:', data.message);
+      return NextResponse.json({
+        success: false,
+        error: 'Google Apps Script Error: ' + data.message,
+        data: [],
+        total: 0
+      });
+    }
     
     // Debug: Log the raw data from Google Sheets
     console.log('Raw Google Sheets data (first item):', data.data?.[0]);

@@ -89,18 +89,19 @@ const PropertyPostModal: React.FC<PropertyPostModalProps> = ({ children }) => {
 
   const propertyTypes = [
     'Residential Apartment',
-    'Independent House',
+    'Independent House', 
     'Builder Floor',
     'Penthouse',
     'Studio Apartment',
+    'Villa/Bungalow',
     'Commercial Office',
     'Retail Shop',
     'Warehouse',
-    'Industrial Land',
-    'Residential Plot'
+    'Industrial Space',
+    'Commercial Plot'
   ];
 
-  const listingTypes = ['Sale', 'Rent', 'Lease'];
+  const listingTypes = ['Buy', 'Lease']; // Updated to match new structure
   const configurations = ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5+ BHK', 'Studio'];
   const furnishedOptions = ['Furnished', 'Semi-Furnished', 'Unfurnished'];
   

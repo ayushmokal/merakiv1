@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
@@ -20,19 +21,20 @@ import {
   Building,
   Warehouse,
   TreePine,
-  Palette,
   Plus,
   Phone,
-  Loader2
+  Loader2,
+  ChevronDown
 } from 'lucide-react';
 import EnquiryModal from '@/components/EnquiryModal';
 import MediaCarousel from '@/components/MediaCarousel';
 import PropertyPostModal from '@/components/PropertyPostModal';
 
-// Enhanced Property Interface for different categories
+// Enhanced Property Interface for new category structure
 interface Property {
   id: string;
-  type: 'buy' | 'lease' | 'commercial' | 'bungalow' | 'interior';
+  type: 'residential' | 'commercial' | 'bungalow';
+  transactionType: 'buy' | 'lease' | 'unknown'; // New field for BUY/Lease
   title: string;
   location: string;
   area: string;
@@ -67,7 +69,8 @@ interface Property {
 
 interface PropertyFilters {
   searchQuery: string;
-  propertyType: 'all' | 'buy' | 'lease' | 'commercial' | 'bungalow' | 'interior';
+  propertyType: 'all' | 'residential' | 'commercial' | 'bungalow';
+  transactionType: 'all' | 'buy' | 'lease'; // Separate transaction type for dropdowns
   location: string;
   priceRange: [number, number];
   bedrooms: string[];
@@ -94,6 +97,11 @@ export default function PropertiesPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [lastSearchParams, setLastSearchParams] = useState<string>('');
+  
+  // Ref to track ongoing API calls and prevent multiple simultaneous requests
+  const fetchingRef = useRef(false);
+  // Ref to track timeout ID for debounced calls
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
   // Utility function to combine images and videos into a single media array
   const getCombinedMedia = (property: Property): string[] => {
@@ -131,6 +139,7 @@ export default function PropertiesPage() {
   const [filters, setFilters] = useState<PropertyFilters>({
     searchQuery: '',
     propertyType: 'all',
+    transactionType: 'all', // Default to show both buy and lease
     location: 'all',
     priceRange: [0, 50000000],
     bedrooms: [],
@@ -146,11 +155,9 @@ export default function PropertiesPage() {
 
   const propertyTypes = [
     { value: 'all', label: 'All Properties', icon: Building2 },
-    { value: 'buy', label: 'Buy', icon: Home },
-    { value: 'lease', label: 'Lease', icon: Building },
+    { value: 'residential', label: 'Residential', icon: Home },
     { value: 'commercial', label: 'Commercial', icon: Warehouse },
-    { value: 'bungalow', label: 'Bungalow', icon: TreePine },
-    { value: 'interior', label: 'Interior', icon: Palette }
+    { value: 'bungalow', label: 'Bungalow', icon: TreePine }
   ];
 
   const locations = [
@@ -162,9 +169,22 @@ export default function PropertiesPage() {
 
   // Debounced fetch function to reduce API calls
   const fetchProperties = useCallback(async (resetData = false) => {
+    // Generate unique request ID for better tracking
+    const requestId = Date.now() + Math.random();
+    
+    // Prevent multiple simultaneous calls
+    if (fetchingRef.current) {
+      console.log(`🚫 Skipping API call ${requestId} - another request in progress`);
+      return;
+    }
+    
+    fetchingRef.current = true;
+    console.log(`🚀 Starting API call ${requestId} - Category: ${filters.propertyType}, Transaction: ${filters.transactionType}`);
+    
     try {
       if (resetData) {
         setSearchLoading(true);
+        setCurrentPage(0);
         if (initialLoading) {
           setInitialLoading(true);
         }
@@ -172,9 +192,24 @@ export default function PropertiesPage() {
         setLoading(true);
       }
       
+      // Handle the API call based on filter type
+      let category = 'ALL';
+      let transactionType = 'ALL';
+      
+      // Set category based on propertyType
+      if (filters.propertyType !== 'all') {
+        category = filters.propertyType.toUpperCase();
+      }
+      
+      // Set transaction type based on transactionType filter
+      if (filters.transactionType !== 'all') {
+        transactionType = filters.transactionType.toUpperCase();
+      }
+      
       const params = new URLSearchParams({
-        category: filters.propertyType.toUpperCase(),
-        limit: '50', // Show all properties - matches backend default
+        category,
+        transactionType,
+        limit: '50',
         offset: resetData ? '0' : (currentPage * 50).toString(),
         search: filters.searchQuery,
         location: filters.location === 'all' ? '' : filters.location,
@@ -184,13 +219,6 @@ export default function PropertiesPage() {
       });
 
       const paramsString = params.toString();
-      
-      // Skip API call if same parameters and resetData is true
-      if (resetData && paramsString === lastSearchParams && !initialLoading) {
-        setSearchLoading(false);
-        setLoading(false);
-        return;
-      }
       
       if (resetData) {
         setLastSearchParams(paramsString);
@@ -226,38 +254,52 @@ export default function PropertiesPage() {
         console.error('API Error:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching properties:', error);
+      console.error(`❌ API call failed:`, error);
     } finally {
       setLoading(false);
       setSearchLoading(false);
       setInitialLoading(false);
+      fetchingRef.current = false; // Reset the flag
+      console.log(`✅ API call completed - Category: ${filters.propertyType}, Transaction: ${filters.transactionType}`);
     }
-  }, [filters.propertyType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage, initialLoading, lastSearchParams]);
+  }, [filters.propertyType, filters.transactionType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage, initialLoading, lastSearchParams]);
 
   // Debounced version of fetchProperties
-  const debouncedFetchProperties = useCallback((resetData = false) => {
-    // Skip debounce for initial load
-    if (initialLoading) {
+  const debouncedFetchProperties = useCallback((resetData = false, immediate = false) => {
+    // Skip debounce for initial load or immediate calls (filter changes)
+    if (initialLoading || immediate) {
+      // Clear any existing timeout if immediate call is requested
+      if (immediate && timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+        timeoutIdRef.current = null;
+      }
       fetchProperties(resetData);
     } else {
-      const timeoutId = setTimeout(() => {
+      // Clear any existing timeout before setting a new one
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
+      timeoutIdRef.current = setTimeout(() => {
         fetchProperties(resetData);
-      }, 300); // 300ms debounce delay
-      return timeoutId;
+        timeoutIdRef.current = null;
+      }, 300); // 300ms debounce delay for search only
     }
   }, [fetchProperties, initialLoading]);
 
-  // Initial load
+  // Initial load and filter changes - CONSOLIDATED to prevent multiple simultaneous calls
   useEffect(() => {
-    debouncedFetchProperties(true);
-  }, [debouncedFetchProperties, filters.propertyType, filters.searchQuery, filters.location, filters.priceRange]);
+    if (initialLoading) {
+      debouncedFetchProperties(true);
+    } else {
+      // For filter changes, use immediate fetch without delay
+      debouncedFetchProperties(true, true);
+    }
+  }, [debouncedFetchProperties, filters.propertyType, filters.transactionType, filters.searchQuery, filters.location, filters.priceRange, initialLoading]);
 
   // Reset to initial loading when major filters change
   useEffect(() => {
-    // Reset current page and trigger initial loading when property type changes
+    // Reset current page when property type changes
     setCurrentPage(0);
-    setProperties([]);
-    setFilteredProperties([]);
   }, [filters.propertyType]);
 
   // Filter properties locally for price range and other filters
@@ -414,6 +456,8 @@ export default function PropertiesPage() {
   // Count active filters
   const getActiveFiltersCount = () => {
     let count = 0;
+    if (filters.propertyType !== 'all') count++;
+    if (filters.transactionType !== 'all') count++;
     if (filters.location !== 'all') count++;
     if (filters.priceRange[1] < 50000000) count++;
     if (filters.carpetAreaRange[1] < 5000) count++;
@@ -553,13 +597,171 @@ export default function PropertiesPage() {
             </p>
           </div>
 
-          {/* Property Type Tabs */}
+          {/* Property Type Tabs with Dropdowns */}
           <div className="flex justify-center mb-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-1 flex flex-wrap gap-1 max-w-full">
-              {propertyTypes.map((type) => (
+              {/* All Properties Button */}
+              <button
+                onClick={async () => {
+                  console.log('🎯 All Properties button clicked - immediate response');
+                  setSearchLoading(true);
+                  setProperties([]);
+                  setFilteredProperties([]);
+                  setCurrentPage(0);
+                  setFilters(prev => ({ ...prev, propertyType: 'all', transactionType: 'all' }));
+                  // Use setTimeout to ensure state updates are processed
+                  setTimeout(() => {
+                    console.log('🚀 Triggering immediate fetch for All Properties');
+                    debouncedFetchProperties(true, true);
+                  }, 10);
+                }}
+                className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] ${
+                  filters.propertyType === 'all'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Building2 className="h-4 w-4 mr-1 sm:mr-2 inline" />
+                <span className="hidden sm:inline">All Properties</span>
+                <span className="sm:hidden">All</span>
+              </button>
+
+              {/* Residential Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] flex items-center ${
+                      filters.propertyType === 'residential'
+                        ? 'bg-white text-primary shadow-sm'
+                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Home className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Residential</span>
+                    <span className="sm:hidden">Res</span>
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white border shadow-lg">
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'all' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <Home className="h-4 w-4 mr-2" />
+                    All Residential
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'buy' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <Home className="h-4 w-4 mr-2" />
+                    Buy Residential
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'lease' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <Building className="h-4 w-4 mr-2" />
+                    Lease Residential
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Commercial Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] flex items-center ${
+                      filters.propertyType === 'commercial'
+                        ? 'bg-white text-primary shadow-sm'
+                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Warehouse className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Commercial</span>
+                    <span className="sm:hidden">Com</span>
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white border shadow-lg">
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'all' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <Warehouse className="h-4 w-4 mr-2" />
+                    All Commercial
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'buy' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <Home className="h-4 w-4 mr-2" />
+                    Buy Commercial
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'lease' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <Building className="h-4 w-4 mr-2" />
+                    Lease Commercial
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Other Category Buttons */}
+              {propertyTypes.slice(3).map((type) => (
                 <button
                   key={type.value}
-                  onClick={() => setFilters(prev => ({ ...prev, propertyType: type.value as any }))}
+                  onClick={async () => {
+                    setSearchLoading(true);
+                    setProperties([]);
+                    setFilteredProperties([]);
+                    setCurrentPage(0);
+                    setFilters(prev => ({ ...prev, propertyType: type.value as any, transactionType: 'all' }));
+                    setTimeout(() => debouncedFetchProperties(true, true), 10);
+                  }}
                   className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] ${
                     filters.propertyType === type.value
                       ? 'bg-white text-primary shadow-sm'
@@ -656,6 +858,7 @@ export default function PropertiesPage() {
                 <Button variant="ghost" size="sm" onClick={() => setFilters({
                   searchQuery: '',
                   propertyType: 'all',
+                  transactionType: 'all',
                   location: 'all',
                   priceRange: [0, 50000000],
                   bedrooms: [],
@@ -850,11 +1053,17 @@ export default function PropertiesPage() {
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold leading-tight">
                   Properties for {filters.propertyType === 'all' ? 'All Types' : propertyTypes.find(t => t.value === filters.propertyType)?.label}
+                  {filters.transactionType !== 'all' && ` (${filters.transactionType === 'buy' ? 'For Sale' : 'For Lease'})`}
                   {filters.location !== 'all' && ` in ${filters.location}`}
                 </h2>
                 <p className="text-gray-600 text-sm sm:text-base">
                   {initialLoading ? 'Discovering amazing properties for you...' : 
-                   `Showing ${sortedProperties.length} of ${totalProperties} properties${filters.location !== 'all' ? ` in ${filters.location}` : ''}`}
+                   `Showing ${sortedProperties.length} of ${totalProperties} properties`}
+                  {getActiveFiltersCount() > 0 && (
+                    <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                      {getActiveFiltersCount()} filter{getActiveFiltersCount() > 1 ? 's' : ''} active
+                    </span>
+                  )}
                 </p>
               </div>
               <Select value={sortBy} onValueChange={setSortBy}>
