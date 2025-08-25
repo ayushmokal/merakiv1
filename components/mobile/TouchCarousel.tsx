@@ -243,7 +243,7 @@ const TouchCarousel: React.FC<TouchCarouselProps> = ({
                   <Maximize2 className="h-4 w-4" />
                 </Button>
 
-                {navigator.share && (
+                {typeof navigator !== 'undefined' && 'share' in navigator && typeof navigator.share === 'function' && (
                   <Button
                     variant="secondary"
                     size="icon"
