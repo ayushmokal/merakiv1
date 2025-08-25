@@ -259,17 +259,17 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
         
         {/* Dot Indicators */}
         {mediaItems.length > 1 && mediaItems.length <= 5 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-0.5">
             {mediaItems.map((item, index) => (
               <button
                 key={index}
-                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors relative ${
-                  index === currentIndex ? 'bg-white' : 'bg-white/50'
+                className={`w-0.5 h-0.5 sm:w-1 sm:h-1 rounded-full transition-colors relative ${
+                  index === currentIndex ? 'bg-white' : 'bg-white/40'
                 }`}
                 onClick={() => setCurrentIndex(index)}
               >
                 {item.type === 'video' && (
-                  <Play className="h-1 w-1 absolute top-0.5 left-0.5 text-black" />
+                  <Play className="h-0.5 w-0.5 absolute top-0 left-0 text-black opacity-60" />
                 )}
               </button>
             ))}

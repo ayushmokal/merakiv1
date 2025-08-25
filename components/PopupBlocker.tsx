@@ -111,82 +111,86 @@ export default function PopupBlocker() {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}} modal={true}>
       <DialogContent 
-        className="sm:max-w-md [&>button]:hidden" 
+        className="w-[95vw] max-w-sm sm:max-w-md [&>button]:hidden mx-4" 
         onInteractOutside={(e) => e.preventDefault()} 
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-2">
-              <Gift className="h-6 w-6 text-primary" />
-              <DialogTitle className="text-xl">Premium Property Consultation!</DialogTitle>
+              <Gift className="h-5 w-5 text-primary" />
+              <DialogTitle className="text-lg sm:text-xl leading-tight">Premium Property Consultation!</DialogTitle>
             </div>
           </div>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div className="bg-primary/5 p-4 rounded-lg">
-            <p className="text-sm text-center">
+        <div className="space-y-3">
+          <div className="bg-primary/5 p-3 rounded-lg">
+            <p className="text-xs sm:text-sm text-center leading-tight">
               <strong>Get Expert Property Consultation</strong> + 
               <strong> Professional Market Analysis</strong>
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <Label htmlFor="popup-name">Name *</Label>
+              <Label htmlFor="popup-name" className="text-sm">Name *</Label>
               <Input
                 id="popup-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Your full name"
+                className="h-10 text-sm"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="popup-number">Phone Number *</Label>
+              <Label htmlFor="popup-number" className="text-sm">Phone Number *</Label>
               <Input
                 id="popup-number"
                 value={formData.number}
                 onChange={(e) => setFormData({ ...formData, number: e.target.value })}
                 placeholder="9930910004 / 9820274467"
+                className="h-10 text-sm"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="popup-email">Email *</Label>
+              <Label htmlFor="popup-email" className="text-sm">Email *</Label>
               <Input
                 id="popup-email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="merakisquarefootsllp@gmail.com"
+                className="h-10 text-sm"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="popup-enquiry">Enquiry Details *</Label>
+              <Label htmlFor="popup-enquiry" className="text-sm">Enquiry Details *</Label>
               <Textarea
                 id="popup-enquiry"
                 value={formData.enquiry}
                 onChange={(e) => setFormData({ ...formData, enquiry: e.target.value })}
                 placeholder="Tell us about your property requirements..."
-                rows={3}
+                rows={2}
+                className="text-sm resize-none"
                 required
               />
             </div>
 
-            <div className="flex space-x-2">
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
+            <div className="flex space-x-2 pt-2">
+              <Button type="submit" disabled={isSubmitting} className="flex-1 h-10">
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </Button>
             </div>
           </form>
 
-          <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Phone className="h-3 w-3" />
               <span>9930910004 / 9820274467</span>
@@ -197,7 +201,7 @@ export default function PopupBlocker() {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-muted-foreground text-center leading-tight px-2">
             By submitting, you agree to receive updates about our services. 
             We respect your privacy and never spam.
           </p>
