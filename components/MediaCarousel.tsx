@@ -199,7 +199,7 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
         {currentMedia?.type === 'video' && (
           <>
             <div className="absolute inset-0 bg-transparent" onClick={togglePlay} />
-            <div className="absolute bottom-4 left-4 flex space-x-2">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
               <Button
                 variant="secondary"
                 size="sm"
@@ -259,11 +259,11 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
         
         {/* Dot Indicators */}
         {mediaItems.length > 1 && mediaItems.length <= 5 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
             {mediaItems.map((item, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors relative ${
+                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors relative ${
                   index === currentIndex ? 'bg-white' : 'bg-white/50'
                 }`}
                 onClick={() => setCurrentIndex(index)}

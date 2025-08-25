@@ -29,6 +29,8 @@ import {
 import EnquiryModal from '@/components/EnquiryModal';
 import MediaCarousel from '@/components/MediaCarousel';
 import PropertyPostModal from '@/components/PropertyPostModal';
+import FilterDrawer from '@/components/mobile/FilterDrawer';
+import { cn } from '@/lib/utils';
 
 // Enhanced Property Interface for new category structure
 interface Property {
@@ -468,56 +470,71 @@ export default function PropertiesPage() {
 
 
     const PropertyCard = ({ property }: { property: Property }) => (
-    <Card className="rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 bg-white overflow-hidden">
+    <Card className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 bg-white overflow-hidden transform hover:scale-[1.01] active:scale-[0.99]">
       {/* Mobile Layout */}
       <div className="block md:hidden">
         {/* Property Image Section */}
-        <div className="relative w-full h-48 overflow-hidden rounded-t-xl">
+        <div className="relative w-full h-56 overflow-hidden rounded-t-2xl">
           <MediaCarousel 
             media={getCombinedMedia(property)} 
             title={property.title}
             className="h-full w-full"
           />
+
+          {/* Property Type Badge */}
+          <div className="absolute top-4 left-4">
+            <Badge 
+              variant="secondary" 
+              className="bg-black/70 text-white border-0 text-sm font-semibold backdrop-blur-sm px-3 py-1.5 rounded-full"
+            >
+              {property.transactionType === 'buy' ? 'For Sale' : 'For Lease'}
+            </Badge>
+          </div>
         </div>
         
         {/* Property Details Section */}
-        <CardContent className="p-4">
-          <div className="mb-3">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">{property.title}</h3>
-              <span className="text-lg font-bold text-primary ml-2">{formatPrice(property.price, property.priceType)}</span>
+        <CardContent className="p-5">
+          <div className="mb-4">
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex-1 pr-3">
+                <h3 className="text-xl font-bold text-gray-900 leading-tight mb-1">{property.title}</h3>
+                <p className="text-base text-gray-600 flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-blue-500" />
+                  {property.location}
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-blue-600 block leading-tight">{formatPrice(property.price, property.priceType)}</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wide">
+                  {property.priceType === 'per_month' ? 'Monthly' : property.priceType === 'per_sqft' ? 'Per Sq Ft' : 'Total'}
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-gray-600 flex items-center">
-              <MapPin className="h-4 w-4 mr-1" />
-              {property.location}
-            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mb-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-3 border border-gray-100">
-            <div className="text-center">
-              <span className="text-xs font-medium text-gray-500 block mb-1">Configuration</span>
-              <span className="text-sm font-bold text-gray-900">{property.configuration}</span>
+          <div className="grid grid-cols-2 gap-3 mb-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+            <div className="text-center py-2">
+              <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide block mb-1">Carpet Area</span>
+              <span className="text-lg font-bold text-gray-900">{property.carpetArea}</span>
+              <span className="text-xs text-gray-500 block">sq ft</span>
             </div>
-            <div className="text-center">
-              <span className="text-xs font-medium text-gray-500 block mb-1">Carpet Size</span>
-              <span className="text-sm font-bold text-gray-900">{property.carpetArea} sq ft</span>
+            <div className="text-center py-2">
+              <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide block mb-1">Built Up</span>
+              <span className="text-lg font-bold text-gray-900">{property.builtUpArea}</span>
+              <span className="text-xs text-gray-500 block">sq ft</span>
             </div>
-            <div className="text-center">
-              <span className="text-xs font-medium text-gray-500 block mb-1">Built up</span>
-              <span className="text-sm font-bold text-gray-900">{property.builtUpArea} sq ft</span>
-            </div>
-            <div className="text-center">
-              <span className="text-xs font-medium text-gray-500 block mb-1">Node</span>
+            <div className="text-center py-2 col-span-2 border-t border-blue-200 pt-3 mt-2">
+              <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide block mb-1">Location Node</span>
               <span className="text-sm font-bold text-gray-900">{property.area}</span>
             </div>
           </div>
 
           <Button 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg" 
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl transform hover:scale-[1.02] active:scale-[0.98]" 
             onClick={() => handleEnquiry(property)}
           >
-            <Phone className="h-4 w-4 mr-2" />
-            Contact
+            <Phone className="h-5 w-5 mr-3" />
+            Contact Agent
           </Button>
         </CardContent>
       </div>
@@ -531,6 +548,16 @@ export default function PropertiesPage() {
             title={property.title}
             className="h-full w-full"
           />
+
+          {/* Property Type Badge */}
+          <div className="absolute bottom-3 left-3">
+            <Badge 
+              variant="secondary" 
+              className="bg-white/90 text-gray-800 border-0 text-xs font-medium backdrop-blur-sm"
+            >
+              {property.transactionType === 'buy' ? 'For Sale' : 'For Lease'}
+            </Badge>
+          </div>
         </div>
         
         {/* Property Details Section */}
@@ -581,25 +608,25 @@ export default function PropertiesPage() {
         </CardContent>
       </div>
     </Card>
-  );
+  ); // Close PropertyCard component
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Search - extends behind navbar */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-12 sm:py-16 -mt-[80px] lg:-mt-[88px] pt-[92px] lg:pt-[104px]">
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-8 sm:py-16 -mt-[80px] lg:-mt-[88px] pt-[88px] lg:pt-[104px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 leading-tight">
               Properties in Mumbai
             </h1>
-            <p className="text-lg sm:text-xl text-white/90">
+            <p className="text-base sm:text-xl text-white/90">
               Explore verified listings
             </p>
           </div>
 
-          {/* Property Type Tabs with Dropdowns */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-1 flex flex-wrap gap-1 max-w-full">
+          {/* Property Type Tabs with Dropdowns - Mobile Optimized */}
+          <div className="flex justify-center mb-6 sm:mb-8">
+            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-2 flex flex-col sm:flex-row gap-2 w-full max-w-4xl">
               {/* All Properties Button */}
               <button
                 onClick={async () => {
@@ -615,34 +642,32 @@ export default function PropertiesPage() {
                     debouncedFetchProperties(true, true);
                   }, 10);
                 }}
-                className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] ${
+                className={`flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm sm:text-xs lg:text-sm font-semibold transition-all min-h-[52px] sm:min-h-[44px] flex items-center justify-center gap-2 ${
                   filters.propertyType === 'all'
-                    ? 'bg-white text-primary shadow-sm'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                    ? 'bg-white text-blue-700 shadow-lg transform scale-105'
+                    : 'text-white/90 hover:text-white hover:bg-white/20 active:bg-white/30'
                 }`}
               >
-                <Building2 className="h-4 w-4 mr-1 sm:mr-2 inline" />
-                <span className="hidden sm:inline">All Properties</span>
-                <span className="sm:hidden">All</span>
+                <Building2 className="h-4 w-4" />
+                <span>All Properties</span>
               </button>
 
               {/* Residential Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] flex items-center ${
+                    className={`flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm sm:text-xs lg:text-sm font-semibold transition-all min-h-[52px] sm:min-h-[44px] flex items-center justify-center gap-2 ${
                       filters.propertyType === 'residential'
-                        ? 'bg-white text-primary shadow-sm'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                        ? 'bg-white text-blue-700 shadow-lg transform scale-105'
+                        : 'text-white/90 hover:text-white hover:bg-white/20 active:bg-white/30'
                     }`}
                   >
-                    <Home className="h-4 w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Residential</span>
-                    <span className="sm:hidden">Res</span>
-                    <ChevronDown className="h-3 w-3 ml-1" />
+                    <Home className="h-4 w-4" />
+                    <span>Residential</span>
+                    <ChevronDown className="h-3 w-3" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border shadow-lg">
+                <DropdownMenuContent className="bg-white border shadow-xl rounded-xl">
                   <DropdownMenuItem 
                     onClick={async () => {
                       setSearchLoading(true);
@@ -652,7 +677,7 @@ export default function PropertiesPage() {
                       setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
                   >
                     <Home className="h-4 w-4 mr-2" />
                     All Residential
@@ -666,7 +691,7 @@ export default function PropertiesPage() {
                       setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'buy' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
                   >
                     <Home className="h-4 w-4 mr-2" />
                     Buy Residential
@@ -692,19 +717,18 @@ export default function PropertiesPage() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] flex items-center ${
+                    className={`flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm sm:text-xs lg:text-sm font-semibold transition-all min-h-[52px] sm:min-h-[44px] flex items-center justify-center gap-2 ${
                       filters.propertyType === 'commercial'
-                        ? 'bg-white text-primary shadow-sm'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                        ? 'bg-white text-blue-700 shadow-lg transform scale-105'
+                        : 'text-white/90 hover:text-white hover:bg-white/20 active:bg-white/30'
                     }`}
                   >
-                    <Warehouse className="h-4 w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Commercial</span>
-                    <span className="sm:hidden">Com</span>
-                    <ChevronDown className="h-3 w-3 ml-1" />
+                    <Warehouse className="h-4 w-4" />
+                    <span>Commercial</span>
+                    <ChevronDown className="h-3 w-3" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border shadow-lg">
+                <DropdownMenuContent className="bg-white border shadow-xl rounded-xl">
                   <DropdownMenuItem 
                     onClick={async () => {
                       setSearchLoading(true);
@@ -714,7 +738,7 @@ export default function PropertiesPage() {
                       setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
                   >
                     <Warehouse className="h-4 w-4 mr-2" />
                     All Commercial
@@ -728,9 +752,9 @@ export default function PropertiesPage() {
                       setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'buy' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
                   >
-                    <Home className="h-4 w-4 mr-2" />
+                    <Warehouse className="h-4 w-4 mr-2" />
                     Buy Commercial
                   </DropdownMenuItem>
                   <DropdownMenuItem 
@@ -742,9 +766,9 @@ export default function PropertiesPage() {
                       setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'lease' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
                   >
-                    <Building className="h-4 w-4 mr-2" />
+                    <Warehouse className="h-4 w-4 mr-2" />
                     Lease Commercial
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -762,24 +786,22 @@ export default function PropertiesPage() {
                     setFilters(prev => ({ ...prev, propertyType: type.value as any, transactionType: 'all' }));
                     setTimeout(() => debouncedFetchProperties(true, true), 10);
                   }}
-                  className={`px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] ${
+                  className={`flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm sm:text-xs lg:text-sm font-semibold transition-all min-h-[52px] sm:min-h-[44px] flex items-center justify-center gap-2 ${
                     filters.propertyType === type.value
-                      ? 'bg-white text-primary shadow-sm'
-                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-blue-700 shadow-lg transform scale-105'
+                      : 'text-white/90 hover:text-white hover:bg-white/20 active:bg-white/30'
                   }`}
                 >
-                  <type.icon className="h-4 w-4 mr-1 sm:mr-2 inline" />
-                  <span className="hidden sm:inline">{type.label}</span>
-                  <span className="sm:hidden">{type.label.split(' ')[0]}</span>
+                  <type.icon className="h-4 w-4" />
+                  <span>{type.label}</span>
                 </button>
               ))}
               
               {/* Post a Property Button integrated into tabs */}
               <PropertyPostModal>
-                <button className="px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all min-h-[44px] bg-black hover:bg-gray-800 text-white">
-                  <Plus className="h-4 w-4 mr-1 sm:mr-2 inline" />
-                  <span className="hidden sm:inline">Post a Property</span>
-                  <span className="sm:hidden">Post</span>
+                <button className="flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm sm:text-xs lg:text-sm font-semibold transition-all min-h-[52px] sm:min-h-[44px] flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white shadow-lg">
+                  <Plus className="h-4 w-4" />
+                  <span>Post</span>
                 </button>
               </PropertyPostModal>
             </div>
@@ -843,8 +865,8 @@ export default function PropertiesPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Filters Sidebar */}
-          <div className="w-full lg:w-80 space-y-4 lg:space-y-6">
+          {/* Filters Sidebar - Desktop only */}
+          <div className="hidden lg:block w-80 space-y-4 lg:space-y-6">
             <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -1049,9 +1071,46 @@ export default function PropertiesPage() {
 
           {/* Properties Grid */}
           <div className="flex-1">
+            {/* Mobile Filter Controls */}
+            <div className="lg:hidden mb-6">
+              <div className="flex items-center gap-3 justify-between px-1">
+                <FilterDrawer
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  activeFiltersCount={getActiveFiltersCount()}
+                >
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center gap-2 rounded-2xl border-2 hover:border-blue-400 bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 px-5 py-3 h-auto min-h-[52px] flex-1 sm:flex-none"
+                  >
+                    <Filter className="h-5 w-5 text-blue-600" />
+                    <span className="font-semibold text-gray-700">Filters</span>
+                    {getActiveFiltersCount() > 0 && (
+                      <Badge variant="secondary" className="ml-1 bg-blue-600 text-white text-sm px-2 py-1 font-bold rounded-full">
+                        {getActiveFiltersCount()}
+                      </Badge>
+                    )}
+                  </Button>
+                </FilterDrawer>
+                
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-36 sm:w-40 rounded-2xl border-2 hover:border-blue-400 bg-white/95 backdrop-blur-sm shadow-lg h-auto min-h-[52px] font-semibold">
+                    <SelectValue placeholder="Sort" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-0 shadow-2xl">
+                    <SelectItem value="relevance" className="rounded-lg">Relevance</SelectItem>
+                    <SelectItem value="price-low" className="rounded-lg">Price ↑</SelectItem>
+                    <SelectItem value="price-high" className="rounded-lg">Price ↓</SelectItem>
+                    <SelectItem value="newest" className="rounded-lg">Newest</SelectItem>
+                    <SelectItem value="area-large" className="rounded-lg">Area ↓</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold leading-tight">
+                <h2 className="text-xl sm:text-2xl font-bold leading-tight mb-1">
                   Properties for {filters.propertyType === 'all' ? 'All Types' : propertyTypes.find(t => t.value === filters.propertyType)?.label}
                   {filters.transactionType !== 'all' && ` (${filters.transactionType === 'buy' ? 'For Sale' : 'For Lease'})`}
                   {filters.location !== 'all' && ` in ${filters.location}`}
@@ -1060,40 +1119,43 @@ export default function PropertiesPage() {
                   {initialLoading ? 'Discovering amazing properties for you...' : 
                    `Showing ${sortedProperties.length} of ${totalProperties} properties`}
                   {getActiveFiltersCount() > 0 && (
-                    <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                    <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full font-semibold">
                       {getActiveFiltersCount()} filter{getActiveFiltersCount() > 1 ? 's' : ''} active
                     </span>
                   )}
                 </p>
               </div>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-48">
+                <SelectTrigger className="hidden lg:flex w-full sm:w-48 rounded-xl">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="relevance">Relevance</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="area-large">Area: Large to Small</SelectItem>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="relevance" className="rounded-lg">Relevance</SelectItem>
+                  <SelectItem value="price-low" className="rounded-lg">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high" className="rounded-lg">Price: High to Low</SelectItem>
+                  <SelectItem value="newest" className="rounded-lg">Newest First</SelectItem>
+                  <SelectItem value="area-large" className="rounded-lg">Area: Large to Small</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {(initialLoading || (searchLoading && sortedProperties.length === 0)) ? (
               <div className="flex justify-center items-center h-64">
-                <div className="flex items-center space-x-3 text-xl text-muted-foreground">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                  <span>{initialLoading ? 'Curating your perfect property matches...' : 'Finding properties that match your criteria...'}</span>
+                <div className="flex flex-col items-center space-y-4 text-center">
+                  <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+                  <div className="text-lg font-medium text-gray-700">
+                    {initialLoading ? 'Curating your perfect property matches...' : 'Finding properties that match your criteria...'}
+                  </div>
+                  <div className="text-sm text-gray-500">This may take a few moments</div>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="grid gap-6 grid-cols-1">
                 {searchLoading && sortedProperties.length > 0 && (
-                  <div className="flex justify-center py-4">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Refreshing your property options...</span>
+                  <div className="flex justify-center py-6">
+                    <div className="flex items-center space-y-2 text-base text-blue-600 bg-blue-50 px-4 py-3 rounded-xl">
+                      <Loader2 className="h-5 w-5 animate-spin mr-3" />
+                      <span className="font-medium">Refreshing your property options...</span>
                     </div>
                   </div>
                 )}

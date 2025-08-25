@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PopupBlocker from '@/components/PopupBlocker';
+import MobileWrapper from '@/components/MobileWrapper';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
@@ -24,11 +25,15 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="h-full m-0 p-0 font-sans" suppressHydrationWarning>
         <Navbar />
-        <main className="relative">
+        <main className="relative mb-20 md:mb-0">
           {children}
         </main>
         <Footer />
         <PopupBlocker />
+        
+        {/* Mobile Navigation and Modals */}
+        <MobileWrapper />
+        
         <Toaster />
       </body>
     </html>

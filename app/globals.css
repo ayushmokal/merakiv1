@@ -198,10 +198,144 @@ input[type="range"]::-moz-range-thumb {
 
 /* Service cards with glass-morphism effect */
 .service-details-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-details-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile-specific optimizations */
+@layer utilities {
+  /* Safe area handling for modern mobile devices */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .h-safe-area-inset-bottom {
+    height: env(safe-area-inset-bottom);
+  }
+  
+  /* Touch-friendly interactions */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Mobile scroll improvements */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Mobile tap highlight removal */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Mobile button sizing */
+  .mobile-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Mobile Navigation Bar Styles */
+.mobile-nav-blur {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Touch feedback for mobile cards */
+@media (max-width: 768px) {
+  .property-card {
+    transition: transform 0.15s ease-out;
+  }
+  
+  .property-card:active {
+    transform: scale(0.98);
+  }
+  
+  /* Improved touch targets */
+  button, .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile-specific spacing */
+  .mobile-spacing {
+    padding: 1rem;
+  }
+  
+  /* Mobile carousel improvements */
+  .mobile-carousel {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+  
+  .mobile-carousel > * {
+    scroll-snap-align: center;
+  }
+}
+
+/* Pull-to-refresh indicator */
+.pull-to-refresh {
+  transform: translateY(var(--pull-distance, 0px));
+  transition: transform 0.2s ease-out;
+}
+
+/* Mobile filter drawer animations */
+.filter-drawer-enter {
+  transform: translateY(100%);
+}
+
+.filter-drawer-enter-active {
+  transform: translateY(0);
+  transition: transform 0.3s ease-out;
+}
+
+.filter-drawer-exit {
+  transform: translateY(0);
+}
+
+.filter-drawer-exit-active {
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in;
+}
+
+/* Mobile search input improvements */
+@media (max-width: 768px) {
+  input[type="search"], input[type="text"] {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (prefers-reduced-motion: reduce) {
+  .property-card:active {
+    transform: none;
+  }
+  
+  .mobile-carousel {
+    scroll-behavior: auto;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mobile-nav-blur {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: none;
+  }
 }
 
 /* --- Blended section backgrounds (dark theme friendly) --- */
