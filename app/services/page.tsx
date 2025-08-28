@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
 import { useToast } from '@/hooks/use-toast';
+import MediaCarousel from '@/components/MediaCarousel';
 
 const services = [
   {
@@ -275,6 +276,28 @@ export default function ServicesPage() {
     }
   };
 
+  // Spotlight images for Interior Designing
+  const interiorImages: string[] = [
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.51.jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.51 (1).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.52.jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.52 (1).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.52 (2).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.53.jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.53 (1).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.53 (2).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.53 (3).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.54.jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.54 (1).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.54 (2).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.55.jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.55 (1).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.55 (2).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.56.jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.56 (1).jpeg',
+    '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.56 (2).jpeg',
+  ];
+
   return (
     <div className="min-h-screen bg-background services-page-bg">
       {/* Hero Section - extends behind navbar */}
@@ -325,8 +348,124 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* Interior Designing Spotlight */}
+      <section className="py-16 bg-slate-50 fade-up">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="w-full h-[320px] sm:h-[420px] rounded-xl overflow-hidden shadow-lg bg-white">
+              <MediaCarousel
+                media={interiorImages.map((p) => encodeURI(p))}
+                title="Interior Designing"
+                className="h-[320px] sm:h-[420px]"
+              />
+            </div>
+            <div>
+              <Badge variant="secondary" className="mb-3">Spotlight</Badge>
+              <h2 className="text-3xl lg:text-4xl font-bold mb-3">Interior Designing</h2>
+              <p className="text-muted-foreground mb-6">
+                Elevate your spaces with premium finishes, custom furniture, and functional layouts. Explore a glimpse of our recent interior work and get a tailored quote today.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm"><CheckCircle className="h-4 w-4 text-green-600 mr-2"/>3D visualizations</div>
+                  <div className="flex items-center text-sm"><CheckCircle className="h-4 w-4 text-green-600 mr-2"/>Material curation</div>
+                  <div className="flex items-center text-sm"><CheckCircle className="h-4 w-4 text-green-600 mr-2"/>Space optimization</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm"><CheckCircle className="h-4 w-4 text-green-600 mr-2"/>Custom furniture</div>
+                  <div className="flex items-center text-sm"><CheckCircle className="h-4 w-4 text-green-600 mr-2"/>On-site execution</div>
+                  <div className="flex items-center text-sm"><CheckCircle className="h-4 w-4 text-green-600 mr-2"/>Budget-friendly options</div>
+                </div>
+              </div>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="lg" onClick={() => handleEnquiry('interior-designing')}>
+                    Get Quote <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Get Quote for Interior Designing</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleEnquirySubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="name">Name *</Label>
+                        <Input
+                          id="name"
+                          value={enquiryForm.name}
+                          onChange={(e) => setEnquiryForm({ ...enquiryForm, name: e.target.value })}
+                          placeholder="Your name"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={enquiryForm.email}
+                          onChange={(e) => setEnquiryForm({ ...enquiryForm, email: e.target.value })}
+                          placeholder="your@email.com"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        value={enquiryForm.phone}
+                        onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })}
+                        placeholder="9930910004 / 9820274467"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="budget">Budget Range</Label>
+                      <Select value={enquiryForm.budget_range} onValueChange={(value) => setEnquiryForm({ ...enquiryForm, budget_range: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select budget range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="under-5l">Under ₹5 Lakhs</SelectItem>
+                          <SelectItem value="5l-15l">₹5 - 15 Lakhs</SelectItem>
+                          <SelectItem value="15l-50l">₹15 - 50 Lakhs</SelectItem>
+                          <SelectItem value="50l-1cr">₹50 Lakhs - 1 Crore</SelectItem>
+                          <SelectItem value="above-1cr">Above ₹1 Crore</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea
+                        id="message"
+                        value={enquiryForm.message}
+                        onChange={(e) => setEnquiryForm({ ...enquiryForm, message: e.target.value })}
+                        placeholder="Tell us about your requirements..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <Button type="submit" disabled={isSubmitting} className="w-full">
+                      {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider between spotlight and services */}
+      <div className="section-divider" />
+
       {/* Services Sections */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="container-rhythm section-y fade-up">
         {services.map((service, index) => (
           <section key={service.id} id={service.id} className="service-section-bg">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -452,7 +591,7 @@ export default function ServicesPage() {
                   
               {/* Service Details Card */}
               <div>
-                <Card className="shadow-xl service-details-card">
+                <Card className="card-soft">
                   <CardContent className="p-8">
                     <div className="space-y-6">
                     <div>
@@ -490,8 +629,8 @@ export default function ServicesPage() {
       </div>
 
       {/* Testimonials */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y bg-slate-50 fade-up">
+        <div className="container-rhythm">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">Client Testimonials</Badge>
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -527,7 +666,7 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section className="section-y bg-primary text-primary-foreground fade-up">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6">
             Ready to Start Your Real Estate Journey?

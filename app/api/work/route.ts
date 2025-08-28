@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const WORK_API_URL = process.env.GOOGLE_WORK_API_URL;
 
+// In-memory cache for work entries
+type WorkCacheEntry = { timestamp: number; key: string; data: any[]; total: number };
+const WORK_CACHE_TTL_MS = parseInt(process.env.WORK_CACHE_TTL_MS || '60000');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const globalAny: any = globalThis as any;
+const WORK_CACHE: Map<string, WorkCacheEntry> = globalAny.__WORK_CACHE__ || (globalAny.__WORK_CACHE__ = new Map());
+
 // GET: Fetch work entries from Google Sheets (Read-only)
 export async function GET(request: NextRequest) {
   try {
@@ -30,6 +37,20 @@ export async function GET(request: NextRequest) {
 
     const url = params.toString() ? `${WORK_API_URL}?${params.toString()}` : WORK_API_URL;
     console.log('Syncing work entries from Google Sheets:', url);
+
+    // Cache key ignoring pagination
+    const cacheKey = JSON.stringify({ limit, offset: 0, type: type || '', search });
+    const cached = WORK_CACHE.get(cacheKey);
+    const now = Date.now();
+    if (cached && now - cached.timestamp < WORK_CACHE_TTL_MS) {
+      const limitNum = parseInt(limit);
+      const offsetNum = parseInt(offset);
+      const slice = cached.data.slice(offsetNum, offsetNum + limitNum);
+      return NextResponse.json(
+        { success: true, data: slice, total: cached.total, message: `Cached ${slice.length} work entries` },
+        { headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300', 'x-cache': 'HIT' } }
+      );
+    }
 
     // Try the request with additional headers for CORS
     const response = await fetch(url, {
@@ -116,16 +137,32 @@ export async function GET(request: NextRequest) {
 
     console.log('Transformed data:', transformedData);
 
-    return NextResponse.json({
-      success: true,
-      data: transformedData,
-      total: data.total || transformedData.length,
-      message: `Successfully synced ${transformedData.length} work entries from Google Sheets`
-    });
+    // Save to cache
+    WORK_CACHE.set(cacheKey, { timestamp: Date.now(), key: cacheKey, data: transformedData, total: data.total || transformedData.length });
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: transformedData,
+        total: data.total || transformedData.length,
+        message: `Successfully synced ${transformedData.length} work entries from Google Sheets`
+      },
+      { headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300', 'x-cache': 'MISS' } }
+    );
 
   } catch (error) {
     console.error('Error syncing from Google Sheets:', error);
     
+    // Fallback to last cached dataset if available
+    if (WORK_CACHE.size > 0) {
+      const latest = Array.from(WORK_CACHE.values()).sort((a, b) => b.timestamp - a.timestamp)[0];
+      if (latest) {
+        return NextResponse.json(
+          { success: true, data: latest.data.slice(0, 50), total: latest.total, message: 'Serving stale cached work data' },
+          { headers: { 'Cache-Control': 'public, max-age=30', 'x-cache': 'STALE' } }
+        );
+      }
+    }
     return NextResponse.json(
       { 
         success: false, 

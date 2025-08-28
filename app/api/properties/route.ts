@@ -8,6 +8,21 @@ const PROPERTIES_API_URL = process.env.GOOGLE_PROPERTY_API_URL;
 // Google Apps Script Web App URL for property submissions and enquiries  
 const PROPERTY_SUBMISSIONS_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
 
+// In-memory cache for properties to avoid repeated slow Google Apps Script calls
+type PropertiesCacheEntry = {
+  timestamp: number;
+  key: string;
+  processedData: any[];
+  originalTotal: number;
+  category: string;
+};
+
+const PROPERTIES_CACHE_TTL_MS = parseInt(process.env.PROPERTIES_CACHE_TTL_MS || '60000'); // default 60s
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const globalAny = globalThis as any;
+const PROPERTIES_CACHE: Map<string, PropertiesCacheEntry> =
+  globalAny.__PROPERTIES_CACHE__ || (globalAny.__PROPERTIES_CACHE__ = new Map());
+
 // NOTE: To get your script URL:
 // 1. Go to script.google.com
 // 2. Create new project and paste the updated-property-portal-apps-script.js code
@@ -44,6 +59,32 @@ export async function GET(request: NextRequest) {
     if (minPrice) params.append('minPrice', minPrice);
     if (maxPrice) params.append('maxPrice', maxPrice);
 
+    // Build cache key ignoring pagination to reuse the same dataset for different pages
+    const cacheKey = JSON.stringify({ category, transactionType, search, location, minPrice, maxPrice, bedrooms, verified, featured });
+    const cached = PROPERTIES_CACHE.get(cacheKey);
+    const now = Date.now();
+    if (cached && now - cached.timestamp < PROPERTIES_CACHE_TTL_MS) {
+      const limitNum = parseInt(limit);
+      const offsetNum = parseInt(offset);
+      const totalFilteredCount = cached.processedData.length;
+      const paginatedData = cached.processedData.slice(offsetNum, offsetNum + limitNum);
+      const hasMoreResults = (offsetNum + limitNum) < totalFilteredCount;
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: paginatedData,
+          total: totalFilteredCount,
+          originalTotal: cached.originalTotal,
+          category: cached.category || category,
+          pagination: { limit: limitNum, offset: offsetNum, hasMore: hasMoreResults },
+          filters: { minPrice, maxPrice, location, bedrooms, search, verified, featured },
+          cache: { hit: true, age: Math.round((now - cached.timestamp) / 1000) }
+        },
+        { headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300', 'x-cache': 'HIT' } }
+      );
+    }
+
     // Check if API URL is configured
     if (!PROPERTIES_API_URL) {
       console.error('GOOGLE_PROPERTY_API_URL not configured in environment variables');
@@ -66,8 +107,15 @@ export async function GET(request: NextRequest) {
     console.log('Making request to Google Apps Script:', `${PROPERTIES_API_URL}?${params}`);
     console.log('Request parameters:', { category, transactionType, search, location });
 
-    // Fetch from Google Sheets
-    const response = await fetch(`${PROPERTIES_API_URL}?${params}`);
+    // Fetch from Google Sheets with timeout (12s)
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    let response: Response;
+    try {
+      response = await fetch(`${PROPERTIES_API_URL}?${params}` , { signal: controller.signal });
+    } finally {
+      clearTimeout(timeout);
+    }
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -333,6 +381,15 @@ export async function GET(request: NextRequest) {
     const totalFilteredCount = processedData.length;
     const limitNum = parseInt(limit);
     const offsetNum = parseInt(offset);
+
+    // Save to cache before slicing so all pages can reuse
+    PROPERTIES_CACHE.set(cacheKey, {
+      timestamp: Date.now(),
+      key: cacheKey,
+      processedData,
+      originalTotal: data.total || processedData.length,
+      category: data.category || category
+    });
     
     // Slice the data for pagination
     const paginatedData = processedData.slice(offsetNum, offsetNum + limitNum);
@@ -367,10 +424,33 @@ export async function GET(request: NextRequest) {
         verified,
         featured
       }
-    });
+    }, { headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300', 'x-cache': 'MISS' } });
 
   } catch (error) {
     console.error('Error fetching properties:', error);
+    // Fallback to latest cache if available
+    if (PROPERTIES_CACHE.size > 0) {
+      const latest = Array.from(PROPERTIES_CACHE.values()).sort((a, b) => b.timestamp - a.timestamp)[0];
+      if (latest) {
+        const limitNum = 50;
+        const offsetNum = 0;
+        const totalFilteredCount = latest.processedData.length;
+        const paginatedData = latest.processedData.slice(offsetNum, offsetNum + limitNum);
+        const hasMoreResults = (offsetNum + limitNum) < totalFilteredCount;
+        return NextResponse.json(
+          {
+            success: true,
+            data: paginatedData,
+            total: totalFilteredCount,
+            originalTotal: latest.originalTotal,
+            category: latest.category,
+            pagination: { limit: limitNum, offset: offsetNum, hasMore: hasMoreResults },
+            cache: { fallback: true }
+          },
+          { headers: { 'Cache-Control': 'public, max-age=30', 'x-cache': 'STALE' } }
+        );
+      }
+    }
     return NextResponse.json(
       { 
         success: false, 

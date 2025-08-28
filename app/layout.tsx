@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import PopupBlocker from '@/components/PopupBlocker';
 import MobileWrapper from '@/components/MobileWrapper';
 import { Toaster } from '@/components/ui/toaster';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Meraki Square Foots - Building Dreams, Creating Futures',
@@ -35,6 +36,27 @@ export default function RootLayout({
         <MobileWrapper />
         
         <Toaster />
+        {/* IntersectionObserver to reveal .fade-up elements */}
+        <Script id="reveal-on-scroll" strategy="afterInteractive">
+          {`
+            (function(){
+              try {
+                const els = Array.from(document.querySelectorAll('.fade-up'));
+                if (!('IntersectionObserver' in window) || els.length === 0) return;
+                const io = new IntersectionObserver((entries) => {
+                  entries.forEach((e) => {
+                    if (e.isIntersecting) {
+                      e.target.classList.add('in-view');
+                      // Unobserve to avoid re-triggering
+                      io.unobserve(e.target);
+                    }
+                  });
+                }, { rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
+                els.forEach((el) => io.observe(el));
+              } catch (err) {}
+            })();
+          `}
+        </Script>
       </body>
     </html>
   );

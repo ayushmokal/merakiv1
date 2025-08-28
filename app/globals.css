@@ -94,6 +94,11 @@
     margin: 0;
     padding: 0;
   }
+
+  /* Global micro-interactions */
+  button, a {
+    @apply transition-all duration-200;
+  }
 }
 
 .marquee-row {
@@ -213,6 +218,36 @@ input[type="range"]::-moz-range-thumb {
 
 /* Mobile-specific optimizations */
 @layer utilities {
+  /* Micro-interaction helpers */
+  .transition-smooth { @apply transition-all duration-200; }
+  .hover-lift { @apply hover:-translate-y-0.5 hover:shadow-md; }
+
+  /* Glass + soft surfaces */
+  .glass {
+    @apply bg-white/70 backdrop-blur border border-black/5 shadow-sm;
+  }
+
+  /* Soft cards and featured cards */
+  .card-soft {
+    @apply rounded-xl shadow-sm border border-black/5 bg-white/70 backdrop-blur;
+  }
+  .card-featured {
+    @apply rounded-xl shadow-lg;
+  }
+
+  /* Section rhythm and standard container */
+  .container-rhythm {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .section-y {
+    @apply py-16;
+  }
+
+  /* Subtle section divider */
+  .section-divider {
+    @apply w-full h-px bg-gradient-to-r from-transparent via-black/10 to-transparent my-12;
+  }
+
   /* Safe area handling for modern mobile devices */
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom);
@@ -357,4 +392,12 @@ input[type="range"]::-moz-range-thumb {
 
 @media (prefers-color-scheme: dark) {
   /* Same backgrounds work for dark; adjust if future contrast issues arise */
+}
+
+/* Entrance animations */
+.fade-up { opacity: 0; transform: translateY(10px); }
+.in-view.fade-up { animation: fadeUp 600ms ease-out forwards; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
