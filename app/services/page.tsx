@@ -447,10 +447,6 @@ export default function ServicesPage() {
                       </form>
                     </DialogContent>
                   </Dialog>
-                  
-                  <Button variant="outline" size="lg">
-                    Learn More
-                  </Button>
                     </div>
                   </div>
                   
