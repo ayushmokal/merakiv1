@@ -235,11 +235,11 @@ export default function WorkPage() {
             <>
               {filteredProjects.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredProjects.map((project) => {
+                  {filteredProjects.map((project, projectIndex) => {
                     const mediaUrls = getProjectMedia(project);
                     
                     return (
-                    <Card key={project.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
+                    <Card key={`project-${project.id || 'unknown'}-${projectIndex}`} className="group cursor-pointer hover:shadow-xl transition-all duration-300">
                       <CardContent className="p-0">
                         <div className="relative overflow-hidden rounded-t-lg bg-gray-100 h-48">
                           <MediaCarousel
@@ -286,7 +286,7 @@ export default function WorkPage() {
                           
                           <div className="flex flex-wrap gap-1">
                             {project.services.slice(0, 2).map((service, idx) => (
-                              <Badge key={idx} variant="secondary" className="text-xs">
+                              <Badge key={`service-${project.id || 'unknown'}-${idx}`} variant="secondary" className="text-xs">
                                 {service}
                               </Badge>
                             ))}
@@ -338,7 +338,7 @@ export default function WorkPage() {
               { step: '03', title: 'Execution', description: 'Professional implementation with quality control' },
               { step: '04', title: 'Delivery', description: 'Final handover and ongoing support' }
             ].map((item, index) => (
-              <Card key={index} className="text-center p-6">
+              <Card key={`process-step-${item.step}-${index}`} className="text-center p-6">
                 <CardContent className="p-0">
                   <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-4">
                     {item.step}
@@ -401,7 +401,7 @@ export default function WorkPage() {
                 <p className="text-sm font-medium text-muted-foreground mb-2">Services Provided</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedProject.services.map((service: string, idx: number) => (
-                    <Badge key={idx} variant="secondary" className="text-xs">
+                    <Badge key={`modal-service-${selectedProject.id || 'unknown'}-${idx}`} variant="secondary" className="text-xs">
                       {service}
                     </Badge>
                   ))}

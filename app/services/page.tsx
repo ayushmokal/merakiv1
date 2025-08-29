@@ -276,8 +276,8 @@ export default function ServicesPage() {
     }
   };
 
-  // Spotlight images for Interior Designing
-  const interiorImages: string[] = [
+  // Spotlight images for Interior Designing (remove duplicates)
+  const interiorImagesRaw: string[] = [
     '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.51.jpeg',
     '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.51 (1).jpeg',
     '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.52.jpeg',
@@ -297,6 +297,9 @@ export default function ServicesPage() {
     '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.56 (1).jpeg',
     '/images/interior_images/WhatsApp Image 2025-07-17 at 14.51.56 (2).jpeg',
   ];
+  
+  // Remove duplicates to prevent key conflicts
+  const interiorImages: string[] = Array.from(new Set(interiorImagesRaw));
 
   return (
     <div className="min-h-screen bg-background services-page-bg">
@@ -357,6 +360,8 @@ export default function ServicesPage() {
                 media={interiorImages.map((p) => encodeURI(p))}
                 title="Interior Designing"
                 className="h-[320px] sm:h-[420px]"
+                autoPlay={true}
+                autoPlayInterval={4000}
               />
             </div>
             <div>
@@ -486,7 +491,7 @@ export default function ServicesPage() {
                     <h4 className="font-semibold mb-3">Key Features</h4>
                     <ul className="space-y-2">
                       {service.features.slice(0, 4).map((feature, idx) => (
-                        <li key={idx} className="flex items-center text-sm">
+                        <li key={`feature-${service.id}-${idx}`} className="flex items-center text-sm">
                           <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0" />
                           {feature}
                         </li>
@@ -498,7 +503,7 @@ export default function ServicesPage() {
                     <h4 className="font-semibold mb-3">Benefits</h4>
                     <ul className="space-y-2">
                       {service.benefits.map((benefit, idx) => (
-                        <li key={idx} className="flex items-center text-sm">
+                        <li key={`benefit-${service.id}-${idx}`} className="flex items-center text-sm">
                           <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
                           {benefit}
                         </li>
@@ -598,7 +603,7 @@ export default function ServicesPage() {
                         <h4 className="font-semibold mb-3">Our Process</h4>
                         <div className="space-y-3">
                           {service.process.map((step, idx) => (
-                            <div key={idx} className="flex items-center space-x-3">
+                            <div key={`process-${service.id}-${idx}`} className="flex items-center space-x-3">
                               <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-xs font-medium text-primary">
                                 {idx + 1}
                               </div>
@@ -612,7 +617,7 @@ export default function ServicesPage() {
                         <h5 className="font-medium mb-2">All Features Include:</h5>
                         <div className="grid grid-cols-1 gap-1">
                           {service.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-center text-xs">
+                            <div key={`all-features-${service.id}-${idx}`} className="flex items-center text-xs">
                               <CheckCircle className="h-3 w-3 text-green-600 mr-2 flex-shrink-0" />
                               {feature}
                             </div>
@@ -643,11 +648,11 @@ export default function ServicesPage() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-lg">
+              <Card key={`testimonial-${testimonial.name}-${index}`} className="border-0 shadow-lg">
                 <CardContent className="p-8">
                   <div className="flex mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      <Star key={`star-${testimonial.name}-${i}`} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
                   <p className="text-muted-foreground mb-4 italic">&ldquo;{testimonial.content}&rdquo;</p>

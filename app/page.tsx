@@ -146,7 +146,7 @@ export default function Home() {
           {/* Row 1: Right to Left */}
           <div className="marquee-row marquee-row-rtl flex items-center space-x-8 py-4">
             {[...logoImages, ...logoImages].map((src, idx) => (
-              <div key={src + idx} className="flex-shrink-0 marquee-logo-img">
+              <div key={`rtl-${src}-${idx}`} className="flex-shrink-0 marquee-logo-img">
                 <Image src={src} alt="Logo" width={250} height={250} className="object-contain hover:scale-105 transition duration-300" />
               </div>
             ))}
@@ -154,7 +154,7 @@ export default function Home() {
           {/* Row 2: Left to Right */}
           <div className="marquee-row marquee-row-ltr flex items-center space-x-8 py-4">
             {[...logoImages, ...logoImages].map((src, idx) => (
-              <div key={src + '2' + idx} className="flex-shrink-0 marquee-logo-img">
+              <div key={`ltr-${src}-${idx}`} className="flex-shrink-0 marquee-logo-img">
                 <Image src={src} alt="Logo" width={250} height={250} className="object-contain hover:scale-105 transition duration-300" />
               </div>
             ))}
@@ -227,7 +227,7 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <Card key={`service-${service.title}-${index}`} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
                 <CardContent className="p-6">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                     <service.icon className="h-6 w-6 text-primary" />
@@ -236,7 +236,7 @@ export default function Home() {
                   <p className="text-muted-foreground mb-4">{service.description}</p>
                   <ul className="space-y-2">
                     {service.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="text-sm text-muted-foreground flex items-center">
+                      <li key={`feature-${service.title}-${featureIndex}`} className="text-sm text-muted-foreground flex items-center">
                         <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></div>
                         {feature}
                       </li>
@@ -307,11 +307,11 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-lg">
+              <Card key={`testimonial-${testimonial.name}-${index}`} className="border-0 shadow-lg">
                 <CardContent className="p-8">
                   <div className="flex mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      <Star key={`star-${testimonial.name}-${i}`} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
                   <p className="text-muted-foreground mb-6 italic">&ldquo;{testimonial.content}&rdquo;</p>

@@ -14,23 +14,28 @@ interface MediaCarouselProps {
   media: string[];
   title: string;
   className?: string;
+  autoPlay?: boolean;
+  autoPlayInterval?: number;
 }
 
-export default function MediaCarousel({ media, title, className = "" }: MediaCarouselProps) {
+export default function MediaCarousel({ 
+  media, 
+  title, 
+  className = "", 
+  autoPlay = false, 
+  autoPlayInterval = 3000 
+}: MediaCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [failedMedia, setFailedMedia] = useState<Set<number>>(new Set());
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const autoPlayTimer = useRef<NodeJS.Timeout | null>(null);
 
   const validMedia = media?.filter(item => item && item.trim() !== '') || [];
-
-  // Reset playing state when currentIndex changes
-  useEffect(() => {
-    setIsPlaying(false);
-  }, [currentIndex]);
 
   // Determine if URL is video or image
   const determineMediaType = (url: string): 'image' | 'video' => {
@@ -57,6 +62,40 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
     type: determineMediaType(url)
   }));
 
+  // Reset playing state when currentIndex changes
+  useEffect(() => {
+    setIsPlaying(false);
+  }, [currentIndex]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!autoPlay || isPaused || mediaItems.length <= 1) {
+      if (autoPlayTimer.current) {
+        clearInterval(autoPlayTimer.current);
+        autoPlayTimer.current = null;
+      }
+      return;
+    }
+
+    autoPlayTimer.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+    }, autoPlayInterval);
+
+    return () => {
+      if (autoPlayTimer.current) {
+        clearInterval(autoPlayTimer.current);
+      }
+    };
+  }, [autoPlay, isPaused, mediaItems.length, autoPlayInterval]);
+
+  // Pause auto-play on user interaction
+  const pauseAutoPlay = () => {
+    if (autoPlay) {
+      setIsPaused(true);
+      setTimeout(() => setIsPaused(false), 5000); // Resume after 5 seconds
+    }
+  };
+
   // Handle touch events for swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
@@ -82,11 +121,13 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
   };
 
   const nextMedia = () => {
+    pauseAutoPlay();
     setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
     setIsPlaying(false);
   };
 
   const prevMedia = () => {
+    pauseAutoPlay();
     setCurrentIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
     setIsPlaying(false);
   };
@@ -262,11 +303,14 @@ export default function MediaCarousel({ media, title, className = "" }: MediaCar
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-0.5">
             {mediaItems.map((item, index) => (
               <button
-                key={index}
+                key={`dot-${item.url}-${index}`}
                 className={`w-0.5 h-0.5 sm:w-1 sm:h-1 rounded-full transition-colors relative ${
                   index === currentIndex ? 'bg-white' : 'bg-white/40'
                 }`}
-                onClick={() => setCurrentIndex(index)}
+                onClick={() => {
+                  pauseAutoPlay();
+                  setCurrentIndex(index);
+                }}
               >
                 {item.type === 'video' && (
                   <Play className="h-0.5 w-0.5 absolute top-0 left-0 text-black opacity-60" />
