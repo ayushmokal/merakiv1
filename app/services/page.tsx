@@ -310,7 +310,6 @@ export default function ServicesPage() {
                 className="object-cover"
                 priority
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="min-h-[80vh] flex flex-col justify-center py-20">
@@ -349,7 +348,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Interior Designing Spotlight */}
-      <section className="py-16 bg-slate-50 fade-up">
+      <section className="py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="w-full h-[320px] sm:h-[420px] rounded-xl overflow-hidden shadow-lg bg-white">
@@ -465,7 +464,7 @@ export default function ServicesPage() {
       <div className="section-divider" />
 
       {/* Services Sections */}
-      <div className="container-rhythm section-y fade-up">
+      <div className="container-rhythm section-y">
         {services.map((service, index) => (
           <section key={service.id} id={service.id} className="service-section-bg">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -629,7 +628,7 @@ export default function ServicesPage() {
       </div>
 
       {/* Testimonials */}
-      <section className="section-y bg-slate-50 fade-up">
+      <section className="section-y bg-slate-50">
         <div className="container-rhythm">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">Client Testimonials</Badge>
@@ -666,7 +665,7 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-y bg-primary text-primary-foreground fade-up">
+      <section className="section-y bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6">
             Ready to Start Your Real Estate Journey?

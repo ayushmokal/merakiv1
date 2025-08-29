@@ -59,7 +59,7 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
     },
     {
       id: 'work',
-      label: 'Our Work',
+      label: 'Work',
       icon: Building2,
       href: '/work',
       active: pathname === '/work'
@@ -111,7 +111,7 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
                     "flex-1 mx-1 flex flex-col items-center gap-1 h-auto py-2 px-2",
                     "text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg min-h-12",
                     "relative after:block after:h-0.5 after:w-4 after:bg-blue-600 after:rounded-full after:transition-all after:duration-200 after:mt-1 after:opacity-0 after:scale-75",
-                    isActive && "text-blue-600 bg-blue-50 after:opacity-100 after:scale-100"
+                    isActive && "text-blue-600 after:opacity-100 after:scale-100"
                   )}
                 >
                   <div className="relative">
@@ -125,7 +125,7 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
                       </Badge>
                     )}
                   </div>
-                  <span className="text-xs font-medium">
+                  <span className="text-xs font-medium whitespace-nowrap text-center">
                     {item.label}
                   </span>
                 </Button>
@@ -140,7 +140,7 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
                   "flex-1 mx-1 flex flex-col items-center gap-1 py-2 px-2 rounded-lg min-h-12",
                   "text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200",
                   "relative after:block after:h-0.5 after:w-4 after:bg-blue-600 after:rounded-full after:transition-all after:duration-200 after:mt-1 after:opacity-0 after:scale-75",
-                  isActive && "text-blue-600 bg-blue-50 after:opacity-100 after:scale-100"
+                  isActive && "text-blue-600 after:opacity-100 after:scale-100"
                 )}
                 onClick={() => handleItemClick(item)}
               >
