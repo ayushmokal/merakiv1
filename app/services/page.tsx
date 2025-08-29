@@ -310,6 +310,7 @@ export default function ServicesPage() {
                 className="object-cover"
                 priority
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="min-h-[80vh] flex flex-col justify-center py-20">
