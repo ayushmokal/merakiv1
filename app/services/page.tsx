@@ -302,7 +302,7 @@ export default function ServicesPage() {
   const interiorImages: string[] = Array.from(new Set(interiorImagesRaw));
 
   return (
-    <div className="min-h-screen bg-background services-page-bg">
+    <div className="min-h-screen bg-background services-page-bg logo-grid-bg">
       {/* Hero Section - extends behind navbar */}
       <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
         <div className="absolute inset-0">

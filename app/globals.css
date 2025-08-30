@@ -373,6 +373,31 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+/* --- Subtle page-wide logo grid background --- */
+.logo-grid-bg {
+  position: relative;
+  isolation: isolate; /* keep ::before layering contained */
+}
+.logo-grid-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/logo.png');
+  background-repeat: space; /* even gaps between tiles */
+  background-position: center;
+  background-size: var(--logo-size, 180px) auto;
+  opacity: 0.099; /* faint */
+  filter: grayscale(2);
+  pointer-events: none;
+  z-index: -1;
+}
+@media (max-width: 640px) {
+  .logo-grid-bg::before {
+    background-size: var(--logo-size-sm, 140px) auto;
+    opacity: 0.035;
+  }
+}
+
 /* --- Blended section backgrounds (dark theme friendly) --- */
 .section-blend {
   position: relative;
