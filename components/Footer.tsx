@@ -86,7 +86,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-            <p>&copy; 2024 Meraki Square Foots. All rights reserved.</p>
+            <p>&copy; 2025 Meraki Square Foots. All rights reserved.</p>
             <p>Trusted Since 2017 | Professional Excellence</p>
           </div>
         </div>

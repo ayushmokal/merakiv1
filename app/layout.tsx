@@ -12,9 +12,9 @@ export const metadata: Metadata = {
   title: 'Meraki Square Foots - Building Dreams, Creating Futures',
   description: 'Comprehensive property solutions including RCC consultancy, property advisory, and interior design.',
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: '/favicon/favicon.png',
+    shortcut: '/favicon/favicon.png',
+    apple: '/favicon/favicon.png',
   },
 };
 
