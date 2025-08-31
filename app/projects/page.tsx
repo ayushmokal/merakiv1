@@ -264,7 +264,7 @@ export default function PropertiesPage() {
       fetchingRef.current = false; // Reset the flag
       console.log(`✅ API call completed - Category: ${filters.propertyType}, Transaction: ${filters.transactionType}`);
     }
-  }, [filters.propertyType, filters.transactionType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage, initialLoading, lastSearchParams]);
+  }, [filters.propertyType, filters.transactionType, filters.searchQuery, filters.location, filters.priceRange, filters.bedrooms, currentPage, initialLoading]);
 
   // Debounced version of fetchProperties
   const debouncedFetchProperties = useCallback((resetData = false, immediate = false) => {

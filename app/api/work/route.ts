@@ -5,8 +5,9 @@ const WORK_API_URL = process.env.GOOGLE_WORK_API_URL;
 // In-memory cache for work entries
 type WorkCacheEntry = { timestamp: number; key: string; data: any[]; total: number };
 const WORK_CACHE_TTL_MS = parseInt(process.env.WORK_CACHE_TTL_MS || '60000');
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalAny: any = globalThis as any;
+const globalAny = globalThis as typeof globalThis & {
+  __WORK_CACHE__?: Map<string, WorkCacheEntry>;
+};
 const WORK_CACHE: Map<string, WorkCacheEntry> = globalAny.__WORK_CACHE__ || (globalAny.__WORK_CACHE__ = new Map());
 
 // GET: Fetch work entries from Google Sheets (Read-only)

@@ -107,7 +107,7 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
         <div className="space-y-4">
           <div className="bg-primary/5 p-4 rounded-lg">
             <p className="text-sm text-center">
-              Fill out the form below and we'll get back to you shortly.
+              Fill out the form below and we&apos;ll get back to you shortly.
             </p>
           </div>
 

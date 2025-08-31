@@ -18,8 +18,9 @@ type PropertiesCacheEntry = {
 };
 
 const PROPERTIES_CACHE_TTL_MS = parseInt(process.env.PROPERTIES_CACHE_TTL_MS || '60000'); // default 60s
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const globalAny = globalThis as any;
+const globalAny = globalThis as typeof globalThis & {
+  __PROPERTIES_CACHE__?: Map<string, PropertiesCacheEntry>;
+};
 const PROPERTIES_CACHE: Map<string, PropertiesCacheEntry> =
   globalAny.__PROPERTIES_CACHE__ || (globalAny.__PROPERTIES_CACHE__ = new Map());
 
