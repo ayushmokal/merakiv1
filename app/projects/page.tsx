@@ -143,7 +143,7 @@ export default function PropertiesPage() {
     propertyType: 'all',
     transactionType: 'all', // Default to show both buy and lease
     location: 'all',
-    priceRange: [0, 50000000],
+    priceRange: [0, 100000000],
     bedrooms: [],
     bathrooms: [],
     furnished: [],
@@ -317,7 +317,7 @@ export default function PropertiesPage() {
     }
 
     // Price range filter
-    if (filters.priceRange[1] < 50000000) {
+    if (filters.priceRange[1] < 100000000) {
       filtered = filtered.filter(property => {
         const price = parseFloat(property.price.replace(/,/g, ''));
         return price >= 0 && price <= filters.priceRange[1];
@@ -461,7 +461,7 @@ export default function PropertiesPage() {
     if (filters.propertyType !== 'all') count++;
     if (filters.transactionType !== 'all') count++;
     if (filters.location !== 'all') count++;
-    if (filters.priceRange[1] < 50000000) count++;
+    if (filters.priceRange[1] < 100000000) count++;
     if (filters.carpetAreaRange[1] < 5000) count++;
     if (filters.bedrooms.length > 0) count++;
     return count;
@@ -882,7 +882,7 @@ export default function PropertiesPage() {
                   propertyType: 'all',
                   transactionType: 'all',
                   location: 'all',
-                  priceRange: [0, 50000000],
+                  priceRange: [0, 100000000],
                   bedrooms: [],
                   bathrooms: [],
                   furnished: [],
@@ -925,11 +925,11 @@ export default function PropertiesPage() {
                       <Label className="text-xs text-gray-600 mb-1 block">Max Price (₹ Lakhs)</Label>
                       <Input
                         type="number"
-                        placeholder="500"
-                        value={filters.priceRange[1] < 50000000 ? (filters.priceRange[1] / 100000).toString() : ''}
+                        placeholder="1000"
+                        value={filters.priceRange[1] < 100000000 ? (filters.priceRange[1] / 100000).toString() : ''}
                         onChange={(e) => {
                           const value = e.target.value;
-                          const maxPrice = value === '' ? 50000000 : parseFloat(value) * 100000;
+                          const maxPrice = value === '' ? 100000000 : parseFloat(value) * 100000;
                           if (!isNaN(maxPrice) && maxPrice >= 0) {
                             setFilters(prev => ({ 
                               ...prev, 
@@ -948,7 +948,7 @@ export default function PropertiesPage() {
                     <Slider
                       value={[filters.priceRange[1]]}
                       onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: [prev.priceRange[0], value[0]] as [number, number] }))}
-                      max={50000000}
+                      max={100000000}
                       step={100000}
                       className="w-full"
                     />
@@ -965,7 +965,7 @@ export default function PropertiesPage() {
                       { label: '10-20L', min: 1000000, max: 2000000 },
                       { label: '20-50L', min: 2000000, max: 5000000 },
                       { label: '50L-1Cr', min: 5000000, max: 10000000 },
-                      { label: '1Cr+', min: 10000000, max: 50000000 }
+                      { label: '1-10Cr', min: 10000000, max: 100000000 }
                     ].map((preset) => (
                       <Button
                         key={preset.label}
@@ -1170,11 +1170,11 @@ export default function PropertiesPage() {
                 <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No properties found in your price range</h3>
                 <div className="text-gray-600 max-w-md mx-auto">
-                  {filters.priceRange[1] < 50000000 || filters.priceRange[0] > 0 ? (
+                  {filters.priceRange[1] < 100000000 || filters.priceRange[0] > 0 ? (
                     <div>
                       <p className="mb-3">
                         No properties available 
-                        {filters.priceRange[0] > 0 && filters.priceRange[1] < 50000000 
+                        {filters.priceRange[0] > 0 && filters.priceRange[1] < 100000000 
                           ? ` between ₹${(filters.priceRange[0] / 100000).toFixed(0)}L - ₹${(filters.priceRange[1] / 100000).toFixed(0)}L`
                           : filters.priceRange[0] > 0 
                           ? ` above ₹${(filters.priceRange[0] / 100000).toFixed(0)}L`
@@ -1199,7 +1199,7 @@ export default function PropertiesPage() {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => setFilters(prev => ({ ...prev, priceRange: [0, 50000000] as [number, number] }))}
+                            onClick={() => setFilters(prev => ({ ...prev, priceRange: [0, 100000000] as [number, number] }))}
                           >
                             Clear price filter
                           </Button>
@@ -1210,7 +1210,7 @@ export default function PropertiesPage() {
                             { label: '< 20L', range: [0, 2000000] },
                             { label: '20-50L', range: [2000000, 5000000] },
                             { label: '50L-1Cr', range: [5000000, 10000000] },
-                            { label: '1Cr+', range: [10000000, 50000000] }
+                            { label: '1-10Cr', range: [10000000, 100000000] }
                           ].map((suggestion) => (
                             <Button
                               key={suggestion.label}

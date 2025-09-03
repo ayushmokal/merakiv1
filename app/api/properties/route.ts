@@ -323,7 +323,7 @@ export async function GET(request: NextRequest) {
             matches = matches && propertyMaxPrice >= filterMin;
           }
           
-          console.log(`Property ${property.id}: "${property.price}" -> Min: ${propertyMinPrice}, Max: ${propertyMaxPrice}, Filter Min: ${minPrice || 0}, Filter Max: ${maxPrice || 50000000}, Matches: ${matches}`);
+          console.log(`Property ${property.id}: "${property.price}" -> Min: ${propertyMinPrice}, Max: ${propertyMaxPrice}, Filter Min: ${minPrice || 0}, Filter Max: ${maxPrice || 100000000}, Matches: ${matches}`);
           
           return matches;
         });

@@ -104,7 +104,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       propertyType: 'all',
       transactionType: 'all',
       location: 'all',
-      priceRange: [0, 50000000],
+      priceRange: [0, 100000000],
       bedrooms: [],
       bathrooms: [],
       furnished: [],
@@ -262,7 +262,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <Slider
                     value={localFilters.priceRange}
                     onValueChange={(value) => handleLocalFilterChange('priceRange', value as [number, number])}
-                    max={50000000}
+                    max={100000000}
                     min={0}
                     step={500000}
                     className="w-full"
