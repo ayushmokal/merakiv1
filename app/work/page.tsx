@@ -16,7 +16,6 @@ import {
   MapPin,
   Calendar,
   Ruler,
-  Eye,
   CheckCircle
 } from 'lucide-react';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
@@ -247,17 +246,7 @@ export default function WorkPage() {
                             title={project.name}
                             className="rounded-t-lg"
                           />
-                          
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => handleProjectClick(project)}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              View Details
-                            </Button>
-                          </div>
+
                         </div>
                         
                         <div className="p-6">
