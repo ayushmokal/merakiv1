@@ -49,7 +49,7 @@ export default function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-gray-300 mt-0.5" />
                 <div>
-                  <p>Shop no.11, Rahul Apartment CHS,</p>
+                  <p>Unit no. C 304, Rahul Apartment CHS,</p>
                   <p>Plot E125, sector 12, Kharghar 410210</p>
                   <p className="text-xs text-gray-500 mt-1">Navi Mumbai, Maharashtra</p>
                 </div>

@@ -155,14 +155,15 @@ export default function ImageCarousel({ images, title, className = "" }: ImageCa
         
         {/* Dot Indicators */}
         {validImages.length > 1 && validImages.length <= 5 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 scale-[.6] sm:scale-100 transform flex space-x-[2px] origin-center">
             {validImages.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
+                className={`p-0 m-0 border-0 appearance-none leading-none w-px h-px sm:w-0.5 sm:h-0.5 rounded-full shrink-0 transition-colors focus:outline-none focus:ring-0 ${
                   index === currentIndex ? 'bg-white' : 'bg-white/50'
                 }`}
                 onClick={() => setCurrentIndex(index)}
+                aria-label={`Go to image ${index + 1}`}
               />
             ))}
           </div>

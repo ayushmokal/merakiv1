@@ -257,17 +257,18 @@ const TouchCarousel: React.FC<TouchCarouselProps> = ({
             </div>
 
             {/* Dot Indicators */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 scale-[.6] sm:scale-100 transform flex gap-[2px] origin-center z-10">
               {media.map((_, index) => (
                 <button
                   key={index}
                   className={cn(
-                    "w-2 h-2 rounded-full transition-all duration-200",
+                    "p-0 m-0 border-0 appearance-none leading-none w-px h-px sm:w-0.5 sm:h-0.5 rounded-full shrink-0 transition-all duration-200 focus:outline-none focus:ring-0",
                     index === currentIndex 
-                      ? "bg-white scale-110" 
+                      ? "bg-white" 
                       : "bg-white/50 hover:bg-white/75"
                   )}
                   onClick={() => goToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>

@@ -300,22 +300,19 @@ export default function MediaCarousel({
         
         {/* Dot Indicators */}
         {mediaItems.length > 1 && mediaItems.length <= 5 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-0.5">
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 scale-[.6] sm:scale-100 transform flex space-x-[2px] origin-center">
             {mediaItems.map((item, index) => (
               <button
                 key={`dot-${item.url}-${index}`}
-                className={`w-0.5 h-0.5 sm:w-1 sm:h-1 rounded-full transition-colors relative ${
+                className={`p-0 m-0 border-0 appearance-none leading-none w-px h-px sm:w-0.5 sm:h-0.5 rounded-full shrink-0 transition-colors focus:outline-none focus:ring-0 ${
                   index === currentIndex ? 'bg-white' : 'bg-white/40'
                 }`}
                 onClick={() => {
                   pauseAutoPlay();
                   setCurrentIndex(index);
                 }}
-              >
-                {item.type === 'video' && (
-                  <Play className="h-0.5 w-0.5 absolute top-0 left-0 text-black opacity-60" />
-                )}
-              </button>
+                aria-label={`Go to media ${index + 1}`}
+              />
             ))}
           </div>
         )}
