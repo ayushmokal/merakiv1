@@ -89,7 +89,8 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
       {/* Bottom Navigation Bar - Only visible on mobile */}
       <div 
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 md:hidden",
+          // Keep below modals/dialogs so it doesn't block clicks
+          "fixed bottom-0 left-0 right-0 z-40 md:hidden",
           "bg-white/95 backdrop-blur-lg border-t border-gray-200",
           "safe-area-pb", // Handle safe area on modern mobile devices
           className

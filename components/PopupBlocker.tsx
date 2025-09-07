@@ -43,7 +43,8 @@ export default function PopupBlocker() {
     }
 
     // Validate phone number (basic validation for numbers only)
-    const phoneRegex = /^\+?[\d\s\-()]+$/;
+    // Allow common separators: spaces, hyphens, parentheses, slashes
+    const phoneRegex = /^\+?[\d\s\-()\/]+$/;
     if (!phoneRegex.test(formData.number)) {
       toast({
         title: "Invalid phone number",
@@ -156,7 +157,9 @@ export default function PopupBlocker() {
                   name="tel"
                   type="tel"
                   inputMode="tel"
-                  pattern="[+0-9()\-\s]*"
+                  // Allow digits, spaces, hyphens, brackets, plus and slashes (for multiple numbers)
+                  pattern="[+0-9()\-\s/]*"
+                  title="Use numbers, spaces, +, -, parentheses or /."
                   autoComplete="tel"
                   value={formData.number}
                   onChange={(e) => setFormData({ ...formData, number: e.target.value })}
