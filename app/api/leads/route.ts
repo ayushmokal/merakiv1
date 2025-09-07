@@ -8,9 +8,14 @@ export async function POST(request: NextRequest) {
     console.log('Received enquiry data:', body);
     
     // Validate required fields
-    if (!body.name || !body.email || !body.phone) {
+    // Allow submissions with: name AND (email OR phone)
+    const hasName = Boolean(body.name && String(body.name).trim());
+    const hasEmail = Boolean(body.email && String(body.email).trim());
+    const hasPhone = Boolean(body.phone && String(body.phone).trim());
+
+    if (!hasName || (!hasEmail && !hasPhone)) {
       return NextResponse.json(
-        { error: 'Name, email and phone are required' },
+        { error: 'Please provide your name and at least one contact (email or phone).' },
         { status: 400 }
       );
     }
@@ -25,10 +30,11 @@ export async function POST(request: NextRequest) {
       // Columns: Timestamp, Name, Email, Phone, Message, Project Configuration, Carpet Size, Built Up, Node, Price, Enquiry Date
       const formData = {
         type: 'enquiry', // Important: tells Google Apps Script this is an enquiry
-        name: body.name || '',
-        email: body.email || '',
-        phone: body.phone || '',
-        message: body.message || '',
+        name: (body.name || '').toString(),
+        email: (body.email || '').toString(),
+        phone: (body.phone || '').toString(),
+        // Accept both `message` and `enquiry` from clients
+        message: (body.message || body.enquiry || '').toString(),
         projectConfiguration: body.projectConfiguration || '',
         projectCarpetSize: body.projectCarpetSize || '',
         projectBuiltUp: body.projectBuiltUp || '',
