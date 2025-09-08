@@ -176,7 +176,7 @@ export default function PopupBlocker() {
     <Dialog open={isOpen} onOpenChange={() => {}} modal={true}>
       <DialogContent 
         className="
-          w-[90vw] max-w-sm max-h-[90vh] 
+          w-[90vw] max-w-sm max-h-[85vh] 
           p-0 gap-0 
           data-[state=open]:animate-in data-[state=closed]:animate-out 
           data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0
@@ -208,7 +208,7 @@ export default function PopupBlocker() {
         </div>
 
         {/* Form Content */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0 max-h-[calc(85vh-140px)]">
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -218,7 +218,7 @@ export default function PopupBlocker() {
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               placeholder="Your full name"
-              className="w-full h-11 text-base"
+              className="w-full h-10 text-sm"
               autoFocus
               required
             />
@@ -233,7 +233,7 @@ export default function PopupBlocker() {
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
               placeholder="9930910004 / 9820274467"
-              className="w-full h-11 text-base"
+              className="w-full h-10 text-sm"
               inputMode="tel"
               required
             />
@@ -249,7 +249,7 @@ export default function PopupBlocker() {
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               placeholder="your@email.com"
-              className="w-full h-11 text-base"
+              className="w-full h-10 text-sm"
               required
             />
           </div>
@@ -264,7 +264,7 @@ export default function PopupBlocker() {
               onChange={(e) => handleInputChange('message', e.target.value)}
               placeholder="Tell us about your property requirements..."
               rows={2}
-              className="w-full resize-none text-base min-h-[60px]"
+              className="w-full resize-none text-sm min-h-[50px]"
               required
             />
           </div>
@@ -288,11 +288,11 @@ export default function PopupBlocker() {
         </div>
 
         {/* Footer Button */}
-        <div className="border-t bg-white p-3 flex-shrink-0">
+        <div className="border-t bg-white p-3 flex-shrink-0 sticky bottom-0">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting || !formData.name.trim() || !formData.phone.trim() || !formData.email.trim() || !formData.message.trim()}
-            className="w-full h-12 text-base bg-green-600 hover:bg-green-700 font-semibold"
+            className="w-full h-11 text-sm bg-green-600 hover:bg-green-700 font-semibold shadow-lg"
             size="lg"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}

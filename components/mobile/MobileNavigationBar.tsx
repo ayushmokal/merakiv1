@@ -89,18 +89,11 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
       {/* Bottom Navigation Bar - Only visible on mobile */}
       <div 
         className={cn(
-          // Ensure proper stickiness with important declarations
-          "!fixed !bottom-0 !left-0 !right-0 !z-40 md:hidden",
+          // Force fixed positioning that ignores browser chrome changes
+          "mobile-nav-fixed md:hidden",
           "bg-white/95 backdrop-blur-lg border-t border-gray-200",
-          "pb-safe-area", // Handle safe area on modern mobile devices
-          "transform-gpu will-change-transform", // Enable hardware acceleration
-          "supports-[padding:max(0px)]:pb-[max(0.5rem,env(safe-area-inset-bottom))]", // Modern safe area
           className
         )}
-        style={{
-          transform: 'translateZ(0)', // Force GPU acceleration
-          backfaceVisibility: 'hidden' // Prevent flickering
-        }}
       >
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
