@@ -112,11 +112,14 @@ export default function PopupBlocker() {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}} modal={true}>
       <DialogContent
-        className="w-[94vw] max-w-sm sm:max-w-md [&>button]:hidden mx-3 sm:mx-4 p-4 sm:p-6 max-h-[70vh] max-h-[70dvh] sm:max-h-[85vh] sm:max-h-[85dvh] overflow-hidden rounded-2xl"
+        className="w-[94vw] max-w-sm sm:max-w-md [&>button]:hidden mx-3 sm:mx-4 p-4 sm:p-6 max-h-[82vh] max-h-[82dvh] sm:max-h-[85vh] sm:max-h-[85dvh] overflow-hidden rounded-2xl"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <div className="h-full overflow-y-auto pr-1 -mr-1 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div
+          className="h-full overflow-y-auto pr-1 -mr-1 overscroll-contain pb-20 sm:pb-6 safe-area-pb"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           <DialogHeader>
             <div className="flex items-center justify-center">
               <div className="flex items-center space-x-2">
@@ -126,7 +129,7 @@ export default function PopupBlocker() {
             </div>
           </DialogHeader>
 
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3 sm:space-y-4 max-w-md mx-auto">
             <div className="bg-primary/5 p-3 sm:p-3 rounded-lg">
               <p className="text-xs sm:text-sm text-center leading-tight">
                 <strong>Get Expert Property Consultation</strong> +
@@ -145,7 +148,7 @@ export default function PopupBlocker() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Your full name"
-                  className="h-11 text-[15px] sm:h-10 sm:text-sm"
+                  className="h-12 text-base sm:h-10 sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
                   required
                 />
               </div>
@@ -164,7 +167,7 @@ export default function PopupBlocker() {
                   value={formData.number}
                   onChange={(e) => setFormData({ ...formData, number: e.target.value })}
                   placeholder="9930910004 / 9820274467"
-                  className="h-11 text-[15px] sm:h-10 sm:text-sm"
+                  className="h-12 text-base sm:h-10 sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
                   required
                 />
               </div>
@@ -179,7 +182,7 @@ export default function PopupBlocker() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="merakisquarefootsllp@gmail.com"
-                  className="h-11 text-[15px] sm:h-10 sm:text-sm"
+                  className="h-12 text-base sm:h-10 sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
                   required
                 />
               </div>
@@ -193,12 +196,20 @@ export default function PopupBlocker() {
                   onChange={(e) => setFormData({ ...formData, enquiry: e.target.value })}
                   placeholder="Tell us about your property requirements..."
                   rows={3}
-                  className="text-sm resize-none"
+                  className="text-base sm:text-sm resize-none border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
+                  data-gramm="false"
+                  data-gramm_editor="false"
+                  data-enable-grammarly="false"
                   required
                 />
               </div>
               <div className="flex space-x-2 pt-1">
-                <Button type="submit" disabled={isSubmitting} className="flex-1 h-11 text-[15px]" aria-label="Submit enquiry">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 h-11 text-[15px]"
+                  aria-label="Submit enquiry"
+                >
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </Button>
               </div>

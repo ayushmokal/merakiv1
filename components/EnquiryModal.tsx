@@ -97,6 +97,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Your full name"
+              className="border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -109,6 +110,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="Your email address"
+              className="border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -120,6 +122,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="Your phone number"
+              className="border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -130,7 +133,10 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               placeholder="Any specific questions or requirements?"
-              className="h-24"
+              className="h-24 border-0 bg-muted/50 shadow-inner resize-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
             />
           </div>
 
