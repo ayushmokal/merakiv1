@@ -193,6 +193,8 @@ const testimonials = [
 export default function ServicesPage() {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [selectedService, setSelectedService] = useState<string>('');
+  // Track which enquiry dialog is open (by id) so we can close after submit
+  const [openEnquiryFor, setOpenEnquiryFor] = useState<string | null>(null);
   const [enquiryForm, setEnquiryForm] = useState({
     name: '',
     email: '',
@@ -207,6 +209,8 @@ export default function ServicesPage() {
   const handleEnquiry = (serviceId: string) => {
     setSelectedService(serviceId);
     setEnquiryForm(prev => ({ ...prev, service: serviceId }));
+    // Open the corresponding dialog when user clicks trigger
+    setOpenEnquiryFor(serviceId);
   };
 
   const handleEnquirySubmit = async (e: React.FormEvent) => {
@@ -255,6 +259,8 @@ export default function ServicesPage() {
           budget_range: ''
         });
         setSelectedService('');
+        // Close any open dialog after successful submission
+        setOpenEnquiryFor(null);
       } else {
         throw new Error('Failed to submit');
       }
@@ -383,9 +389,12 @@ export default function ServicesPage() {
                 </div>
               </div>
 
-              <Dialog>
+              <Dialog
+                open={openEnquiryFor === 'interior-designing-spotlight'}
+                onOpenChange={(o) => setOpenEnquiryFor(o ? 'interior-designing-spotlight' : null)}
+              >
                 <DialogTrigger asChild>
-                  <Button size="lg" onClick={() => handleEnquiry('interior-designing')}>
+                  <Button size="lg" onClick={() => { handleEnquiry('interior-designing'); setOpenEnquiryFor('interior-designing-spotlight'); }}>
                     Get Quote <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </DialogTrigger>
@@ -513,9 +522,12 @@ export default function ServicesPage() {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Dialog>
+                  <Dialog
+                    open={openEnquiryFor === service.id}
+                    onOpenChange={(o) => setOpenEnquiryFor(o ? service.id : null)}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="lg" onClick={() => handleEnquiry(service.id)}>
+                      <Button size="lg" onClick={() => { handleEnquiry(service.id); setOpenEnquiryFor(service.id); }}>
                         Enquire Now <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </DialogTrigger>
