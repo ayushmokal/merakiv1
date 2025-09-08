@@ -80,7 +80,7 @@ export default function EnquiryModal({ isOpen, onClose, project }: EnquiryModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Enquire About This Property</DialogTitle>
           <DialogDescription>

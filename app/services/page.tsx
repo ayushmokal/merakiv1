@@ -398,7 +398,7 @@ export default function ServicesPage() {
                     Get Quote <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Get Quote for Interior Designing</DialogTitle>
                   </DialogHeader>
@@ -531,7 +531,7 @@ export default function ServicesPage() {
                         Enquire Now <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>Enquire about {service.title}</DialogTitle>
                       </DialogHeader>

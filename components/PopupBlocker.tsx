@@ -4,95 +4,156 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Gift, Phone, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function PopupBlocker() {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    number: '',
-    email: '',
-    enquiry: ''
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    message: ''
+  });
 
   useEffect(() => {
     // Check if user has already seen the popup in this session
     const hasSeenPopup = sessionStorage.getItem('popupBlockerSeen');
     
     if (!hasSeenPopup) {
-      setIsOpen(true); // Instant popup
+      // Show popup after a small delay for better UX
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
     }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate required fields
-    if (!formData.name || !formData.number || !formData.email || !formData.enquiry) {
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
       toast({
-        title: "Required fields missing",
-        description: "Please fill in all required fields.",
+        title: "Name required",
+        description: "Please enter your full name.",
         variant: "destructive"
       });
-      return;
+      return false;
     }
 
-    // Validate phone number (basic validation for numbers only)
-    // Allow common separators: spaces, hyphens, parentheses, slashes
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Phone number required",
+        description: "Please enter your phone number.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    // Validate phone number format
     const phoneRegex = /^\+?[\d\s\-()\/]+$/;
-    if (!phoneRegex.test(formData.number)) {
+    if (!phoneRegex.test(formData.phone)) {
       toast({
         title: "Invalid phone number",
-        description: "Please enter a valid phone number with only numbers, spaces, hyphens, or brackets.",
+        description: "Please enter a valid phone number.",
         variant: "destructive"
       });
-      return;
+      return false;
     }
 
-    // Validate phone number length (should be at least 10 digits)
-    const numbersOnly = formData.number.replace(/\D/g, '');
+    // Check minimum digits
+    const numbersOnly = formData.phone.replace(/\D/g, '');
     if (numbersOnly.length < 10) {
       toast({
-        title: "Invalid phone number",
+        title: "Phone number too short",
         description: "Phone number should contain at least 10 digits.",
         variant: "destructive"
       });
-      return;
+      return false;
     }
+
+    if (!formData.email.trim()) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!formData.message.trim()) {
+      toast({
+        title: "Enquiry details required",
+        description: "Please tell us about your property requirements.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-        try {
-      // Use FormData to avoid CORS issues
-      const formData_encoded = new FormData();
-      formData_encoded.append('name', formData.name);
-      formData_encoded.append('phone', formData.number);
-      formData_encoded.append('email', formData.email || '');
-      formData_encoded.append('message', formData.enquiry || '');
-      formData_encoded.append('source', 'Popup Blocker');
-
-      // Submit using no-cors mode to bypass CORS restrictions
-      await fetch('https://script.google.com/macros/s/AKfycby6OC0ZsBp6Bl7DzFwPBzpXwHyZXAa6R2NBzoHeNO0qf_wqzl_BJOkmE1BBLfgIxIPs/exec', {
+    try {
+      // Submit to our API endpoint
+      const response = await fetch('/api/leads', {
         method: 'POST',
-        mode: 'no-cors',
-        body: formData_encoded,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          message: formData.message,
+          source: 'Popup Blocker',
+          interest: 'General Enquiry',
+          budget_range: '',
+        }),
       });
 
-      // Since we're using no-cors, we can't check the response, so we assume success
-      toast({
-        title: "Thank you!",
-        description: "We'll contact you soon with exclusive offers!",
-      });
-      
-      // Mark as seen for this session
-      sessionStorage.setItem('popupBlockerSeen', 'true');
-      setIsOpen(false);
-      
+      if (response.ok) {
+        toast({
+          title: "Thank you!",
+          description: "We'll contact you soon with exclusive offers!",
+        });
+        
+        // Mark as seen for this session
+        sessionStorage.setItem('popupBlockerSeen', 'true');
+        setIsOpen(false);
+        
+        // Reset form
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          message: ''
+        });
+      } else {
+        throw new Error('Failed to submit');
+      }
     } catch (error) {
       toast({
         title: "Something went wrong",
@@ -105,132 +166,137 @@ export default function PopupBlocker() {
   };
 
   const handleClose = () => {
-    sessionStorage.setItem('popupBlockerSeen', 'true');
-    setIsOpen(false);
+    // Only allow closing after form submission
+    // Remove this function since we don't want users to close manually
   };
+
+  if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}} modal={true}>
-      <DialogContent
-        className="w-[94vw] max-w-sm sm:max-w-md [&>button]:hidden mx-3 sm:mx-4 p-4 sm:p-6 max-h-[82vh] max-h-[82dvh] sm:max-h-[85vh] sm:max-h-[85dvh] overflow-hidden rounded-2xl"
+      <DialogContent 
+        className="
+          w-[90vw] max-w-sm max-h-[90vh] 
+          p-0 gap-0 
+          data-[state=open]:animate-in data-[state=closed]:animate-out 
+          data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0
+          data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95
+          rounded-xl overflow-hidden
+          [&>button]:!hidden [&_button[data-dialog-close]]:!hidden
+          flex flex-col
+          !fixed !top-1/2 !left-1/2 !transform !-translate-x-1/2 !-translate-y-1/2
+          sm:max-w-md
+        "
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <div
-          className="h-full overflow-y-auto pr-1 -mr-1 overscroll-contain pb-20 sm:pb-6 safe-area-pb"
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          <DialogHeader>
-            <div className="flex items-center justify-center">
-              <div className="flex items-center space-x-2">
-                <Gift className="h-5 w-5 text-primary" />
-                <DialogTitle className="text-base sm:text-xl leading-tight">Premium Property Consultation!</DialogTitle>
+        {/* Header */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 border-b flex-shrink-0">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-2">
+              <Gift className="h-4 w-4 text-green-600" />
+              <div className="text-center">
+                <DialogTitle className="text-base font-semibold text-gray-900 leading-tight">
+                  Premium Property Consultation!
+                </DialogTitle>
+                <p className="text-xs text-gray-600 mt-1 leading-tight">
+                  Get Expert Property Consultation + Professional Market Analysis
+                </p>
               </div>
             </div>
-          </DialogHeader>
-
-          <div className="space-y-3 sm:space-y-4 max-w-md mx-auto">
-            <div className="bg-primary/5 p-3 sm:p-3 rounded-lg">
-              <p className="text-xs sm:text-sm text-center leading-tight">
-                <strong>Get Expert Property Consultation</strong> +
-                <strong> Professional Market Analysis</strong>
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4">
-              <div>
-                <Label htmlFor="popup-name" className="text-sm">Name *</Label>
-                <Input
-                  id="popup-name"
-                  name="name"
-                  autoComplete="name"
-                  autoFocus
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Your full name"
-                  className="h-12 text-base sm:h-10 sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="popup-number" className="text-sm">Phone Number *</Label>
-                <Input
-                  id="popup-number"
-                  name="tel"
-                  type="tel"
-                  inputMode="tel"
-                  // Allow digits, spaces, hyphens, brackets, plus and slashes (for multiple numbers)
-                  pattern="[+0-9()\-\s/]*"
-                  title="Use numbers, spaces, +, -, parentheses or /."
-                  autoComplete="tel"
-                  value={formData.number}
-                  onChange={(e) => setFormData({ ...formData, number: e.target.value })}
-                  placeholder="9930910004 / 9820274467"
-                  className="h-12 text-base sm:h-10 sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="popup-email" className="text-sm">Email *</Label>
-                <Input
-                  id="popup-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="merakisquarefootsllp@gmail.com"
-                  className="h-12 text-base sm:h-10 sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="popup-enquiry" className="text-sm">Enquiry Details *</Label>
-                <Textarea
-                  id="popup-enquiry"
-                  name="message"
-                  value={formData.enquiry}
-                  onChange={(e) => setFormData({ ...formData, enquiry: e.target.value })}
-                  placeholder="Tell us about your property requirements..."
-                  rows={3}
-                  className="text-base sm:text-sm resize-none border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                  data-gramm="false"
-                  data-gramm_editor="false"
-                  data-enable-grammarly="false"
-                  required
-                />
-              </div>
-              <div className="flex space-x-2 pt-1">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1 h-11 text-[15px]"
-                  aria-label="Submit enquiry"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                </Button>
-              </div>
-            </form>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <Phone className="h-3 w-3" />
-                <span>9930910004 / 9820274467</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Mail className="h-3 w-3" />
-                <span>merakisquarefootsllp@gmail.com</span>
-              </div>
-            </div>
-
-            <p className="text-[11px] text-muted-foreground text-center leading-snug px-2">
-              By submitting, you agree to receive updates about our services.
-              We respect your privacy and never spam.
-            </p>
           </div>
+        </div>
+
+        {/* Form Content */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Name *
+            </label>
+            <Input
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Your full name"
+              className="w-full h-11 text-base"
+              autoFocus
+              required
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number *
+            </label>
+            <Input
+              value={formData.phone}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
+              placeholder="9930910004 / 9820274467"
+              className="w-full h-11 text-base"
+              inputMode="tel"
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email *
+            </label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="your@email.com"
+              className="w-full h-11 text-base"
+              required
+            />
+          </div>
+
+          {/* Message */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Enquiry Details *
+            </label>
+            <Textarea
+              value={formData.message}
+              onChange={(e) => handleInputChange('message', e.target.value)}
+              placeholder="Tell us about your property requirements..."
+              rows={2}
+              className="w-full resize-none text-base min-h-[60px]"
+              required
+            />
+          </div>
+
+          {/* Contact Info */}
+          <div className="flex flex-col items-center justify-center space-y-1 text-xs text-gray-600 bg-gray-50 p-2 rounded-lg">
+            <div className="flex items-center space-x-1">
+              <Phone className="h-3 w-3" />
+              <span>9930910004 / 9820274467</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Mail className="h-3 w-3" />
+              <span>merakisquarefootsllp@gmail.com</span>
+            </div>
+          </div>
+
+          {/* Privacy Notice */}
+          <div className="text-xs text-gray-500 text-center p-2 bg-gray-50 rounded">
+            By submitting, you agree to receive updates about our services. We respect your privacy and never spam.
+          </div>
+        </div>
+
+        {/* Footer Button */}
+        <div className="border-t bg-white p-3 flex-shrink-0">
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !formData.name.trim() || !formData.phone.trim() || !formData.email.trim() || !formData.message.trim()}
+            className="w-full h-12 text-base bg-green-600 hover:bg-green-700 font-semibold"
+            size="lg"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

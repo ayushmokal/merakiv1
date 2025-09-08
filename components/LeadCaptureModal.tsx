@@ -5,12 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Gift } from 'lucide-react';
+import { Gift, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { useState } from 'react';
 
 interface LeadCaptureModalProps {
@@ -18,42 +14,39 @@ interface LeadCaptureModalProps {
   onClose: () => void;
 }
 
-const formSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  phone: z
-    .string()
-    .min(10, 'Phone must be at least 10 digits')
-    .regex(/^\+?[\d\s\-()\/]+$/, 'Use numbers, spaces, +, -, (), or /'),
-  email: z.string().email('Enter a valid email'),
-  message: z.string().min(1, 'Please describe your enquiry'),
-  interest: z.string().optional().default(''),
-  budget_range: z.string().optional().default(''),
-});
-
 export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      phone: '',
-      email: '',
-      message: '',
-      interest: '',
-      budget_range: '',
-    },
-    mode: 'onTouched',
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    message: '',
+    interest: '',
+    budget_range: '',
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async () => {
+    // Basic validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please fill in Name, Email, and Enquiry Details.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -64,10 +57,17 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
         localStorage.setItem('leadModalSeen', 'true');
         localStorage.setItem('leadModalTimestamp', Date.now().toString());
         onClose();
-        form.reset();
+        // Reset form
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          message: '',
+          interest: '',
+          budget_range: '',
+        });
       } else {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to submit');
+        throw new Error('Failed to submit');
       }
     } catch (error) {
       toast({
@@ -81,19 +81,15 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
   };
 
   const handleNotNow = () => {
-    const email = form.getValues('email');
-    const name = form.getValues('name') || 'Not provided';
-    if (email) {
+    if (formData.email) {
+      // Save partial data if email provided
       fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          email,
-          phone: form.getValues('phone') || '',
-          message: form.getValues('message') || '',
+          ...formData,
+          name: formData.name || 'Not provided',
           interest: 'Deferred',
-          budget_range: form.getValues('budget_range') || '',
         }),
       }).catch(() => {});
     }
@@ -102,198 +98,169 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="
-          p-0 overflow-hidden z-[101]
-          max-h-[86vh] max-h-[86dvh] sm:max-h-[88vh] sm:max-h-[88dvh]
-          w-full md:w-[94vw] md:max-w-md
-          left-0 right-0 bottom-0 top-auto translate-x-0 translate-y-0 rounded-t-2xl rounded-b-0
-          md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:mx-4
-        ">
-        <div className="flex flex-col h-full">
-          <div className="px-4 pt-4">
-            <DialogHeader>
-              <div className="flex items-center justify-center">
-                <div className="flex items-center space-x-2">
-                  <Gift className="h-5 w-5 text-primary" />
-                  <DialogTitle className="text-base sm:text-xl leading-tight">Premium Property Consultation!</DialogTitle>
-                </div>
+        max-w-md w-[95vw] max-h-[95vh] 
+        p-0 gap-0 
+        data-[state=open]:animate-in data-[state=closed]:animate-out 
+        data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0
+        data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95
+        data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] 
+        data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]
+        sm:rounded-lg overflow-hidden
+      ">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Gift className="h-5 w-5 text-blue-600" />
+              <div>
+                <DialogTitle className="text-lg font-semibold text-gray-900">
+                  Premium Property Consultation!
+                </DialogTitle>
+                <p className="text-sm text-gray-600 mt-1">
+                  Get Expert Property Consultation + Professional Market Analysis
+                </p>
               </div>
-            </DialogHeader>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8 text-gray-500 hover:text-gray-700"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
+        </div>
 
-          <div className="px-4">
-            <div className="bg-primary/5 p-2 rounded-lg">
-              <p className="text-[11px] sm:text-xs text-center leading-tight">
-                <strong>Get Expert Property Consultation</strong> +
-                <strong> Professional Market Analysis</strong>
-              </p>
+        {/* Form Content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(95vh-140px)]">
+          {/* Name and Phone */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Name *
+              </label>
+              <Input
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="Your full name"
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number *
+              </label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="9930910004 / 9820274467"
+                className="w-full"
+              />
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 pt-2 pb-1" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2" data-form-tracked>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs sm:text-sm">Name *</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Your full name"
-                            className="h-10 text-[16px] sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs sm:text-sm">Phone Number *</FormLabel>
-                        <FormControl>
-                        <Input
-                          {...field}
-                          inputMode="tel"
-                          pattern="[+0-9()\-\s/]*"
-                          placeholder="9930910004 / 9820274467"
-                          className="h-10 text-[16px] sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                        />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email *
+            </label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="your@email.com"
+              className="w-full"
+            />
+          </div>
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">Email *</FormLabel>
-                      <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="merakisquarefootsllp@gmail.com"
-                        className="h-10 text-[16px] sm:text-sm border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                      />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          {/* Message */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Enquiry Details *
+            </label>
+            <Textarea
+              value={formData.message}
+              onChange={(e) => handleInputChange('message', e.target.value)}
+              placeholder="Tell us about your property requirements..."
+              rows={3}
+              className="w-full resize-none"
+            />
+          </div>
 
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">Enquiry Details *</FormLabel>
-                      <FormControl>
-                      <Textarea
-                        {...field}
-                        rows={2}
-                        placeholder="Tell us about your property requirements..."
-                        className="text-[16px] sm:text-sm resize-none min-h-[64px] border-0 bg-muted/50 shadow-inner focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0"
-                        data-gramm="false"
-                        data-gramm_editor="false"
-                        data-enable-grammarly="false"
-                      />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          {/* Interest */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              I&apos;m interested in
+            </label>
+            <Select
+              value={formData.interest}
+              onValueChange={(value) => handleInputChange('interest', value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select service" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rcc-consultancy">RCC Consultancy</SelectItem>
+                <SelectItem value="property-consultancy">Property Consultancy</SelectItem>
+                <SelectItem value="interior-design">Interior Design</SelectItem>
+                <SelectItem value="villa-management">Villa Management</SelectItem>
+                <SelectItem value="property-management">Property Management</SelectItem>
+                <SelectItem value="multiple">Multiple Services</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-                <div>
-                  <FormLabel className="text-xs sm:text-sm">I&apos;m interested in</FormLabel>
-                  <FormField
-                    control={form.control}
-                    name="interest"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select
-                          value={field.value}
-                          onValueChange={(v) => field.onChange(v)}
-                        >
-                          <FormControl>
-                          <SelectTrigger className="h-10 sm:h-10 text-[16px] sm:text-sm border-0 bg-muted/50 shadow-inner focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
-                            <SelectValue placeholder="Select service" />
-                          </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="rcc-consultancy">RCC Consultancy</SelectItem>
-                            <SelectItem value="property-consultancy">Property Consultancy</SelectItem>
-                            <SelectItem value="interior-design">Interior Design</SelectItem>
-                            <SelectItem value="villa-management">Villa Management</SelectItem>
-                            <SelectItem value="property-management">Property Management</SelectItem>
-                            <SelectItem value="multiple">Multiple Services</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                </div>
+          {/* Budget Range */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Budget Range
+            </label>
+            <Select
+              value={formData.budget_range}
+              onValueChange={(value) => handleInputChange('budget_range', value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select budget range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="under-5l">Under ₹5 Lakhs</SelectItem>
+                <SelectItem value="5l-15l">₹5 - 15 Lakhs</SelectItem>
+                <SelectItem value="15l-50l">₹15 - 50 Lakhs</SelectItem>
+                <SelectItem value="50l-1cr">₹50 Lakhs - 1 Crore</SelectItem>
+                <SelectItem value="above-1cr">Above ₹1 Crore</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-                <div>
-                  <FormLabel className="text-xs sm:text-sm">Budget Range</FormLabel>
-                  <FormField
-                    control={form.control}
-                    name="budget_range"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select
-                          value={field.value}
-                          onValueChange={(v) => field.onChange(v)}
-                        >
-                          <FormControl>
-                          <SelectTrigger className="h-10 sm:h-10 text-[16px] sm:text-sm border-0 bg-muted/50 shadow-inner focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
-                            <SelectValue placeholder="Select budget range" />
-                          </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="under-5l">Under ₹5 Lakhs</SelectItem>
-                            <SelectItem value="5l-15l">₹5 - 15 Lakhs</SelectItem>
-                            <SelectItem value="15l-50l">₹15 - 50 Lakhs</SelectItem>
-                            <SelectItem value="50l-1cr">₹50 Lakhs - 1 Crore</SelectItem>
-                            <SelectItem value="above-1cr">Above ₹1 Crore</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                </div>
+          {/* Privacy Notice */}
+          <div className="text-xs text-gray-500 text-center p-2 bg-gray-50 rounded">
+            By submitting, you agree to receive updates about our services. We respect your privacy.
+          </div>
+        </div>
 
-                <div className="text-[11px] text-muted-foreground text-center pt-1 px-1">
-                  By submitting, you agree to receive updates about our services. We respect your privacy.
-                </div>
-                
-                {/* Spacer so last field isn't hidden behind sticky footer */}
-                <div className="h-3" />
-
-                {/* Sticky action bar */}
-                <div className="sticky bottom-0 left-0 right-0 bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur border-t mt-2">
-                  <div className="flex space-x-3 pt-1.5 pb-2 safe-area-pb">
-                    <Button type="submit" disabled={isSubmitting} className="flex-1 h-10">
-                      {isSubmitting ? 'Submitting...' : 'Submit'}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={handleNotNow} className="h-10">
-                      Not Now
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </Form>
+        {/* Footer Buttons */}
+        <div className="border-t bg-white p-4">
+          <div className="flex space-x-3">
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting || !formData.name || !formData.email || !formData.message}
+              className="flex-1"
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleNotNow}
+              className="px-6"
+            >
+              Not Now
+            </Button>
           </div>
         </div>
       </DialogContent>
