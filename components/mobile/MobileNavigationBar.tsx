@@ -164,12 +164,7 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
           })}
         </div>
 
-        {/* Safe area padding for devices with home indicator */}
-        <div className="h-safe-area-inset-bottom" />
       </div>
-
-      {/* Spacer to prevent content from being hidden behind navigation bar */}
-      <div className="h-20 md:hidden" />
     </>
   );
 };
