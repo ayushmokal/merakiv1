@@ -398,6 +398,32 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+/* --- Single centered logo backdrop (non-repeating) --- */
+.logo-backdrop {
+  position: relative;
+  isolation: isolate;
+}
+.logo-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/logo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Scale responsively: max 900px wide or 65vw, whichever is smaller */
+  background-size: min(65vw, 900px) auto;
+  opacity: 0.06;
+  filter: grayscale(1);
+  pointer-events: none;
+  z-index: -1;
+}
+@media (max-width: 640px) {
+  .logo-backdrop::before {
+    background-size: min(80vw, 520px) auto;
+    opacity: 0.08;
+  }
+}
+
 /* --- Blended section backgrounds (dark theme friendly) --- */
 .section-blend {
   position: relative;
