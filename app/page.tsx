@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Building2, Users, Award, MapPin, Phone, Mail, Star, Home as HomeIcon, Briefcase, FileText, Palette } from 'lucide-react';
+import HeroSection from '@/components/HeroSection';
+import { Building2, Users, Award, Star, Home as HomeIcon, Palette } from 'lucide-react';
 // Removed LeadCaptureModal import - now using PopupBlocker from layout
 import Image from 'next/image';
 
@@ -34,13 +35,6 @@ const services = [
     icon: HomeIcon,
     features: ['Residential Management', 'Commercial Leasing', 'Lease Management', 'Maintenance Services']
   }
-];
-
-const stats = [
-  { number: '1 lakh sq.ft+', label: 'Sqft Delivered to Podar International School' },
-  { number: '75,000', label: 'Sqft Land Sold at Aamby Valley City' },
-  { number: '61,000', label: 'Sqft Residential Space Leased' },
-  { number: '6+', label: 'Years of Excellence' }
 ];
 
 const testimonials = [
@@ -73,62 +67,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - extends behind navbar for seamless look */}
-      <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
-        <div className="absolute inset-0">
-            <Image
-                src="/hero.png"
-                alt="Modern architecture"
-                fill
-                className="object-cover"
-                priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="min-h-screen flex flex-col justify-center pb-20">
-              <div className="max-w-2xl space-y-8">
-                <div className="space-y-4">
-                  <Badge variant="secondary" className="w-fit bg-white/10 border-white/20 text-white">
-                    Real Estate – Acquisition, Realty & Interiors
-                  </Badge>
-                  <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                    Meraki Square Foots
-                    <br />
-                    <span className="text-white/90">Where Dreams Become Reality</span>
-                  </h1>
-                  <p className="text-xl text-white/80 leading-relaxed">
-                    Established in 2017, we are Navi Mumbai&apos;s trusted consulting firm providing professional 
-                    property consultancy services throughout Mumbai, Pune and Navi Mumbai with uncompromising professionalism.
-                  </p>
-                </div>
-                {/* <div className="flex flex-col sm:flex-row gap-4">
-                  <Button size="lg" asChild className="text-lg px-8">
-                    <Link href="/projects">
-                      View Our Projects <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                  <Button size="lg" variant="outline" asChild className="text-lg px-8 border-white text-white hover:bg-white hover:text-primary">
-                    <Link href="/services">Our Services</Link>
-                  </Button>
-                </div> */}
-                <div className="pt-8">
-                    <div className="inline-flex bg-white/10 backdrop-blur-sm p-4 rounded-2xl shadow-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                            <Award className="h-6 w-6 text-white" />
-                          </div>
-                          <div>
-                            <p className="font-semibold">Trusted Since 2017</p>
-                            <p className="text-sm text-white/70">Professional Excellence</p>
-                          </div>
-                        </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Marquee Logos Section */}
       <section className="py-12 marquee-section-bg">
