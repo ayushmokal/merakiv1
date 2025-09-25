@@ -274,7 +274,7 @@ export default function HeroSection() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="border-white text-white hover:bg-white hover:text-slate-900"
+                  className="border-white/80 bg-white/90 text-slate-900 hover:bg-white hover:text-slate-900"
                 >
                   <Link href="/services" className="relative flex items-center justify-center gap-2 font-medium">
                     <Search className="h-5 w-5" />
@@ -341,7 +341,7 @@ export default function HeroSection() {
             transition={{ duration: 1, delay: 0.5, type: 'spring', stiffness: 120 }}
             className="relative"
           >
-            <Card className="relative overflow-hidden border-white/10 bg-white/5 backdrop-blur-md p-8 lg:p-10 flex flex-col items-center text-center gap-6">
+            <Card className="relative overflow-hidden border-white/10 bg-white/5 backdrop-blur-sm p-8 lg:p-10 flex flex-col items-center text-center gap-6">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
               <div className="relative flex flex-col items-center gap-6">
                 <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-72 lg:h-72">
