@@ -169,8 +169,9 @@ export default function HeroSection() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/85 via-slate-900/70 to-slate-900/85" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.07),_transparent_60%)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-slate-900/60 to-slate-900/72" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/78 via-slate-900/35 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.14),_transparent_64%)]" />
       </div>
 
       <FloatingParticles />
@@ -341,26 +342,32 @@ export default function HeroSection() {
             transition={{ duration: 1, delay: 0.5, type: 'spring', stiffness: 120 }}
             className="relative"
           >
-            <Card className="relative overflow-hidden border-white/10 bg-white/5 backdrop-blur-sm p-8 lg:p-10 flex flex-col items-center text-center gap-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
-              <div className="relative flex flex-col items-center gap-6">
-                <div className="relative w-48 h-48 sm:w-56 sm:h-56 lg:w-72 lg:h-72">
-                  <Image
-                    src="/logo.png"
-                    alt="Meraki Square Foots logo"
-                    fill
-                    className="object-contain drop-shadow-[0_0_35px_rgba(56,189,248,0.4)]"
-                    priority
-                  />
+            <Card className="relative overflow-hidden border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_30px_70px_-35px_rgba(15,23,42,0.9)] p-8 lg:p-10 flex flex-col items-center text-center gap-8">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.3)_0%,_rgba(255,255,255,0.08)_45%,_transparent_80%)]" />
+              <div className="relative flex flex-col items-center gap-6 w-full">
+                <div className="relative flex items-center justify-center w-full">
+                  <div className="relative rounded-[30px] border border-white/35 bg-white/25 px-8 py-6 shadow-[0_25px_55px_-30px_rgba(30,64,175,0.75)] backdrop-blur-xl">
+                    <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/40 via-white/25 to-white/10" aria-hidden />
+                    <div className="relative flex items-center justify-center">
+                      <Image
+                        src="/logo.png"
+                        alt="Meraki Square Foots logo"
+                        width={260}
+                        height={120}
+                        className="h-auto w-[220px] sm:w-[240px] lg:w-[260px] object-contain"
+                        priority
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  <p className="text-lg font-semibold tracking-wide text-white/90">
+                <div className="relative w-full border-t border-white/30 pt-6 space-y-3">
+                  <p className="text-lg font-semibold tracking-wide text-white/95 drop-shadow-[0_8px_20px_rgba(15,23,42,0.45)]">
                     Tailored Real Estate & Interior Journeys
                   </p>
-                  <p className="text-sm text-white/70 flex items-center justify-center gap-2">
+                  <p className="text-sm text-white/85 flex items-center justify-center gap-2">
                     <MapPin className="h-4 w-4" /> Mumbai · Navi Mumbai · Pune
                   </p>
-                  <p className="text-sm text-white/70 flex items-center justify-center gap-2">
+                  <p className="text-sm text-white/85 flex items-center justify-center gap-2">
                     <Phone className="h-4 w-4" /> Always a conversation away
                   </p>
                 </div>

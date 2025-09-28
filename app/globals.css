@@ -428,16 +428,16 @@ input[type="range"]::-moz-range-thumb {
 .section-blend {
   position: relative;
   background:
-    radial-gradient(circle at 18% 22%, rgba(59,130,246,0.07), transparent 55%),
-    radial-gradient(circle at 82% 78%, rgba(139,92,246,0.05), transparent 60%),
-    linear-gradient(180deg, #0f1216 0%, #12161b 50%, #101418 100%);
+    radial-gradient(circle at 12% 20%, rgba(59,130,246,0.18), transparent 48%),
+    radial-gradient(circle at 88% 80%, rgba(139,92,246,0.14), transparent 58%),
+    linear-gradient(180deg, #f7faff 0%, #edf2ff 45%, #e7f0ff 100%);
 }
 .section-blend-alt {
   position: relative;
   background:
-    radial-gradient(circle at 78% 24%, rgba(56,189,248,0.07), transparent 55%),
-    radial-gradient(circle at 24% 82%, rgba(99,102,241,0.05), transparent 60%),
-    linear-gradient(180deg, #101419 0%, #151a20 50%, #12171d 100%);
+    radial-gradient(circle at 78% 18%, rgba(16,185,129,0.15), transparent 50%),
+    radial-gradient(circle at 22% 82%, rgba(99,102,241,0.14), transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, #f2f6ff 45%, #ecf5ff 100%);
 }
 .section-blend, .section-blend-alt { overflow: hidden; }
 

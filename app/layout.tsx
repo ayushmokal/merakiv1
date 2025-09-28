@@ -6,6 +6,7 @@ import PopupBlocker from '@/components/PopupBlocker';
 import MobileWrapper from '@/components/MobileWrapper';
 import { Toaster } from '@/components/ui/toaster';
 import Script from 'next/script';
+import FloatingSocial from '@/components/FloatingSocial';
 
 export const metadata: Metadata = {
   title: 'Meraki Square Foots - Building Dreams, Creating Futures',
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className="h-full m-0 p-0 font-sans" suppressHydrationWarning>
         <Navbar />
+        <FloatingSocial />
         <main className="relative mb-20 md:mb-0">
           {children}
         </main>

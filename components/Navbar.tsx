@@ -42,7 +42,7 @@ export default function Navbar() {
         }`}>
           <nav
             aria-label="Main navigation"
-            className={`relative flex items-center ${isScrolled ? 'h-14' : 'h-16 lg:h-18'} rounded-[1.1rem] px-4 sm:px-6 lg:px-8
+            className={`relative flex items-center ${isScrolled ? 'h-16' : 'h-20'} rounded-[1.1rem] px-4 sm:px-6 lg:px-8
             bg-sky-50/90 dark:bg-neutral-900/70 backdrop-blur-xl
             border border-sky-100 dark:border-white/10
             transition-colors duration-500`}
@@ -53,10 +53,10 @@ export default function Navbar() {
                 <Image
                   src="/logo.png"
                   alt="Meraki Logo"
-                  width={140}
-                  height={38}
+                  width={220}
+                  height={80}
                   priority
-                  className={`w-auto object-contain transition-transform duration-300 group-hover:scale-[1.035] ${isScrolled ? 'h-8 sm:h-9 lg:h-10' : 'h-9 sm:h-10 lg:h-12'}`}
+                  className={`w-auto object-contain transition-transform duration-300 group-hover:scale-[1.035] ${isScrolled ? 'h-10 sm:h-11 lg:h-12' : 'h-12 sm:h-14 lg:h-16'}`}
                 />
               </Link>
             </div>
