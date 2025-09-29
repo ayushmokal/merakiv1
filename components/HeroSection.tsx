@@ -336,44 +336,7 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 80 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.5, type: 'spring', stiffness: 120 }}
-            className="relative"
-          >
-            <Card className="relative overflow-hidden border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_30px_70px_-35px_rgba(15,23,42,0.9)] p-8 lg:p-10 flex flex-col items-center text-center gap-8">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.3)_0%,_rgba(255,255,255,0.08)_45%,_transparent_80%)]" />
-              <div className="relative flex flex-col items-center gap-6 w-full">
-                <div className="relative flex items-center justify-center w-full">
-                  <div className="relative rounded-[30px] border border-white/35 bg-white/25 px-8 py-6 shadow-[0_25px_55px_-30px_rgba(30,64,175,0.75)] backdrop-blur-xl">
-                    <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/40 via-white/25 to-white/10" aria-hidden />
-                    <div className="relative flex items-center justify-center">
-                      <Image
-                        src="/logo.png"
-                        alt="Meraki Square Foots logo"
-                        width={260}
-                        height={120}
-                        className="h-auto w-[220px] sm:w-[240px] lg:w-[260px] object-contain"
-                        priority
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="relative w-full border-t border-white/30 pt-6 space-y-3">
-                  <p className="text-lg font-semibold tracking-wide text-white/95 drop-shadow-[0_8px_20px_rgba(15,23,42,0.45)]">
-                    Tailored Real Estate & Interior Journeys
-                  </p>
-                  <p className="text-sm text-white/85 flex items-center justify-center gap-2">
-                    <MapPin className="h-4 w-4" /> Mumbai · Navi Mumbai · Pune
-                  </p>
-                  <p className="text-sm text-white/85 flex items-center justify-center gap-2">
-                    <Phone className="h-4 w-4" /> Always a conversation away
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
+          
         </div>
       </div>
     </section>
