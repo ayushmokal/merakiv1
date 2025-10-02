@@ -160,7 +160,7 @@ export default function HeroSection() {
   const experienceCount = useAnimatedCounter(7, 2000, 850);
 
   return (
-    <section className="relative -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px] overflow-hidden bg-slate-950 text-white">
+    <section className="relative -mt-[160px] pt-[160px] sm:-mt-[180px] sm:pt-[180px] lg:-mt-[210px] lg:pt-[210px] overflow-hidden bg-slate-950 text-white">
       <div className="absolute inset-0">
         <Image
           src="/hero.png"
@@ -177,35 +177,24 @@ export default function HeroSection() {
       <FloatingParticles />
 
       <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-20 lg:py-28">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_minmax(260px,1fr)] lg:items-center">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_minmax(260px,1fr)] lg:items-center">
           <div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-8"
+              className="space-y-6"
             >
               <Badge className="bg-white/10 border-white/20 text-white backdrop-blur">Trusted Since 2017</Badge>
 
-              <div className="space-y-6">
-                <motion.h1
-                  className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight"
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.4 }}
-                >
-                  Meraki <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-purple-400 to-pink-400">Square Foots</span>
-                </motion.h1>
-
-                <motion.p
-                  className="text-lg md:text-xl text-white/80 max-w-2xl"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.6 }}
-                >
-                  Professional property consultants for Navi Mumbai, Mumbai, and Pune. We blend architecture, interiors, and real estate expertise to craft inspiring spaces and lasting partnerships.
-                </motion.p>
-              </div>
+              <motion.p
+                className="text-lg md:text-xl text-white/80 max-w-2xl"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.5 }}
+              >
+                Professional property consultants for Navi Mumbai, Mumbai, and Pune. We blend architecture, interiors, and real estate expertise to craft inspiring spaces and lasting partnerships.
+              </motion.p>
 
               <motion.div
                 className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
@@ -253,10 +242,10 @@ export default function HeroSection() {
               </motion.div>
 
               <motion.div
-                className="flex flex-col sm:flex-row gap-4 pt-4"
+                className="flex flex-col sm:flex-row gap-4 pt-1"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.3 }}
+                transition={{ duration: 0.8, delay: 1.1 }}
               >
                 <Button
                   size="lg"

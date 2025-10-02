@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full m-0 p-0 font-sans" suppressHydrationWarning>
+      <body className="h-full m-0 p-0 font-sans bg-[#0b1629] text-slate-900" suppressHydrationWarning>
         <Navbar />
         <FloatingSocial />
         <main className="relative mb-20 md:mb-0">

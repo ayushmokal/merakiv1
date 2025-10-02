@@ -2,95 +2,158 @@
 
 ## Architecture Overview
 
-This is a **Next.js 13+ property portal** with Google Sheets as the backend database via Google Apps Scripts. The system manages real estate listings across 5 categories: Buy, Lease, Commercial, Bungalow, and Interior properties.
+This is a **Next.js 14+ property portal** using Google Sheets as the primary database via Google Apps Scripts. The system manages real estate listings across multiple categories (Buy, Lease, Commercial, Bungalow, Interior) with a serverless backend architecture.
 
-### Key Data Flow
-- **Frontend**: Next.js app with shadcn/ui components and Tailwind CSS
-- **API Layer**: Next.js API routes in `/app/api/` handle business logic
-- **Backend**: Google Apps Scripts act as serverless functions connected to Google Sheets
-- **Storage**: Google Sheets store property data, leads, and work submissions
+### Core Data Flow
+- **Frontend**: Next.js App Router with shadcn/ui + Tailwind CSS
+- **API Layer**: Next.js API routes (`/app/api/*`) handle business logic and validation
+- **Backend**: Google Apps Scripts serve as serverless functions with direct Google Sheets integration
+- **Storage**: Google Sheets store properties, leads, work submissions, and enquiries
+- **Media**: Cloudinary handles image/video uploads via Google Apps Script integration
 
-## Critical Integration Points
+## Critical Environment Configuration
 
-### Google Apps Script URLs
-The system relies on deployed Google Apps Script web apps. Key environment variables:
-- `GOOGLE_PROPERTIES_API_URL` - Property data fetching/listing
-- `GOOGLE_APPS_SCRIPT_URL` - Property submissions and enquiries
+### Required Environment Variables
+```bash
+# Google Apps Script Deployment URLs
+GOOGLE_PROPERTIES_API_URL     # Property data fetching/CRUD operations
+GOOGLE_APPS_SCRIPT_URL        # Property submissions & enquiries
+GOOGLE_WORK_API_URL           # Work portfolio submissions
 
-**Important**: When modifying API routes, ensure Google Apps Script URLs are properly configured in `/app/api/*/route.ts` files.
-
-### Property Categories & Data Structure
-Properties are categorized with specific prefixes:
-- `BUY_` - Purchase properties
-- `LEASE_` - Rental properties  
-- `COMM_` - Commercial spaces
-- `BUNG_` - Bungalows/villas
-- `INT_` - Interior design projects
-
-Each category has its own Google Sheet with standardized columns defined in the Apps Script files.
-
-## Development Patterns
-
-### Component Architecture
-- **UI Components**: Use shadcn/ui components from `/components/ui/`
-- **Business Components**: Custom components in `/components/` (modals, forms, etc.)
-- **Layout**: Global layout in `app/layout.tsx` includes Navbar, Footer, PopupBlocker, and Toaster
-
-### Modal System
-The app uses a comprehensive modal system:
-- `PopupBlocker.tsx` - Session-based lead capture popup (auto-triggers)
-- `PropertyPostModal.tsx` - Property submission form with file upload
-- `EnquiryModal.tsx` - General enquiry forms
-- All modals use shadcn/ui Dialog component and share form validation patterns
-
-### API Route Patterns
-```typescript
-// Standard pattern for all API routes
-export async function POST(request: NextRequest) {
-  const body = await request.json();
-  // Validate required fields
-  // Forward to Google Apps Script
-  // Handle response and errors
-}
+# Cache Configuration  
+PROPERTIES_CACHE_TTL_MS=60000 # In-memory cache TTL (default 60s)
 ```
 
-### Form Handling
-- Uses react-hook-form with Zod validation (check existing forms for patterns)
-- All forms submit to Next.js API routes, which forward to Google Apps Scripts
-- Toast notifications via `useToast` hook for user feedback
+**Critical**: Each Google Apps Script must be deployed as a web app with "Execute as: Me" and "Who has access: Anyone" settings.
 
-## File Upload System
-Image uploads use Cloudinary integration within Google Apps Scripts. The `ImageUpload.tsx` component handles client-side file selection, but actual upload happens server-side.
+## Google Sheets Integration Patterns
 
-## Styling Conventions
-- **Tailwind CSS** with custom design system in `tailwind.config.ts`
-- **CSS Variables** for theming (check `app/globals.css`)
-- **shadcn/ui** provides base components with consistent styling
-- Use `cn()` utility from `lib/utils.ts` for conditional classes
+### Property Data Structure
+Properties use categorized prefixes for data organization:
+- `BUY_*` - Purchase properties
+- `LEASE_*` - Rental properties
+- `COMM_*` - Commercial spaces  
+- `BUNG_*` - Bungalows/villas
+- `INT_*` - Interior design projects
 
-## Development Workflow
+### API Communication Pattern
+```typescript
+// Standard Google Apps Script integration
+const response = await fetch(GOOGLE_SCRIPT_URL, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(dataObject)
+});
 
-### Adding New Features
-1. Create API route in `/app/api/`
-2. Update corresponding Google Apps Script
-3. Deploy new Google Apps Script version
-4. Update environment variables if needed
-5. Create/modify UI components
-6. Test form submissions and data flow
+// Always handle both success/error responses
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const result = await response.json();
+if (result.status === 'error') throw new Error(result.message);
+```
 
-### Google Apps Script Development
-Scripts are in root directory (e.g., `property-portal-google-apps-script.js`). When modifying:
-1. Update the script in Google Apps Script console
-2. Deploy new version
-3. Update API URLs in Next.js if deployment URL changes
+## Advanced Features & Gotchas
 
-### Environment Setup
-- Run `npm run dev` for development
-- ESLint is disabled during builds (`ignoreDuringBuilds: true`)
-- Images are unoptimized (`images: { unoptimized: true }`)
+### In-Memory Caching System
+- Properties API uses Map-based caching (`globalAny.__PROPERTIES_CACHE__`)
+- Cache key built from filter parameters (excluding pagination)
+- TTL-based invalidation with fallback to stale cache on errors
+- **Important**: Cache is per-process, resets on deployment
 
-## Common Gotchas
-- **Session Storage**: PopupBlocker uses sessionStorage to prevent repeated popups
-- **Form Validation**: Phone numbers use regex pattern `/^\+?[\d\s\-()]+$/`
-- **API Responses**: Always return JSON with `success`/`error` structure
-- **Google Sheets**: Column order matters - check Apps Script for exact field mapping
+### Price Filtering Logic
+Complex price normalization handles mixed formats:
+```typescript
+// Handles: "45-55lakhs", "19L-30L", "1.5Cr-2Cr", "90L-1.2Cr"
+const priceString = property.price.toString()
+  .replace(/[₹\s,]/g, '')        // Remove rupee symbols, spaces, commas
+  .replace(/–/g, '-')            // Normalize dashes
+  .toLowerCase();
+```
+
+### Media Handling
+- **Images & Videos**: Single `images` field stores comma-separated URLs
+- **Processing**: API splits into `images[]`, `videos[]`, and `media[]` arrays
+- **Detection**: Video URLs identified by `/video/upload/` or file extensions
+- **Order**: `media[]` preserves original Google Sheets sequence
+
+### Modal System Architecture
+Comprehensive modal ecosystem:
+- `PopupBlocker.tsx` - Session-gated lead capture (sessionStorage: 'popupBlockerSeen')
+- `PropertyPostModal.tsx` - Multi-step property submission with validation
+- `EnquiryModal.tsx` - Context-aware enquiry forms
+- All use shadcn/ui Dialog with shared validation patterns
+
+## Development Workflows
+
+### Adding New API Endpoints
+1. Create route in `/app/api/[endpoint]/route.ts`
+2. Implement standard error handling with try/catch
+3. Validate inputs with proper TypeScript types
+4. Forward to appropriate Google Apps Script
+5. Update corresponding Google Apps Script if needed
+6. Test with middleware security headers
+
+### Form Component Patterns
+```typescript
+// Standard form validation pattern
+const validateForm = () => {
+  if (!formData.field.trim()) {
+    toast({ title: "Error", description: "Field required", variant: "destructive" });
+    return false;
+  }
+  return true;
+};
+
+// Standard submission pattern
+const handleSubmit = async () => {
+  if (!validateForm()) return;
+  setIsSubmitting(true);
+  try {
+    const response = await fetch('/api/endpoint', { /* ... */ });
+    if (response.ok) {
+      toast({ title: "Success", description: "Operation completed" });
+    }
+  } catch (error) {
+    toast({ title: "Error", description: "Please try again", variant: "destructive" });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+```
+
+### Security & Performance
+- **Middleware**: Applies security headers and CORS to all `/api/*` routes
+- **Rate Limiting**: Configured in `middleware.ts` for API protection
+- **Image Optimization**: Disabled (`images: { unoptimized: false }`) with Cloudinary domains allowed
+- **Caching**: HTTP cache headers on API responses with stale-while-revalidate
+
+## Project-Specific Conventions
+
+### Styling System
+- **Design Tokens**: CSS variables in `app/globals.css` (HSL color system)
+- **Component Styling**: shadcn/ui + `cn()` utility from `lib/utils.ts`
+- **Animations**: Custom keyframes for accordions, fades, marquees
+- **Responsive**: Mobile-first with dedicated mobile components in `/components/mobile/`
+
+### File Organization
+```
+app/
+├── api/                    # Next.js API routes
+├── (pages)/               # App Router pages
+└── globals.css           # Global styles + CSS variables
+
+components/
+├── ui/                   # shadcn/ui base components
+├── mobile/              # Mobile-specific components  
+└── *.tsx               # Business components
+
+[root]/
+├── *-apps-script.js    # Google Apps Scripts (deploy separately)
+└── middleware.ts       # Security & CORS
+```
+
+### Common Debugging Steps
+1. **API Issues**: Check environment variables in `/api/*/route.ts`
+2. **Google Scripts**: Verify deployment URLs and execution permissions
+3. **Cache Problems**: Clear `globalAny.__PROPERTIES_CACHE__` or restart dev server
+4. **Form Validation**: Check `useToast` hook integration and error states
+5. **Mobile Issues**: Test with `MobileWrapper.tsx` and responsive breakpoints

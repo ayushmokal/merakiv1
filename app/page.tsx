@@ -268,9 +268,15 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-2 gap-12">
             <Card className="border border-slate-200/70 bg-white/95 shadow-xl shadow-slate-200/40">
-              <CardContent className="p-10 text-center space-y-6">
-                <div className="w-28 h-28 rounded-[32px] bg-gradient-to-br from-sky-100 via-indigo-50 to-white border border-sky-200/70 flex items-center justify-center mx-auto shadow-inner shadow-sky-200/60">
-                  <Users className="h-14 w-14 text-sky-700" />
+              <CardContent className="p-12 text-center space-y-8">
+                <div className="mx-auto h-36 w-36 overflow-hidden rounded-[2.5rem] border border-sky-200/80 shadow-xl shadow-sky-200/40">
+                  <Image
+                    src="/founder1.png"
+                    alt="Amisha Khanna"
+                    width={144}
+                    height={144}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-2xl font-bold text-slate-900">Amisha Khanna</h3>
@@ -282,9 +288,15 @@ export default function Home() {
               </CardContent>
             </Card>
             <Card className="border border-slate-200/70 bg-white/95 shadow-xl shadow-slate-200/40">
-              <CardContent className="p-10 text-center space-y-6">
-                <div className="w-28 h-28 rounded-[32px] bg-gradient-to-br from-violet-100 via-purple-50 to-white border border-violet-200/70 flex items-center justify-center mx-auto shadow-inner shadow-violet-200/60">
-                  <Award className="h-14 w-14 text-violet-600" />
+              <CardContent className="p-12 text-center space-y-8">
+                <div className="mx-auto h-36 w-36 overflow-hidden rounded-[2.5rem] border border-violet-200/80 shadow-xl shadow-violet-200/40">
+                  <Image
+                    src="/founder2.png"
+                    alt="Aditya Narang"
+                    width={144}
+                    height={144}
+                    className="h-full w-full object-cover object-top"
+                  />
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-2xl font-bold text-slate-900">Aditya Narang</h3>

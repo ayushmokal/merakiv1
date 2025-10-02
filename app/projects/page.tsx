@@ -613,7 +613,7 @@ export default function PropertiesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Search - extends behind navbar */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-8 sm:py-16 -mt-[80px] lg:-mt-[88px] pt-[88px] lg:pt-[104px]">
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-10 sm:py-16 -mt-[160px] pt-[164px] sm:-mt-[180px] sm:pt-[188px] lg:-mt-[210px] lg:pt-[216px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 leading-tight">

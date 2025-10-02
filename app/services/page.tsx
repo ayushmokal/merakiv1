@@ -308,9 +308,9 @@ export default function ServicesPage() {
   const interiorImages: string[] = Array.from(new Set(interiorImagesRaw));
 
   return (
-    <div className="min-h-screen bg-background services-page-bg logo-grid-bg">
+    <div className="min-h-screen bg-background services-page-bg logo-backdrop">
       {/* Hero Section - extends behind navbar */}
-      <section className="relative bg-black text-white -mt-[80px] lg:-mt-[88px] pt-[80px] lg:pt-[88px]">
+      <section className="relative bg-black text-white -mt-[160px] pt-[160px] sm:-mt-[180px] sm:pt-[180px] lg:-mt-[210px] lg:pt-[210px]">
         <div className="absolute inset-0">
             <Image
                 src="/hero.png"
