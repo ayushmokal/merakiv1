@@ -32,10 +32,10 @@ export default function Navbar() {
   return (
     <>
       <div className="fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 md:flex-row md:items-center md:gap-5">
           <Link
             href="/"
-            className={`inline-flex items-center justify-center rounded-[1.85rem] border border-white/80 bg-white/95 px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] backdrop-blur-xl transition-all duration-300 ${
+            className={`inline-flex items-center justify-center self-center md:self-auto md:shrink-0 rounded-[1.85rem] border border-white/80 bg-white/95 px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] backdrop-blur-xl transition-all duration-300 ${
               isScrolled ? 'py-2.5' : 'py-3.5'
             }`}
           >
@@ -50,7 +50,7 @@ export default function Navbar() {
           </Link>
 
           <div
-            className={`w-full rounded-[1.9rem] border border-white/65 bg-white/70 backdrop-blur-2xl shadow-[0_30px_55px_-24px_rgba(15,23,42,0.35)] transition-all duration-300 ${
+            className={`w-full md:flex-1 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] md:ml-4 md:self-auto rounded-[1.9rem] border border-white/65 bg-white/70 backdrop-blur-2xl shadow-[0_30px_55px_-24px_rgba(15,23,42,0.35)] transition-all duration-300 ${
               isScrolled ? 'px-4 py-2.5 sm:px-5' : 'px-5 py-3 sm:px-6 sm:py-3.5'
             }`}
           >
