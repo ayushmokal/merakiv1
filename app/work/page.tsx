@@ -408,19 +408,37 @@ export default function WorkPage() {
       </Dialog>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600" aria-hidden />
+        <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),_transparent_55%)]" aria-hidden />
+        <div className="absolute inset-y-0 left-1/2 hidden w-[640px] -translate-x-1/2 bg-white/10 blur-3xl sm:block" aria-hidden />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+          <Badge
+            variant="secondary"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/90"
+          >
+            Let&apos;s Collaborate
+          </Badge>
+          <h2 className="text-3xl lg:text-4xl font-bold mb-5 drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
             Ready to Start Your Real Estate Journey?
           </h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">
+          <p className="text-lg sm:text-xl mb-10 text-white/90 max-w-3xl mx-auto">
             Let&apos;s discuss how we can help you find the perfect property or bring your interior design dreams to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+            <Button
+              size="lg"
+              asChild
+              className="text-lg px-9 rounded-full bg-white text-slate-900 hover:bg-slate-100 shadow-[0_18px_40px_-25px_rgba(255,255,255,0.95)]"
+            >
               <Link href="/services">Our Services</Link>
             </Button>
-            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+            <Button
+              size="lg"
+              asChild
+              className="text-lg px-9 rounded-full bg-white text-slate-900 hover:bg-slate-100 shadow-[0_18px_40px_-25px_rgba(255,255,255,0.95)]"
+            >
               <Link href="/work">Our Work</Link>
             </Button>
           </div>

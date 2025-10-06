@@ -32,25 +32,28 @@ export default function Navbar() {
   return (
     <>
       <div className="fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-6">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 md:flex-row md:items-center md:gap-5">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 md:flex-row md:items-center md:justify-center md:gap-6">
           <Link
             href="/"
-            className={`inline-flex items-center justify-center self-center md:self-auto md:shrink-0 rounded-[1.85rem] border border-white/80 bg-white/95 px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] backdrop-blur-xl transition-all duration-300 ${
-              isScrolled ? 'py-2.5' : 'py-3.5'
+            className={`inline-flex w-[14.5rem] items-center justify-center self-center rounded-[1.85rem] border border-white/80 bg-white/95 px-7 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] backdrop-blur-xl transition-all duration-300 md:w-[17.5rem] lg:w-[19rem] ${
+              isScrolled
+                ? 'h-[3.4rem] sm:h-[3.6rem] md:h-[3.8rem]'
+                : 'h-[3.8rem] sm:h-[4.1rem] md:h-[4.3rem]'
             }`}
           >
             <Image
               src="/logo.png"
               alt="Meraki Logo"
-              width={260}
-              height={110}
+              width={360}
+              height={160}
               priority
-              className={`${isScrolled ? 'h-[3.2rem]' : 'h-[3.6rem]'} w-auto object-contain transition-transform duration-300 hover:scale-[1.02]`}
+              style={{ width: '100%', height: '100%' }}
+              className="object-contain transition-transform duration-300 hover:scale-[1.02]"
             />
           </Link>
 
           <div
-            className={`w-full md:flex-1 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] md:ml-4 md:self-auto rounded-[1.9rem] border border-white/65 bg-white/70 backdrop-blur-2xl shadow-[0_30px_55px_-24px_rgba(15,23,42,0.35)] transition-all duration-300 ${
+            className={`w-full md:flex-1 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] md:self-auto rounded-[1.9rem] border border-white/65 bg-white/70 backdrop-blur-2xl shadow-[0_30px_55px_-24px_rgba(15,23,42,0.35)] transition-all duration-300 ${
               isScrolled ? 'px-4 py-2.5 sm:px-5' : 'px-5 py-3 sm:px-6 sm:py-3.5'
             }`}
           >

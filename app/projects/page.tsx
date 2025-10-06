@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -613,8 +614,18 @@ export default function PropertiesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Search - extends behind navbar */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-10 sm:py-16 -mt-[160px] pt-[164px] sm:-mt-[180px] sm:pt-[188px] lg:-mt-[210px] lg:pt-[216px]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden text-white py-10 sm:py-16 -mt-[160px] pt-[164px] sm:-mt-[180px] sm:pt-[188px] lg:-mt-[210px] lg:pt-[216px]">
+        <Image
+          src="/hero.png"
+          alt="Mumbai skyline inspiring Meraki Square Foots"
+          fill
+          priority
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/78 via-slate-900/55 to-slate-900/35" aria-hidden />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.18),_transparent_62%)]" aria-hidden />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4 leading-tight">
               Properties in Mumbai
@@ -625,8 +636,8 @@ export default function PropertiesPage() {
           </div>
 
           {/* Property Type Tabs with Dropdowns - Mobile Optimized */}
-          <div className="flex justify-center mb-6 sm:mb-8">
-            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-2 flex flex-col sm:flex-row gap-2 w-full max-w-4xl">
+          <div className="mb-6 sm:mb-8">
+            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-2 flex flex-col items-center sm:flex-row sm:justify-center gap-2 w-full sm:w-auto max-w-4xl mx-auto">
               {/* All Properties Button */}
               <button
                 onClick={async () => {

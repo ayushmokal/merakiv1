@@ -82,9 +82,85 @@ const testimonials = [
   }
 ];
 
-const logoImages = [
-  '/images/Picture1.jpg', '/images/Picture2.jpg', '/images/Picture3.jpg', '/images/Picture4.jpg', '/images/Picture5.jpg', '/images/Picture6.jpg', '/images/Picture7.jpg', '/images/Picture8.jpg', '/images/Picture9.jpg', '/images/Picture10.jpg', '/images/Picture11.jpg', '/images/Picture12.jpg', '/images/Picture13.png', '/images/Picture14.jpg', '/images/Picture15.jpg', '/images/Picture16.jpg', '/images/Picture17.jpg', '/images/Picture18.jpg', '/images/Picture19.jpg', '/images/Picture20.jpg', '/images/Picture21.jpg', '/images/Picture22.jpg', '/images/Picture23.jpg', '/images/Picture24.jpg', '/images/Picture25.jpg', '/images/Picture26.jpg', '/images/Picture27.jpg', '/images/Picture28.jpg', '/images/Picture29.jpg', '/images/Picture30.png', '/images/Picture31.png', '/images/Picture32.jpg', '/images/Picture33.jpg', '/images/Picture34.jpg', '/images/Picture35.jpg', '/images/Picture36.jpg', '/images/Picture37.jpg', '/images/Picture38.jpg', '/images/Picture39.jpg', '/images/Picture40.jpg'
+const associations = [
+  {
+    title: 'Associated Schools',
+    description: 'Educational institutions that trust our real estate expertise',
+    logos: [
+      '/images/Picture1.jpg',
+      '/images/Picture2.jpg',
+      '/images/Picture3.jpg',
+      '/images/Picture4.jpg'
+    ]
+  },
+  {
+    title: 'Associated Banks',
+    description: 'Financial institutions supporting our projects',
+    logos: ['/images/Picture5.jpg', '/images/Picture6.jpg']
+  },
+  {
+    title: 'Associated Diagnostic Centres',
+    description: 'Healthcare and diagnostic partners',
+    logos: [
+      '/images/Picture7.jpg',
+      '/images/Picture8.jpg',
+      '/images/Picture9.jpg',
+      '/images/Picture10.jpg',
+      '/images/Picture11.jpg'
+    ]
+  },
+  {
+    title: 'Associated Developers',
+    description: 'Real estate developers and builders we collaborate with',
+    logos: [
+      '/images/Picture12.jpg',
+      '/images/Picture13.png',
+      '/images/Picture14.jpg',
+      '/images/Picture15.jpg',
+      '/images/Picture16.jpg',
+      '/images/Picture17.jpg',
+      '/images/Picture18.jpg',
+      '/images/Picture19.jpg',
+      '/images/Picture20.jpg',
+      '/images/Picture21.jpg',
+      '/images/Picture22.jpg',
+      '/images/Picture23.jpg',
+      '/images/Picture24.jpg'
+    ]
+  },
+  {
+    title: 'Associated F&B Brands',
+    description: 'Food & beverage brands that rely on us for space solutions',
+    logos: [
+      '/images/Picture25.jpg',
+      '/images/Picture26.jpg',
+      '/images/Picture27.jpg',
+      '/images/Picture28.jpg',
+      '/images/Picture29.jpg'
+    ]
+  },
+  {
+    title: 'Other Associations',
+    description: 'Additional corporate partners across industries',
+    logos: [
+      '/images/Picture30.png',
+      '/images/Picture31.png',
+      '/images/Picture32.jpg',
+      '/images/Picture33.jpg',
+      '/images/Picture34.jpg',
+      '/images/Picture35.jpg',
+      '/images/Picture36.jpg',
+      '/images/Picture37.jpg',
+      '/images/Picture38.jpg',
+      '/images/Picture39.jpg',
+      '/images/Picture40.jpg'
+    ]
+  }
 ];
+
+const marqueeLogoItems = associations.flatMap((group) =>
+  group.logos.map((logo) => ({ logo, title: group.title.replace(/s$/, '') }))
+);
 
 export default function Home() {
   // Removed duplicate popup logic - now using PopupBlocker from layout
@@ -93,34 +169,78 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <HeroSection />
 
-      {/* Marquee Logos Section */}
-      <section className="py-12 marquee-section-bg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-          <div className="text-center">
-            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
-              Brands We Worked With
+      {/* Associations Section */}
+      <section className="py-16 marquee-section-bg">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge
+              variant="secondary"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-blue-700"
+            >
+              Our Associations
+            </Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900">
+              Affiliated Brands & Partners
             </h2>
-            <p className="text-gray-600">
-              Trusted by leading companies and organizations
+            <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
+              A glimpse at the institutions and companies that collaborate with us across sectors.
             </p>
           </div>
-        </div>
-        <div className="overflow-hidden">
-          {/* Row 1: Right to Left */}
-          <div className="marquee-row marquee-row-rtl flex items-center space-x-8 py-4">
-            {[...logoImages, ...logoImages].map((src, idx) => (
-              <div key={`rtl-${src}-${idx}`} className="flex-shrink-0 marquee-logo-img">
-                <Image src={src} alt="Logo" width={250} height={250} className="object-contain hover:scale-105 transition duration-300" />
+
+          <div className="space-y-10">
+            <div className="pt-4">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {associations.map((group) => (
+                  <div
+                    key={group.title}
+                    className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60"
+                  >
+                    <h4 className="text-lg font-semibold text-slate-900">{group.title}</h4>
+                    <p className="mt-1 text-xs text-slate-500 leading-relaxed">{group.description}</p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      {group.logos.map((logo, idx) => (
+                        <div
+                          key={`${group.title}-grid-${idx}`}
+                          className="association-logo-pill"
+                        >
+                          <Image
+                            src={logo}
+                            alt={`${group.title} logo ${idx + 1}`}
+                            width={140}
+                            height={140}
+                            className="object-contain"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {/* Row 2: Left to Right */}
-          <div className="marquee-row marquee-row-ltr flex items-center space-x-8 py-4">
-            {[...logoImages, ...logoImages].map((src, idx) => (
-              <div key={`ltr-${src}-${idx}`} className="flex-shrink-0 marquee-logo-img">
-                <Image src={src} alt="Logo" width={250} height={250} className="object-contain hover:scale-105 transition duration-300" />
+            </div>
+
+            <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-[0_18px_45px_-28px_rgba(15,23,42,0.35)]">
+              <div className="marquee-row marquee-row-rtl items-center gap-6 py-6">
+                {[...marqueeLogoItems, ...marqueeLogoItems].map((item, idx) => (
+                  <div
+                    key={`marquee-${item.logo}-${idx}`}
+                    className="marquee-logo-card"
+                  >
+                    <div className="marquee-logo-img h-24 w-28 sm:h-28 sm:w-36 lg:h-32 lg:w-40">
+                      <Image
+                        src={item.logo}
+                        alt={`${item.title} logo ${idx % marqueeLogoItems.length + 1}`}
+                        width={220}
+                        height={220}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                    <span className="mt-2 text-[0.65rem] font-medium uppercase tracking-wide text-slate-500">
+                      {item.title}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -357,19 +477,37 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600" aria-hidden />
+        <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),_transparent_55%)]" aria-hidden />
+        <div className="absolute inset-y-0 left-1/2 hidden w-[640px] -translate-x-1/2 bg-white/10 blur-3xl sm:block" aria-hidden />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+          <Badge
+            variant="secondary"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-white/90"
+          >
+            Let&apos;s Collaborate
+          </Badge>
+          <h2 className="text-3xl lg:text-4xl font-bold mb-5 drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
             Ready to Start Your Real Estate Journey?
           </h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">
+          <p className="text-lg sm:text-xl mb-10 text-white/90 max-w-3xl mx-auto">
             Let&apos;s discuss how we can help you find the perfect property or bring your interior design dreams to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+            <Button
+              size="lg"
+              asChild
+              className="text-lg px-9 rounded-full bg-white text-slate-900 hover:bg-slate-100 shadow-[0_18px_40px_-25px_rgba(255,255,255,0.95)]"
+            >
               <Link href="/services">Our Services</Link>
             </Button>
-            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+            <Button
+              size="lg"
+              asChild
+              className="text-lg px-9 rounded-full bg-white text-slate-900 hover:bg-slate-100 shadow-[0_18px_40px_-25px_rgba(255,255,255,0.95)]"
+            >
               <Link href="/work">Our Work</Link>
             </Button>
           </div>
