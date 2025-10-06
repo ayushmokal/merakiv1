@@ -7,6 +7,8 @@ import MobileWrapper from '@/components/MobileWrapper';
 import { Toaster } from '@/components/ui/toaster';
 import Script from 'next/script';
 import FloatingSocial from '@/components/FloatingSocial';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'Meraki Square Foots - Building Dreams, Creating Futures',
@@ -39,6 +41,8 @@ export default function RootLayout({
         <MobileWrapper />
         
         <Toaster />
+        <Analytics />
+        <SpeedInsights />
         {/* IntersectionObserver to reveal .fade-up elements */}
         <Script id="reveal-on-scroll" strategy="afterInteractive">
           {`
