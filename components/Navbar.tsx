@@ -32,13 +32,13 @@ export default function Navbar() {
   return (
     <>
       <div className="fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-6">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 md:flex-row md:items-center md:justify-center md:gap-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
           <Link
             href="/"
-            className={`inline-flex w-[14.5rem] items-center justify-center self-center rounded-[1.85rem] border border-white/80 bg-white/95 px-7 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] backdrop-blur-xl transition-all duration-300 md:w-[17.5rem] lg:w-[19rem] ${
+            className={`inline-flex w-[18.5rem] items-center justify-center self-center rounded-[1.15rem] border border-white/80 bg-white px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] transition-transform duration-300 md:w-[20.5rem] lg:w-[22.5rem] ${
               isScrolled
-                ? 'h-[3.4rem] sm:h-[3.6rem] md:h-[3.8rem]'
-                : 'h-[3.8rem] sm:h-[4.1rem] md:h-[4.3rem]'
+                ? 'h-[4.2rem] sm:h-[4.4rem] md:h-[4.6rem]'
+                : 'h-[4.6rem] sm:h-[4.9rem] md:h-[5.1rem]'
             }`}
           >
             <Image
@@ -47,16 +47,14 @@ export default function Navbar() {
               width={360}
               height={160}
               priority
-              style={{ width: '100%', height: '100%' }}
+              quality={100}
+              sizes="(max-width: 768px) 288px, 352px"
+              style={{ width: '100%', height: '100%', maxHeight: '100%' }}
               className="object-contain transition-transform duration-300 hover:scale-[1.02]"
             />
           </Link>
 
-          <div
-            className={`w-full md:flex-1 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] md:self-auto rounded-[1.9rem] border border-white/65 bg-white/70 backdrop-blur-2xl shadow-[0_30px_55px_-24px_rgba(15,23,42,0.35)] transition-all duration-300 ${
-              isScrolled ? 'px-4 py-2.5 sm:px-5' : 'px-5 py-3 sm:px-6 sm:py-3.5'
-            }`}
-          >
+          <div className={`w-full md:flex-1 md:max-w-[720px] xl:max-w-[780px] transition-all duration-300 ${isScrolled ? 'md:pl-6' : 'md:pl-8'}`}>
             <nav
               aria-label="Main navigation"
               className="flex items-center gap-4"
@@ -70,12 +68,22 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           className={`relative text-sm font-semibold tracking-wide transition-colors duration-200 ${
-                            active ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900'
+                            active
+                              ? isScrolled
+                                ? 'text-blue-600'
+                                : 'text-blue-300 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
+                              : isScrolled
+                                ? 'text-slate-800 hover:text-slate-600'
+                                : 'text-white hover:text-slate-100 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
                           }`}
                         >
                           {link.label}
                           {active && (
-                            <span className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-blue-600" />
+                            <span
+                              className={`absolute -bottom-1 left-0 right-0 h-[2px] rounded-full ${
+                                isScrolled ? 'bg-blue-600' : 'bg-blue-300'
+                              }`}
+                            />
                           )}
                         </Link>
                       </li>
@@ -88,7 +96,9 @@ export default function Navbar() {
                 <Button
                   onClick={() => setIsModalOpen(true)}
                   size="sm"
-                  className="rounded-full px-6 py-2 text-sm font-semibold shadow-md bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white transition-all duration-200"
+                  className={`rounded-full px-6 py-2 text-sm font-semibold shadow-md bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white transition-all duration-200 ${
+                    isScrolled ? '' : 'drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)]'
+                  }`}
                 >
                   Get Quote
                 </Button>
