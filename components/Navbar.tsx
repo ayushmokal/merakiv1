@@ -13,13 +13,23 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileFixed, setIsMobileFixed] = useState(true);
   const navRef = useRef<HTMLDivElement>(null);
   const [navOffset, setNavOffset] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 10);
+      
+      // On mobile, check if we've scrolled past the hero section (viewport height)
+      if (window.innerWidth < 768) {
+        const heroHeight = window.innerHeight * 0.8; // Assuming hero is 80vh
+        setIsMobileFixed(scrollY < heroHeight);
+      }
     };
+    
+    handleScroll(); // Initial check
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -48,7 +58,14 @@ export default function Navbar() {
 
   return (
     <>
-      <div ref={navRef} className="navbar-shell fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 pt-3">
+      <div 
+        ref={navRef} 
+        className={`navbar-shell z-50 px-3 sm:px-6 pt-3 ${
+          isMobileFixed 
+            ? 'fixed top-0 left-0 right-0' 
+            : 'md:fixed md:top-0 md:left-0 md:right-0 absolute top-0 left-0 right-0'
+        }`}
+      >
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-6">
           <Link
             href="/"
