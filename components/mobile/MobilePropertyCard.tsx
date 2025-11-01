@@ -379,7 +379,7 @@ const MobilePropertyCard: React.FC<MobilePropertyCardProps> = ({
           onClick={() => onContact(property)}
         >
           <Phone className="h-4 w-4 mr-2" />
-          Contact Agent
+          Call for Details
         </Button>
       </CardContent>
     </Card>

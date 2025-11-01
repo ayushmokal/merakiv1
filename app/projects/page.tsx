@@ -535,7 +535,7 @@ export default function PropertiesPage() {
             onClick={() => handleEnquiry(property)}
           >
             <Phone className="h-5 w-5 mr-3" />
-            Contact Agent
+            Call for Details
           </Button>
         </CardContent>
       </div>

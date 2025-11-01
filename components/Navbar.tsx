@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
 
 export default function Navbar() {
@@ -13,6 +13,8 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+  const [navOffset, setNavOffset] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +23,21 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const updateNavOffset = useCallback(() => {
+    if (!navRef.current) return;
+    const rect = navRef.current.getBoundingClientRect();
+    setNavOffset(Math.ceil(rect.bottom));
+  }, []);
+
+  useEffect(() => {
+    updateNavOffset();
+  }, [updateNavOffset, isScrolled, isMobileMenuOpen]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateNavOffset);
+    return () => window.removeEventListener('resize', updateNavOffset);
+  }, [updateNavOffset]);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -31,14 +48,14 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-6">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
+      <div ref={navRef} className="navbar-shell fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 pt-3">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-6">
           <Link
             href="/"
-            className={`inline-flex w-[18.5rem] items-center justify-center self-center rounded-[1.15rem] border border-white/80 bg-white px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] transition-transform duration-300 md:w-[20.5rem] lg:w-[22.5rem] ${
+            className={`inline-flex w-[18.5rem] items-center justify-center self-center rounded-[1.15rem] border border-white/80 bg-white px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] transition-transform duration-300 md:w-[20.5rem] lg:w-[22.5rem] h-[4.6rem] sm:h-[4.85rem] ${
               isScrolled
-                ? 'h-[4.2rem] sm:h-[4.4rem] md:h-[4.6rem]'
-                : 'h-[4.6rem] sm:h-[4.9rem] md:h-[5.1rem]'
+                ? 'md:h-[4.4rem] lg:h-[4.6rem]'
+                : 'md:h-[4.9rem] lg:h-[5.1rem]'
             }`}
           >
             <Image
@@ -158,7 +175,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={isScrolled ? 'h-[150px]' : 'h-[180px]'}></div>
+      <div style={{ height: navOffset ?? (isScrolled ? 150 : 180) }} aria-hidden />
       
       <LeadCaptureModal 
         isOpen={isModalOpen} 

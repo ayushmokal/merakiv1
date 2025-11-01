@@ -90,8 +90,9 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({
       <div 
         className={cn(
           // Force fixed positioning that ignores browser chrome changes
-          "mobile-nav-fixed md:hidden",
-          "bg-white/95 backdrop-blur-lg border-t border-gray-200",
+          "fixed bottom-0 left-0 right-0 z-50 md:hidden",
+          "mobile-nav-fixed",
+          "bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-lg",
           className
         )}
       >

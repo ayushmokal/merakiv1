@@ -25,6 +25,7 @@ const categories = [
     description: 'Purchase properties with confidence',
     icon: Home,
     accent: 'from-blue-500/10 via-blue-400/5 to-transparent',
+    href: '/projects',
   },
   {
     id: 'lease',
@@ -32,6 +33,7 @@ const categories = [
     description: 'Discover premium rental spaces',
     icon: Key,
     accent: 'from-emerald-500/10 via-emerald-400/5 to-transparent',
+    href: '/projects',
   },
   {
     id: 'commercial',
@@ -39,6 +41,7 @@ const categories = [
     description: 'Strategic business destinations',
     icon: Building2,
     accent: 'from-purple-500/10 via-purple-400/5 to-transparent',
+    href: '/projects',
   },
   {
     id: 'bungalow',
@@ -46,6 +49,7 @@ const categories = [
     description: 'Handpicked luxury villas',
     icon: Crown,
     accent: 'from-orange-500/10 via-orange-400/5 to-transparent',
+    href: '/projects',
   },
   {
     id: 'interior',
@@ -53,6 +57,7 @@ const categories = [
     description: 'Bespoke interior experiences',
     icon: Palette,
     accent: 'from-pink-500/10 via-pink-400/5 to-transparent',
+    href: '/services',
   },
 ];
 
@@ -226,16 +231,18 @@ export default function HeroSection() {
                       whileTap={{ scale: 0.97 }}
                       className="relative"
                     >
-                      <Card className="relative group overflow-hidden border border-white/10 bg-slate-900/70 backdrop-blur-sm p-4 text-center h-full flex flex-col items-center justify-center gap-3">
-                        <span className={`absolute inset-0 bg-gradient-to-br ${category.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                        <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white/5 border border-white/10">
-                          <Icon className="h-5 w-5 text-white" />
-                        </span>
-                        <div className="relative">
-                          <p className="font-semibold text-white text-sm sm:text-base">{category.title}</p>
-                          <p className="text-xs text-white/70 mt-1">{category.description}</p>
-                        </div>
-                      </Card>
+                      <Link href={category.href} className="block h-full">
+                        <Card className="relative group overflow-hidden border border-white/10 bg-slate-900/70 backdrop-blur-sm p-4 text-center h-full flex flex-col items-center justify-center gap-3">
+                          <span className={`absolute inset-0 bg-gradient-to-br ${category.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white/5 border border-white/10">
+                            <Icon className="h-5 w-5 text-white" />
+                          </span>
+                          <div className="relative">
+                            <p className="font-semibold text-white text-sm sm:text-base">{category.title}</p>
+                            <p className="text-xs text-white/70 mt-1">{category.description}</p>
+                          </div>
+                        </Card>
+                      </Link>
                     </motion.div>
                   );
                 })}

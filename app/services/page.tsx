@@ -624,18 +624,6 @@ export default function ServicesPage() {
                           ))}
                     </div>
                   </div>
-                  
-                      <div className="pt-4 border-t">
-                        <h5 className="font-medium mb-2">All Features Include:</h5>
-                        <div className="grid grid-cols-1 gap-1">
-                          {service.features.map((feature, idx) => (
-                            <div key={`all-features-${service.id}-${idx}`} className="flex items-center text-xs">
-                              <CheckCircle className="h-3 w-3 text-green-600 mr-2 flex-shrink-0" />
-                              {feature}
-                            </div>
-                          ))}
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
