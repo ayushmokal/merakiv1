@@ -614,7 +614,10 @@ export default function PropertiesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Search - extends behind navbar */}
-      <div className="relative overflow-hidden text-white py-10 sm:py-16 -mt-[160px] pt-[164px] sm:-mt-[180px] sm:pt-[188px] lg:-mt-[210px] lg:pt-[216px]">
+      <div
+        data-nav-hero
+        className="relative overflow-hidden text-white py-10 sm:py-16 -mt-[160px] pt-[164px] sm:-mt-[180px] sm:pt-[188px] lg:-mt-[210px] lg:pt-[216px]"
+      >
         <Image
           src="/hero.png"
           alt="Mumbai skyline inspiring Meraki Square Foots"

@@ -13,26 +13,42 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileFixed, setIsMobileFixed] = useState(true);
+  const [isHeroPinned, setIsHeroPinned] = useState(true);
   const navRef = useRef<HTMLDivElement>(null);
   const [navOffset, setNavOffset] = useState<number | null>(null);
+  const heroBoundaryRef = useRef<number | null>(null);
+
+  const handleScroll = useCallback(() => {
+    const scrollY = window.scrollY;
+    setIsScrolled(scrollY > 10);
+
+    const navHeight = navRef.current?.offsetHeight ?? 0;
+    const heroBoundary = heroBoundaryRef.current;
+
+    if (typeof heroBoundary === 'number') {
+      setIsHeroPinned(scrollY + navHeight <= heroBoundary);
+    } else {
+      setIsHeroPinned(true);
+    }
+  }, []);
+
+  const updateHeroBoundary = useCallback(() => {
+    const hero = document.querySelector<HTMLElement>('[data-nav-hero]');
+
+    if (!hero) {
+      heroBoundaryRef.current = null;
+      return;
+    }
+
+    const rect = hero.getBoundingClientRect();
+    heroBoundaryRef.current = rect.top + window.scrollY + rect.height;
+  }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 10);
-      
-      // On mobile, check if we've scrolled past the hero section (viewport height)
-      if (window.innerWidth < 768) {
-        const heroHeight = window.innerHeight * 0.8; // Assuming hero is 80vh
-        setIsMobileFixed(scrollY < heroHeight);
-      }
-    };
-    
-    handleScroll(); // Initial check
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   const updateNavOffset = useCallback(() => {
     if (!navRef.current) return;
@@ -42,12 +58,43 @@ export default function Navbar() {
 
   useEffect(() => {
     updateNavOffset();
-  }, [updateNavOffset, isScrolled, isMobileMenuOpen]);
+  }, [updateNavOffset, isScrolled, isMobileMenuOpen, isHeroPinned]);
 
   useEffect(() => {
     window.addEventListener('resize', updateNavOffset);
     return () => window.removeEventListener('resize', updateNavOffset);
   }, [updateNavOffset]);
+
+  useEffect(() => {
+    const runUpdates = () => {
+      updateHeroBoundary();
+      handleScroll();
+    };
+
+    runUpdates();
+
+    const heroElement = document.querySelector<HTMLElement>('[data-nav-hero]');
+    let resizeObserver: ResizeObserver | null = null;
+
+    if (heroElement && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(runUpdates);
+      resizeObserver.observe(heroElement);
+    }
+
+    window.addEventListener('resize', runUpdates);
+
+    const rafId = requestAnimationFrame(runUpdates);
+    const timeoutId = window.setTimeout(runUpdates, 400);
+
+    return () => {
+      window.removeEventListener('resize', runUpdates);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [pathname, updateHeroBoundary, handleScroll]);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -61,9 +108,9 @@ export default function Navbar() {
       <div 
         ref={navRef} 
         className={`navbar-shell z-50 px-3 sm:px-6 pt-3 ${
-          isMobileFixed 
+          isHeroPinned 
             ? 'fixed top-0 left-0 right-0' 
-            : 'md:fixed md:top-0 md:left-0 md:right-0 absolute top-0 left-0 right-0'
+            : 'absolute top-0 left-0 right-0'
         }`}
       >
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-6">

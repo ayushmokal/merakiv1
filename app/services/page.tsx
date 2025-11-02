@@ -310,7 +310,10 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-background services-page-bg logo-backdrop">
       {/* Hero Section - extends behind navbar */}
-      <section className="relative bg-black text-white -mt-[160px] pt-[160px] sm:-mt-[180px] sm:pt-[180px] lg:-mt-[210px] lg:pt-[210px]">
+      <section
+        data-nav-hero
+        className="relative bg-black text-white -mt-[160px] pt-[160px] sm:-mt-[180px] sm:pt-[180px] lg:-mt-[210px] lg:pt-[210px]"
+      >
         <div className="absolute inset-0">
             <Image
                 src="/hero.png"

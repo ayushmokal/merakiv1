@@ -165,7 +165,10 @@ export default function HeroSection() {
   const experienceCount = useAnimatedCounter(7, 2000, 850);
 
   return (
-    <section className="relative -mt-[160px] pt-[160px] sm:-mt-[180px] sm:pt-[180px] lg:-mt-[210px] lg:pt-[210px] overflow-hidden bg-slate-950 text-white">
+    <section
+      data-nav-hero
+      className="relative -mt-[160px] pt-[160px] sm:-mt-[180px] sm:pt-[180px] lg:-mt-[210px] lg:pt-[210px] overflow-hidden bg-slate-950 text-white"
+    >
       <div className="absolute inset-0">
         <Image
           src="/hero.png"
