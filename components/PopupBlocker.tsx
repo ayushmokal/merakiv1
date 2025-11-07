@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Gift, Phone, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import confetti from 'canvas-confetti';
 
 export default function PopupBlocker() {
   const [isOpen, setIsOpen] = useState(false);
@@ -135,6 +136,32 @@ export default function PopupBlocker() {
       });
 
       if (response.ok) {
+        // Trigger confetti animation
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        
+        // Multiple confetti bursts for more celebration
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+        }, 250);
+        
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 400);
+        
         toast({
           title: "Thank you!",
           description: "We'll contact you soon with exclusive offers!",
@@ -232,7 +259,7 @@ export default function PopupBlocker() {
             <Input
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
-              placeholder="9930910004 / 9820274467"
+              placeholder="9876543210 / 9123456789"
               className="w-full h-10 text-sm"
               inputMode="tel"
               required

@@ -184,3 +184,5 @@ temp/
 *.njsproj
 *.sln
 *.sw?
+wsl-setup.sh
+WSL_SETUP_GUIDE.md
