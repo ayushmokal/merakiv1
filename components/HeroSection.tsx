@@ -194,6 +194,18 @@ export default function HeroSection() {
               className="space-y-6"
             >
               <Badge className="bg-white/10 border-white/20 text-white backdrop-blur">Trusted Since 2017</Badge>
+              <motion.h1
+                className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight text-white"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.35 }}
+              >
+                Meraki Square Foots LLP
+                <span className="mt-3 block text-lg sm:text-xl font-normal text-sky-200/90">
+                  The official merakisquarefootsllp hub for RCC consultancy, property advisory, interior design, and
+                  property management across Navi Mumbai, Mumbai, and Pune.
+                </span>
+              </motion.h1>
 
               <motion.p
                 className="text-lg md:text-xl text-white/80 max-w-2xl"
