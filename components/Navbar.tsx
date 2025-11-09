@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import { triggerLeadPopup, hasSeenPopup } from '@/lib/popup-trigger';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -144,6 +145,9 @@ export default function Navbar() {
                 <ul className="flex items-center gap-5 lg:gap-7">
                   {navLinks.map((link) => {
                     const active = pathname === link.href;
+                    // Only trigger popup for services and work, not for properties
+                    const shouldTriggerPopup = link.href === '/services' || link.href === '/work';
+                    
                     return (
                       <li key={link.href}>
                         <Link
@@ -157,6 +161,12 @@ export default function Navbar() {
                                 ? 'text-slate-800 hover:text-slate-600'
                                 : 'text-white hover:text-slate-100 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
                           }`}
+                          onClick={(e) => {
+                            if (shouldTriggerPopup && !hasSeenPopup()) {
+                              e.preventDefault();
+                              triggerLeadPopup(link.href);
+                            }
+                          }}
                         >
                           {link.label}
                           {active && (
@@ -209,6 +219,9 @@ export default function Navbar() {
             <ul className="py-2 px-4">
               {navLinks.map((link) => {
                 const active = pathname === link.href;
+                // Only trigger popup for services and work, not for properties
+                const shouldTriggerPopup = link.href === '/services' || link.href === '/work';
+                
                 return (
                   <li key={link.href}>
                     <Link
@@ -216,7 +229,13 @@ export default function Navbar() {
                       className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                         active ? 'text-blue-600 bg-blue-50' : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
                       }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={(e) => {
+                        setIsMobileMenuOpen(false);
+                        if (shouldTriggerPopup && !hasSeenPopup()) {
+                          e.preventDefault();
+                          triggerLeadPopup(link.href);
+                        }
+                      }}
                     >
                       {link.label}
                     </Link>

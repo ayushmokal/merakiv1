@@ -32,6 +32,7 @@ import MediaCarousel from '@/components/MediaCarousel';
 import PropertyPostModal from '@/components/PropertyPostModal';
 import FilterDrawer from '@/components/mobile/FilterDrawer';
 import { cn } from '@/lib/utils';
+import { triggerLeadPopup, hasSeenPopup } from '@/lib/popup-trigger';
 
 // Enhanced Property Interface for new category structure
 interface Property {
@@ -138,6 +139,14 @@ export default function PropertiesPage() {
     
     return [...separatedMedia.videos, ...separatedMedia.images]; // Videos first
   };
+
+  // Helper function to handle filter changes with popup trigger
+  const handleFilterChange = useCallback((updater: (prev: PropertyFilters) => PropertyFilters) => {
+    if (!hasSeenPopup()) {
+      triggerLeadPopup();
+    }
+    setFilters(updater);
+  }, []);
 
   const [filters, setFilters] = useState<PropertyFilters>({
     searchQuery: '',
@@ -827,7 +836,7 @@ export default function PropertiesPage() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {/* Location Selector */}
                 <div className="w-full sm:w-auto sm:min-w-[200px]">
-                  <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
+                  <Select value={filters.location} onValueChange={(value) => handleFilterChange(prev => ({ ...prev, location: value }))}>
                     <SelectTrigger className="border-0 bg-gray-50 hover:bg-gray-100 transition-colors text-gray-900 h-12">
                       <div className="flex items-center">
                         <MapPin className="h-4 w-4 mr-2 text-gray-500" />
@@ -853,7 +862,12 @@ export default function PropertiesPage() {
                       placeholder="Search locality, project, or builder"
                       className="pl-10 border-0 bg-gray-50 text-gray-900 placeholder-gray-500 hover:bg-gray-100 transition-colors h-12 text-base"
                       value={filters.searchQuery}
-                      onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
+                      onChange={(e) => handleFilterChange(prev => ({ ...prev, searchQuery: e.target.value }))}
+                      onFocus={() => {
+                        if (!hasSeenPopup()) {
+                          triggerLeadPopup();
+                        }
+                      }}
                     />
                   </div>
                 </div>

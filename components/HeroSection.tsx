@@ -17,6 +17,7 @@ import {
   Phone,
   Search,
 } from 'lucide-react';
+import { triggerLeadPopup, hasSeenPopup } from '@/lib/popup-trigger';
 
 const categories = [
   {
@@ -246,7 +247,17 @@ export default function HeroSection() {
                       whileTap={{ scale: 0.97 }}
                       className="relative"
                     >
-                      <Link href={category.href} className="block h-full">
+                      <Link 
+                        href={category.href} 
+                        className="block h-full"
+                        onClick={(e) => {
+                          // Only trigger popup for interior/services, not for property browsing
+                          if (category.id === 'interior' && !hasSeenPopup()) {
+                            e.preventDefault();
+                            triggerLeadPopup(category.href);
+                          }
+                        }}
+                      >
                         <Card className="relative group overflow-hidden border border-white/10 bg-slate-900/70 backdrop-blur-sm p-4 text-center h-full flex flex-col items-center justify-center gap-3">
                           <span className={`absolute inset-0 bg-gradient-to-br ${category.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                           <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white/5 border border-white/10">
@@ -274,7 +285,10 @@ export default function HeroSection() {
                   asChild
                   className="group relative overflow-hidden bg-sky-500 hover:bg-sky-600"
                 >
-                  <Link href="/projects" className="relative flex items-center justify-center gap-2 font-medium">
+                  <Link 
+                    href="/projects" 
+                    className="relative flex items-center justify-center gap-2 font-medium"
+                  >
                     <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-sky-400 via-purple-400 to-pink-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     <span className="relative z-10 flex items-center">
                       <Home className="h-5 w-5" />
@@ -286,9 +300,18 @@ export default function HeroSection() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="border-white/80 bg-white/90 text-slate-900 hover:bg-white hover:text-slate-900"
+                  className="border-white/20 bg-white/5 hover:bg-white/10 text-white"
                 >
-                  <Link href="/services" className="relative flex items-center justify-center gap-2 font-medium">
+                  <Link 
+                    href="/services" 
+                    className="relative flex items-center justify-center gap-2 font-medium"
+                    onClick={(e) => {
+                      if (!hasSeenPopup()) {
+                        e.preventDefault();
+                        triggerLeadPopup('/services');
+                      }
+                    }}
+                  >
                     <Search className="h-5 w-5" />
                     <span>Book Consultation</span>
                   </Link>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,9 @@ import confetti from 'canvas-confetti';
 export default function PopupBlocker() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [intendedPath, setIntendedPath] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -22,17 +25,24 @@ export default function PopupBlocker() {
   });
 
   useEffect(() => {
-    // Check if user has already seen the popup in this session
-    const hasSeenPopup = sessionStorage.getItem('popupBlockerSeen');
-    
-    if (!hasSeenPopup) {
-      // Show popup after a small delay for better UX
-      const timer = setTimeout(() => {
+    // Listen for custom trigger event
+    const handleTrigger = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const hasSeenPopup = sessionStorage.getItem('popupBlockerSeen');
+      if (!hasSeenPopup) {
+        // Store the intended path if provided
+        if (customEvent.detail?.path) {
+          setIntendedPath(customEvent.detail.path);
+        }
         setIsOpen(true);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
+      }
+    };
+
+    window.addEventListener('triggerLeadPopup', handleTrigger);
+    
+    return () => {
+      window.removeEventListener('triggerLeadPopup', handleTrigger);
+    };
   }, []);
 
   const handleInputChange = (field: string, value: string) => {
@@ -171,6 +181,13 @@ export default function PopupBlocker() {
         sessionStorage.setItem('popupBlockerSeen', 'true');
         setIsOpen(false);
         
+        // Navigate to intended path after a short delay
+        if (intendedPath) {
+          setTimeout(() => {
+            router.push(intendedPath);
+          }, 500);
+        }
+        
         // Reset form
         setFormData({
           name: '',
@@ -178,6 +195,7 @@ export default function PopupBlocker() {
           email: '',
           message: ''
         });
+        setIntendedPath(null);
       } else {
         throw new Error('Failed to submit');
       }
