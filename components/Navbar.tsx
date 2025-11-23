@@ -145,8 +145,8 @@ export default function Navbar() {
                 <ul className="flex items-center gap-5 lg:gap-7">
                   {navLinks.map((link) => {
                     const active = pathname === link.href;
-                    // Only trigger popup for services and work, not for properties
-                    const shouldTriggerPopup = link.href === '/services' || link.href === '/work';
+                    // Only trigger popup for properties, not for services and work
+                    const shouldTriggerPopup = link.href === '/projects';
                     
                     return (
                       <li key={link.href}>
@@ -219,8 +219,8 @@ export default function Navbar() {
             <ul className="py-2 px-4">
               {navLinks.map((link) => {
                 const active = pathname === link.href;
-                // Only trigger popup for services and work, not for properties
-                const shouldTriggerPopup = link.href === '/services' || link.href === '/work';
+                // Only trigger popup for properties, not for services and work
+                const shouldTriggerPopup = link.href === '/projects';
                 
                 return (
                   <li key={link.href}>
