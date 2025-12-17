@@ -173,7 +173,7 @@ export default function HeroSection() {
       <div className="absolute inset-0">
         <Image
           src="/hero.png"
-          alt="Mumbai skyline inspiring Meraki Square Foots"
+          alt="Mumbai skyline inspiring Meraki Square "
           fill
           className="object-cover"
           priority
@@ -201,7 +201,7 @@ export default function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.35 }}
               >
-                Meraki Square Foots LLP
+                Meraki Square Foot LLP
                 <span className="mt-3 block text-lg sm:text-xl font-normal text-sky-200/90">
                   The official merakisquarefootsllp hub for RCC consultancy, property advisory, interior design, and
                   property management across Navi Mumbai, Mumbai, and Pune.
