@@ -203,7 +203,7 @@ export default function HeroSection() {
               >
                 Meraki Square Foot LLP
                 <span className="mt-3 block text-lg sm:text-xl font-normal text-sky-200/90">
-                  The official merakisquarefootsllp hub for RCC consultancy, property advisory, interior design, and
+                  The official merakisquarefootllp hub for RCC consultancy, property advisory, interior design, and
                   property management across Navi Mumbai, Mumbai, and Pune.
                 </span>
               </motion.h1>

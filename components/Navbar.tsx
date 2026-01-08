@@ -117,21 +117,16 @@ export default function Navbar() {
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:gap-6">
           <Link
             href="/"
-            className={`inline-flex items-center justify-center self-center rounded-[1rem] border border-white/80 bg-white p-2 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] transition-transform duration-300 ${
-              isScrolled
-                ? 'md:h-[5rem] lg:h-[5.5rem]'
-                : 'md:h-[5.5rem] lg:h-[6rem]'
-            }`}
+            className="inline-flex items-center justify-center self-center transition-transform duration-300"
           >
             <Image
               src="/logo.png"
               alt="Meraki Logo"
-              width={140}
-              height={140}
+              width={180}
+              height={180}
               priority
               quality={100}
-              sizes="(max-width: 768px) 100px, 140px"
-              className="object-contain h-full w-auto transition-transform duration-300 hover:scale-[1.02]"
+              className="object-contain transition-transform duration-300 hover:scale-[1.02]"
             />
           </Link>
 

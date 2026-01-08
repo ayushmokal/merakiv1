@@ -403,7 +403,7 @@ export default function Home() {
                   <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">Founder & Partner</p>
                 </div>
                 <p className="text-base leading-relaxed text-slate-600">
-                  The esteemed founder and Partner of Meraki Squarefoots and Interiors, Amisha has expertly steered the company for seven years, excelling in both property deals and interior projects. Her astute leadership has established Meraki as a trusted name, known for seamless integration of real estate transactions and exquisite interior designs. With a remarkable track record, Amisha continues to redefine standards with her innovative approach.
+                  The esteemed founder and Partner of Meraki Squarefoot and Interiors, Amisha has expertly steered the company for seven years, excelling in both property deals and interior projects. Her astute leadership has established Meraki as a trusted name, known for seamless integration of real estate transactions and exquisite interior designs. With a remarkable track record, Amisha continues to redefine standards with her innovative approach.
                 </p>
               </CardContent>
             </Card>
@@ -423,7 +423,7 @@ export default function Home() {
                   <p className="text-sm font-semibold uppercase tracking-[0.3em] text-violet-600">Founder & CEO</p>
                 </div>
                 <p className="text-base leading-relaxed text-slate-600">
-                  The visionary founder and CEO of Meraki Squarefoots and Interiors, Aditya has been at the helm of the company for seven years, adeptly managing property deals and interior projects. With a keen eye for detail and a passion for excellence, Aditya has positioned Meraki as a leader in both the real estate and interior design sectors. Under his leadership, the company continues to thrive, delivering exceptional results in every endeavor.
+                  The visionary founder and CEO of Meraki Squarefoot and Interiors, Aditya has been at the helm of the company for seven years, adeptly managing property deals and interior projects. With a keen eye for detail and a passion for excellence, Aditya has positioned Meraki as a leader in both the real estate and interior design sectors. Under his leadership, the company continues to thrive, delivering exceptional results in every endeavor.
                 </p>
               </CardContent>
             </Card>

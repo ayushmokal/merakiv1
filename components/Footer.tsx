@@ -13,7 +13,7 @@ export default function Footer() {
               <Image src="/logo.png" alt="Meraki Logo" width={140} height={40} className="object-contain" />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Meraki Square Foots - Where Dreams Become Reality. Established in 2017, we are Navi Mumbai&apos;s trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
+              Meraki Square Foot - Where Dreams Become Reality. Established in 2017, we are Navi Mumbai&apos;s trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
             </p>
           </div>
 
@@ -86,7 +86,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-slate-200 py-6">
           <div className="flex flex-col items-center gap-3 text-sm text-slate-600">
-            <p>&copy; 2025 Meraki Square Foots. All rights reserved.</p>
+            <p>&copy; 2025 Meraki Square Foot. All rights reserved.</p>
             <p>Trusted Since 2017 | Professional Excellence</p>
             <p className="flex items-center gap-1">
               Crafted with <span aria-hidden>❤️</span>

@@ -1,11 +1,11 @@
 export const SITE_URL = 'https://www.merakisquarefootsllp.co.in';
 
 export const BUSINESS_INFO = {
-  name: 'Meraki Square Foots LLP',
-  legalName: 'Meraki Square Foots LLP',
+  name: 'Meraki Square Foot LLP',
+  legalName: 'Meraki Square Foot LLP',
   tagline: 'Building Dreams, Creating Futures',
   description:
-    'Meraki Square Foots LLP (merakisquarefootsllp) delivers integrated RCC consultancy, property advisory, interior design, and property management solutions across Navi Mumbai, Mumbai, and Pune.',
+    'Meraki Square Foot LLP (merakisquarefootllp) delivers integrated RCC consultancy, property advisory, interior design, and property management solutions across Navi Mumbai, Mumbai, and Pune.',
   email: 'merakisquarefootsllp@gmail.com',
   phones: ['+91-9930910004', '+91-9820274467'],
   whatsapp: 'https://wa.me/919930910004',
@@ -22,12 +22,12 @@ export const BUSINESS_INFO = {
 };
 
 export const KEYWORDS = [
-  'merakisquarefootsllp',
-  'MerakiSquareFootsLLP',
-  'Meraki Square Foots LLP',
-  'Meraki Square Foots',
-  'Meraki Squarefoots',
-  'Meraki Square Foots Navi Mumbai',
+  'merakisquarefootllp',
+  'MerakiSquareFootLLP',
+  'Meraki Square Foot LLP',
+  'Meraki Square Foot',
+  'Meraki Squarefoot',
+  'Meraki Square Foot Navi Mumbai',
   'real estate consultants Navi Mumbai',
   'RCC consultancy Mumbai',
   'interior design Navi Mumbai',
