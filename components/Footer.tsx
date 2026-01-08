@@ -9,10 +9,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-12">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Image src="/logo.png" alt="Meraki Logo" width={140} height={40} className="object-contain" />
+            <div className="flex items-center justify-center md:justify-start">
+              <Image 
+                src="/logo.png" 
+                alt="Meraki Logo" 
+                width={120} 
+                height={120} 
+                className="object-contain w-[100px] sm:w-[120px]" 
+              />
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed">
+            <p className="text-slate-600 text-sm leading-relaxed text-center md:text-left">
               Meraki Square Foot - Where Dreams Become Reality. Established in 2017, we are Navi Mumbai&apos;s trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
             </p>
           </div>

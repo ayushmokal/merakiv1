@@ -114,10 +114,10 @@ export default function Navbar() {
             : 'absolute top-0 left-0 right-0'
         }`}
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:gap-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-4">
           <Link
             href="/"
-            className="inline-flex items-center justify-center self-center transition-transform duration-300"
+            className="inline-flex items-center justify-center shrink-0 transition-transform duration-300"
           >
             <Image
               src="/logo.png"
@@ -126,87 +126,90 @@ export default function Navbar() {
               height={180}
               priority
               quality={100}
-              className="object-contain transition-transform duration-300 hover:scale-[1.02]"
+              sizes="(max-width: 640px) 100px, (max-width: 768px) 130px, 180px"
+              className="object-contain w-[100px] sm:w-[130px] md:w-[180px] h-auto transition-transform duration-300 hover:scale-[1.02]"
             />
           </Link>
 
-          <div className="flex-1 flex justify-center">
+          <div className="hidden md:flex flex-1 justify-center">
             <nav
               aria-label="Main navigation"
               className="flex items-center"
             >
-              <div className="hidden md:flex justify-center">
-                <ul className="flex items-center gap-5 lg:gap-7">
-                  {navLinks.map((link) => {
-                    const active = pathname === link.href;
-                    // Only trigger popup for properties, not for services and work
-                    const shouldTriggerPopup = link.href === '/projects';
-                    
-                    return (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          className={`relative text-sm font-semibold tracking-wide transition-colors duration-200 ${
-                            active
-                              ? isScrolled
-                                ? 'text-blue-600'
-                                : 'text-blue-300 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
-                              : isScrolled
-                                ? 'text-slate-800 hover:text-slate-600'
-                                : 'text-white hover:text-slate-100 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
-                          }`}
-                          onClick={(e) => {
-                            if (shouldTriggerPopup && !hasSeenPopup()) {
-                              e.preventDefault();
-                              triggerLeadPopup(link.href);
-                            }
-                          }}
-                        >
-                          {link.label}
-                          {active && (
-                            <span
-                              className={`absolute -bottom-1 left-0 right-0 h-[2px] rounded-full ${
-                                isScrolled ? 'bg-blue-600' : 'bg-blue-300'
-                              }`}
-                            />
-                          )}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-
-              <div className="hidden md:flex items-center ml-8">
-                <Button
-                  onClick={() => setIsModalOpen(true)}
-                  size="sm"
-                  className={`rounded-full px-6 py-2 text-sm font-semibold shadow-md bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white transition-all duration-200 ${
-                    isScrolled ? '' : 'drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)]'
-                  }`}
-                >
-                  Get Quote
-                </Button>
-              </div>
-
-              <div className="flex w-full items-center justify-between md:hidden">
-                <span className="text-sm font-semibold text-slate-600">Menu</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="h-10 w-10 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
-                  aria-label="Toggle menu"
-                  aria-expanded={isMobileMenuOpen}
-                >
-                  {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </Button>
-              </div>
+              <ul className="flex items-center gap-5 lg:gap-7">
+                {navLinks.map((link) => {
+                  const active = pathname === link.href;
+                  // Only trigger popup for properties, not for services and work
+                  const shouldTriggerPopup = link.href === '/projects';
+                  
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={`relative text-sm font-semibold tracking-wide transition-colors duration-200 ${
+                          active
+                            ? isScrolled
+                              ? 'text-blue-600'
+                              : 'text-blue-300 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
+                            : isScrolled
+                              ? 'text-slate-800 hover:text-slate-600'
+                              : 'text-white hover:text-slate-100 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)]'
+                        }`}
+                        onClick={(e) => {
+                          if (shouldTriggerPopup && !hasSeenPopup()) {
+                            e.preventDefault();
+                            triggerLeadPopup(link.href);
+                          }
+                        }}
+                      >
+                        {link.label}
+                        {active && (
+                          <span
+                            className={`absolute -bottom-1 left-0 right-0 h-[2px] rounded-full ${
+                              isScrolled ? 'bg-blue-600' : 'bg-blue-300'
+                            }`}
+                          />
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </nav>
           </div>
 
+          <div className="hidden md:flex shrink-0">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              size="sm"
+              className={`rounded-full px-6 py-2 text-sm font-semibold shadow-md bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white transition-all duration-200 ${
+                isScrolled ? '' : 'drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)]'
+              }`}
+            >
+              Get Quote
+            </Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="flex w-full md:hidden">
+            <div className="flex w-full items-center justify-between bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
+              <span className="text-sm font-semibold text-slate-600">Menu</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="h-10 w-10 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors active:scale-95"
+                aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile dropdown menu */}
           <div
-            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out rounded-3xl border border-white/60 bg-white text-slate-800 shadow-lg ${
+            className={`md:hidden w-full overflow-hidden transition-all duration-300 ease-in-out rounded-2xl border border-white/60 bg-white text-slate-800 shadow-lg ${
               isMobileMenuOpen ? 'max-h-96 opacity-100 pb-4' : 'max-h-0 opacity-0'
             }`}
           >
