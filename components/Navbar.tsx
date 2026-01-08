@@ -114,34 +114,33 @@ export default function Navbar() {
             : 'absolute top-0 left-0 right-0'
         }`}
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:justify-between md:gap-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 md:flex-row md:items-center md:gap-6">
           <Link
             href="/"
-            className={`inline-flex w-[18.5rem] items-center justify-center self-center rounded-[1.15rem] border border-white/80 bg-white px-6 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] transition-transform duration-300 md:w-[20.5rem] lg:w-[22.5rem] h-[4.6rem] sm:h-[4.85rem] ${
+            className={`inline-flex items-center justify-center self-center rounded-[1rem] border border-white/80 bg-white p-2 shadow-[0_24px_55px_-24px_rgba(15,23,42,0.55)] transition-transform duration-300 ${
               isScrolled
-                ? 'md:h-[4.4rem] lg:h-[4.6rem]'
-                : 'md:h-[4.9rem] lg:h-[5.1rem]'
+                ? 'md:h-[5rem] lg:h-[5.5rem]'
+                : 'md:h-[5.5rem] lg:h-[6rem]'
             }`}
           >
             <Image
               src="/logo.png"
               alt="Meraki Logo"
-              width={360}
-              height={160}
+              width={140}
+              height={140}
               priority
               quality={100}
-              sizes="(max-width: 768px) 288px, 352px"
-              style={{ width: '100%', height: '100%', maxHeight: '100%' }}
-              className="object-contain transition-transform duration-300 hover:scale-[1.02]"
+              sizes="(max-width: 768px) 100px, 140px"
+              className="object-contain h-full w-auto transition-transform duration-300 hover:scale-[1.02]"
             />
           </Link>
 
-          <div className={`w-full md:flex-1 md:max-w-[720px] xl:max-w-[780px] transition-all duration-300 ${isScrolled ? 'md:pl-6' : 'md:pl-8'}`}>
+          <div className="flex-1 flex justify-center">
             <nav
               aria-label="Main navigation"
-              className="flex items-center gap-4"
+              className="flex items-center"
             >
-              <div className="hidden md:flex flex-1 justify-center">
+              <div className="hidden md:flex justify-center">
                 <ul className="flex items-center gap-5 lg:gap-7">
                   {navLinks.map((link) => {
                     const active = pathname === link.href;
@@ -183,7 +182,7 @@ export default function Navbar() {
                 </ul>
               </div>
 
-              <div className="hidden md:flex items-center">
+              <div className="hidden md:flex items-center ml-8">
                 <Button
                   onClick={() => setIsModalOpen(true)}
                   size="sm"
