@@ -19,7 +19,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed text-center md:text-left">
-              Meraki Square Foot - Where Dreams Become Reality. Established in 2017, we are Navi Mumbai&apos;s trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
+              Meraki Square Foot - Creating Profitable Spaces. Established in 2017, we are Navi Mumbai&apos;s trusted consultancy firm providing professional property consultancy services throughout Mumbai, Pune and Navi Mumbai.
             </p>
           </div>
 
