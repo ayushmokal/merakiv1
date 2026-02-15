@@ -539,6 +539,24 @@ export default function PropertiesPage() {
             </div>
           </div>
 
+          {/* Possession Status */}
+          {property.possessionDate && (
+            <div className="mb-4">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "text-sm font-semibold px-4 py-1.5 rounded-full",
+                  property.possessionDate.toLowerCase().includes('ready')
+                    ? 'bg-green-100 text-green-800 border border-green-200'
+                    : 'bg-amber-100 text-amber-800 border border-amber-200'
+                )}
+              >
+                {property.possessionDate.toLowerCase().includes('ready') ? '✓ ' : '⏳ '}
+                {property.possessionDate}
+              </Badge>
+            </div>
+          )}
+
           <Button 
             className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl transform hover:scale-[1.02] active:scale-[0.98]" 
             onClick={() => handleEnquiry(property)}
@@ -604,6 +622,24 @@ export default function PropertiesPage() {
                 <span className="text-sm font-bold text-gray-900">{property.area}</span>
               </div>
             </div>
+
+            {/* Possession Status - Desktop */}
+            {property.possessionDate && (
+              <div>
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "text-xs font-semibold px-3 py-1 rounded-full",
+                    property.possessionDate.toLowerCase().includes('ready')
+                      ? 'bg-green-100 text-green-800 border border-green-200'
+                      : 'bg-amber-100 text-amber-800 border border-amber-200'
+                  )}
+                >
+                  {property.possessionDate.toLowerCase().includes('ready') ? '✓ ' : '⏳ '}
+                  {property.possessionDate}
+                </Badge>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end mt-auto">

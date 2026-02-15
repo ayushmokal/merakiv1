@@ -362,7 +362,17 @@ const MobilePropertyCard: React.FC<MobilePropertyCardProps> = ({
             {property.possessionDate && (
               <div className="flex items-center">
                 <Calendar className="h-3 w-3 mr-1" />
-                <span>Possession: {property.possessionDate}</span>
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "text-xs font-semibold px-2 py-0.5 rounded-full",
+                    property.possessionDate.toLowerCase().includes('ready')
+                      ? 'bg-green-100 text-green-800 border border-green-200'
+                      : 'bg-amber-100 text-amber-800 border border-amber-200'
+                  )}
+                >
+                  {property.possessionDate}
+                </Badge>
               </div>
             )}
           </div>

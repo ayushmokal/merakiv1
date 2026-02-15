@@ -18,16 +18,17 @@ const PROPERTY_SHEETS = {
     }
   },
   RESIDENTIAL: {
-    name: "Residential Projects", 
+    name: "Residential Projects",
     columns: {
       srNo: 0,        // A: S R NO
       config: 1,      // B: Configuration
-      carpetSize: 2,  // C: Carpet Size  
+      carpetSize: 2,  // C: Carpet Size
       builtUp: 3,     // D: Built up
       node: 4,        // E: Node
       price: 5,       // F: Price
       buyLease: 6,    // G: BUY/Lease
-      photos: 7       // H: Photos
+      photos: 7,      // H: Photos
+      possession: 8   // I: Possession (ready to move / under construction)
     }
   },
   BUNGALOW: {
@@ -230,7 +231,10 @@ function getPropertiesFromSheet(ss, sheetConfig, categoryType, transactionType =
         postedDate: new Date().toISOString().split('T')[0],
         views: Math.floor(Math.random() * 200) + 50,
         likes: Math.floor(Math.random() * 30) + 5,
-        images: processPhotoUrls(photos)
+        images: processPhotoUrls(photos),
+        possessionDate: (cols.possession !== undefined && row[cols.possession])
+          ? row[cols.possession].toString().trim()
+          : ''
       };
       
       properties.push(property);
