@@ -28,6 +28,7 @@ interface PropertyFilters {
   searchQuery: string;
   propertyType: 'all' | 'residential' | 'commercial' | 'bungalow';
   transactionType: 'all' | 'buy' | 'lease';
+  possessionFilter: 'all' | 'ready' | 'under_construction';
   location: string;
   priceRange: [number, number];
   bedrooms: string[];
@@ -103,6 +104,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       searchQuery: '',
       propertyType: 'all',
       transactionType: 'all',
+      possessionFilter: 'all',
       location: 'all',
       priceRange: [0, 100000000],
       bedrooms: [],

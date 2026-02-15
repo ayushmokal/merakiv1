@@ -13,11 +13,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Building2, 
-  Search, 
-  Filter, 
-  MapPin, 
+import {
+  Building2,
+  Search,
+  Filter,
+  MapPin,
   Home,
   Building,
   Warehouse,
@@ -25,7 +25,8 @@ import {
   Plus,
   Phone,
   Loader2,
-  ChevronDown
+  ChevronDown,
+  CheckCircle
 } from 'lucide-react';
 import EnquiryModal from '@/components/EnquiryModal';
 import MediaCarousel from '@/components/MediaCarousel';
@@ -75,6 +76,7 @@ interface PropertyFilters {
   searchQuery: string;
   propertyType: 'all' | 'residential' | 'commercial' | 'bungalow';
   transactionType: 'all' | 'buy' | 'lease'; // Separate transaction type for dropdowns
+  possessionFilter: 'all' | 'ready' | 'under_construction'; // Possession status filter
   location: string;
   priceRange: [number, number];
   bedrooms: string[];
@@ -152,6 +154,7 @@ export default function PropertiesPage() {
     searchQuery: '',
     propertyType: 'all',
     transactionType: 'all', // Default to show both buy and lease
+    possessionFilter: 'all',
     location: 'all',
     priceRange: [0, 100000000],
     bedrooms: [],
@@ -343,13 +346,27 @@ export default function PropertiesPage() {
 
     // Carpet Area filter
     if (filters.carpetAreaRange[1] < 5000) {
-      filtered = filtered.filter(property => 
+      filtered = filtered.filter(property =>
         property.carpetArea >= 0 && property.carpetArea <= filters.carpetAreaRange[1]
       );
     }
 
+    // Possession filter (Ready to Move / Under Construction)
+    if (filters.possessionFilter !== 'all') {
+      filtered = filtered.filter(property => {
+        const possession = (property.possessionDate || '').toLowerCase();
+        if (filters.possessionFilter === 'ready') {
+          return possession.includes('ready');
+        }
+        if (filters.possessionFilter === 'under_construction') {
+          return possession.includes('under') || possession.includes('construction');
+        }
+        return true;
+      });
+    }
+
     setFilteredProperties(filtered);
-  }, [filters.priceRange, filters.bedrooms, filters.carpetAreaRange, filters.location, properties]);
+  }, [filters.priceRange, filters.bedrooms, filters.carpetAreaRange, filters.location, filters.possessionFilter, properties]);
 
   // Sort filtered properties based on selected sort option
   const sortedProperties = useMemo(() => {
@@ -470,6 +487,7 @@ export default function PropertiesPage() {
     let count = 0;
     if (filters.propertyType !== 'all') count++;
     if (filters.transactionType !== 'all') count++;
+    if (filters.possessionFilter !== 'all') count++;
     if (filters.location !== 'all') count++;
     if (filters.priceRange[1] < 100000000) count++;
     if (filters.carpetAreaRange[1] < 5000) count++;
@@ -694,7 +712,7 @@ export default function PropertiesPage() {
                   setProperties([]);
                   setFilteredProperties([]);
                   setCurrentPage(0);
-                  setFilters(prev => ({ ...prev, propertyType: 'all', transactionType: 'all' }));
+                  setFilters(prev => ({ ...prev, propertyType: 'all', transactionType: 'all', possessionFilter: 'all' }));
                   // Use setTimeout to ensure state updates are processed
                   setTimeout(() => {
                     console.log('🚀 Triggering immediate fetch for All Properties');
@@ -727,13 +745,13 @@ export default function PropertiesPage() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white border shadow-xl rounded-xl">
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={async () => {
                       setSearchLoading(true);
                       setProperties([]);
                       setFilteredProperties([]);
                       setCurrentPage(0);
-                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'all' }));
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'all', possessionFilter: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
                     className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
@@ -741,13 +759,13 @@ export default function PropertiesPage() {
                     <Home className="h-4 w-4 mr-2" />
                     All Residential
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={async () => {
                       setSearchLoading(true);
                       setProperties([]);
                       setFilteredProperties([]);
                       setCurrentPage(0);
-                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'buy' }));
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'buy', possessionFilter: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
                     className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
@@ -755,16 +773,44 @@ export default function PropertiesPage() {
                     <Home className="h-4 w-4 mr-2" />
                     Buy Residential
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={async () => {
                       setSearchLoading(true);
                       setProperties([]);
                       setFilteredProperties([]);
                       setCurrentPage(0);
-                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'lease' }));
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'buy', possessionFilter: 'ready' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-green-50 rounded-lg m-1 p-3 pl-8"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                    Ready to Move
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'buy', possessionFilter: 'under_construction' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-amber-50 rounded-lg m-1 p-3 pl-8"
+                  >
+                    <Building className="h-4 w-4 mr-2 text-amber-600" />
+                    Under Construction
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      setSearchLoading(true);
+                      setProperties([]);
+                      setFilteredProperties([]);
+                      setCurrentPage(0);
+                      setFilters(prev => ({ ...prev, propertyType: 'residential', transactionType: 'lease', possessionFilter: 'all' }));
+                      setTimeout(() => debouncedFetchProperties(true, true), 10);
+                    }}
+                    className="cursor-pointer hover:bg-gray-50 rounded-lg m-1 p-3"
                   >
                     <Building className="h-4 w-4 mr-2" />
                     Lease Residential
@@ -794,7 +840,7 @@ export default function PropertiesPage() {
                       setProperties([]);
                       setFilteredProperties([]);
                       setCurrentPage(0);
-                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'all' }));
+                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'all', possessionFilter: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
                     className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
@@ -802,13 +848,13 @@ export default function PropertiesPage() {
                     <Warehouse className="h-4 w-4 mr-2" />
                     All Commercial
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={async () => {
                       setSearchLoading(true);
                       setProperties([]);
                       setFilteredProperties([]);
                       setCurrentPage(0);
-                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'buy' }));
+                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'buy', possessionFilter: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
                     className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
@@ -816,13 +862,13 @@ export default function PropertiesPage() {
                     <Warehouse className="h-4 w-4 mr-2" />
                     Buy Commercial
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={async () => {
                       setSearchLoading(true);
                       setProperties([]);
                       setFilteredProperties([]);
                       setCurrentPage(0);
-                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'lease' }));
+                      setFilters(prev => ({ ...prev, propertyType: 'commercial', transactionType: 'lease', possessionFilter: 'all' }));
                       setTimeout(() => debouncedFetchProperties(true, true), 10);
                     }}
                     className="cursor-pointer hover:bg-blue-50 rounded-lg m-1 p-3"
@@ -842,7 +888,7 @@ export default function PropertiesPage() {
                     setProperties([]);
                     setFilteredProperties([]);
                     setCurrentPage(0);
-                    setFilters(prev => ({ ...prev, propertyType: type.value as any, transactionType: 'all' }));
+                    setFilters(prev => ({ ...prev, propertyType: type.value as any, transactionType: 'all', possessionFilter: 'all' }));
                     setTimeout(() => debouncedFetchProperties(true, true), 10);
                   }}
                   className={`flex-1 sm:flex-none px-4 py-3 sm:px-3 sm:py-2 rounded-xl text-sm sm:text-xs lg:text-sm font-semibold transition-all min-h-[52px] sm:min-h-[44px] flex items-center justify-center gap-2 ${
@@ -945,6 +991,7 @@ export default function PropertiesPage() {
                   searchQuery: '',
                   propertyType: 'all',
                   transactionType: 'all',
+                  possessionFilter: 'all',
                   location: 'all',
                   priceRange: [0, 100000000],
                   bedrooms: [],
@@ -1177,6 +1224,7 @@ export default function PropertiesPage() {
                 <h2 className="text-xl sm:text-2xl font-bold leading-tight mb-1">
                   Properties for {filters.propertyType === 'all' ? 'All Types' : propertyTypes.find(t => t.value === filters.propertyType)?.label}
                   {filters.transactionType !== 'all' && ` (${filters.transactionType === 'buy' ? 'For Sale' : 'For Lease'})`}
+                  {filters.possessionFilter !== 'all' && ` - ${filters.possessionFilter === 'ready' ? 'Ready to Move' : 'Under Construction'}`}
                   {filters.location !== 'all' && ` in ${filters.location}`}
                 </h2>
                 <p className="text-gray-600 text-sm sm:text-base">
