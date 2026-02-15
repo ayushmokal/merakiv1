@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
           filters: { minPrice, maxPrice, location, bedrooms, search, verified, featured },
           cache: { hit: true, age: Math.round((now - cached.timestamp) / 1000) }
         },
-        { headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300', 'x-cache': 'HIT' } }
+        { headers: { 'Cache-Control': 'public, max-age=15, s-maxage=30, stale-while-revalidate=60', 'x-cache': 'HIT' } }
       );
     }
 
@@ -425,7 +425,7 @@ export async function GET(request: NextRequest) {
         verified,
         featured
       }
-    }, { headers: { 'Cache-Control': 'public, max-age=30, s-maxage=60, stale-while-revalidate=300', 'x-cache': 'MISS' } });
+    }, { headers: { 'Cache-Control': 'public, max-age=15, s-maxage=30, stale-while-revalidate=60', 'x-cache': 'MISS' } });
 
   } catch (error) {
     console.error('Error fetching properties:', error);
