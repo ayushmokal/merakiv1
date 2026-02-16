@@ -9,7 +9,7 @@ export const BUSINESS_INFO = {
   email: 'merakisquarefootsllp@gmail.com',
   phones: ['+91-9930910004', '+91-9820274467'],
   whatsapp: 'https://wa.me/919930910004',
-  instagram: 'https://www.instagram.com/merakisquarefoots?igsh=eXpnNzh1OWR2bTUw&utm_source=qr',
+  instagram: 'https://www.instagram.com/merakisquarefoot/',
   address: {
     streetAddress: 'Unit no. C 304, Rahul Apartment CHS, Plot E125, Sector 12',
     addressLocality: 'Kharghar',

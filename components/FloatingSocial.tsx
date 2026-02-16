@@ -13,7 +13,7 @@ const links = [
     ring: 'from-[#25d366] to-[#128c7e]',
   },
   {
-    href: 'https://www.instagram.com/merakisquarefoots?igsh=eXpnNzh1OWR2bTUw&utm_source=qr',
+    href: 'https://www.instagram.com/merakisquarefoot/',
     label: 'View on Instagram',
     icon: Instagram,
     ring: 'from-[#f58529] via-[#dd2a7b] to-[#515bd4]',
